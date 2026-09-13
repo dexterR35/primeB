@@ -12,18 +12,20 @@
   const HOLD_AFTER_READY = 2000; // requested dwell on the loading screen
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-  /* Background images the first screen cannot do without. */
-  const CRITICAL_BG = [
-    'assets/hero-dossier.png',
-    'assets/grain.svg',
-    'assets/archival-paper.png',
-  ];
-  /* Loaded quietly after the intro so nothing pops in further down. */
-  const DEFERRED_BG = [
-    'assets/access-paper-card.png',
-    'assets/private-night.png',
-    'assets/s4bg.png',
-  ];
+  /* Ce se preîncarcă nu mai e o listă de nume fixe (se rupea la fiecare
+     redenumire de fișier), ci se citește din ce folosește chiar pagina. */
+  const grain = 'assets/grain.svg';
+
+  const layerImages = () =>
+    [...doc.querySelectorAll('[data-live-bg]')]
+      .map((section) => section.querySelector('.sec-bg, .hero-image'))
+      .filter(Boolean)
+      .map((el) =>
+        el.tagName === 'IMG'
+          ? el.getAttribute('src')
+          : getComputedStyle(el).backgroundImage.match(/url\("?([^")]+)"?\)/)?.[1]
+      )
+      .filter(Boolean);
 
   const loader = doc.getElementById('loader');
   const fill = doc.getElementById('loader-fill');
@@ -90,7 +92,7 @@
               img.addEventListener('error', resolve, { once: true });
             })
       ),
-      ...CRITICAL_BG.map(preload),
+      ...[grain, ...layerImages().slice(0, 1)].map(preload),
     ];
 
     let done = 0;
@@ -270,25 +272,85 @@
     frame();
   };
 
-  /* --------------------------------------------------- fundaluri vii */
+  /* ------------------------------------------------- parallax pe secțiuni */
 
-  /* Un IntersectionObserver, nu scroll: callback-ul se declanșează o dată,
-     la intrarea secțiunii în ecran, iar zoomul e o tranziție de transform
-     pe compositor. Zero cost pe fiecare frame de scroll. */
-  const startLiveBackgrounds = () => {
-    if (reduced || !('IntersectionObserver' in window)) return;
-    const sections = doc.querySelectorAll('[data-live-bg]');
+  /* Mișcarea urmează scroll-ul, dar fără să coste cât un scroll listener
+     obișnuit: pozițiile se măsoară o dată (și la resize), observer-ul spune
+     care secțiuni sunt pe ecran, iar în frame se fac numai scrieri — nicio
+     citire de geometrie, deci niciun layout forțat. */
+  const startParallax = () => {
+    if (reduced) return;
+    const sections = [...doc.querySelectorAll('[data-live-bg]')].map((el) => ({
+      el,
+      top: 0,
+      height: 0,
+    }));
     if (!sections.length) return;
+
+    const measure = () => {
+      const y = window.scrollY;
+      for (const s of sections) {
+        const r = s.el.getBoundingClientRect();
+        s.top = r.top + y;
+        s.height = r.height;
+      }
+    };
+
+    const live = new Set();
+    let queued = false;
+
+    const frame = () => {
+      queued = false;
+      const y = window.scrollY;
+      const view = window.innerHeight;
+      const mid = y + view / 2;
+      for (const s of live) {
+        // 1 = secțiunea vine de jos, 0 = e în dreptul ochiului, -1 = a ieșit sus
+        const span = (view + s.height) / 2;
+        const p = Math.max(-1, Math.min(1, (s.top + s.height / 2 - mid) / span));
+        s.el.style.setProperty('--p', p.toFixed(4));
+      }
+    };
+
+    const request = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(frame);
+    };
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          entry.target.classList.toggle('in-view', entry.isIntersecting);
+          const s = sections.find((x) => x.el === entry.target);
+          if (!s) continue;
+          if (entry.isIntersecting) live.add(s);
+          else {
+            live.delete(s);
+            s.el.style.setProperty('--p', entry.boundingClientRect.top > 0 ? '1' : '-1');
+          }
         }
+        request();
       },
-      { rootMargin: '10% 0px', threshold: 0 }
+      { rootMargin: '12% 0px' }
     );
-    for (const section of sections) io.observe(section);
+
+    measure();
+    for (const s of sections) io.observe(s.el);
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener(
+      'resize',
+      () => {
+        measure();
+        request();
+      },
+      { passive: true }
+    );
+    // pozițiile se schimbă când imaginile lazy își iau locul
+    window.addEventListener('load', () => {
+      measure();
+      request();
+    });
+    request();
   };
 
   /* ---------------------------------------------------------------- boot */
@@ -310,10 +372,10 @@
 
     startReveals();
     startHeroDrift();
-    startLiveBackgrounds();
+    startParallax();
 
     // Warm the remaining artwork once the page is interactive.
-    const warm = () => DEFERRED_BG.forEach(preload);
+    const warm = () => layerImages().slice(1).forEach(preload);
     if ('requestIdleCallback' in window) requestIdleCallback(warm, { timeout: 4000 });
     else setTimeout(warm, 2500);
   };

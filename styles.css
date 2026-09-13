@@ -1025,7 +1025,9 @@ h2 {
      și scunde, fără reguli separate. Pe telefon marginea e oricum 0. */
   margin: 0 0 clamp(40px, 22vh, 200px) clamp(12px, 1.8vw, 25px);
   text-align: center;
-  width: 100%;
+  /* width:100% + margin-left împingea cutia în afara coloanei cu exact
+     marginea (11–16px la 768–1100px); auto umple ce rămâne după margine */
+  width: auto;
 }
 .v2 .hero h1 {
   max-width: 960px;
@@ -2624,9 +2626,9 @@ h2 {
     justify-self: stretch;
     align-self: end; /* pașii stau pe un rând, la baza secțiunii */
     width: auto;
-    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: end; /* fiecare pas ia lățimea textului, nu a coloanei */
-    gap: 0 22px;
+    gap: 22px 22px; /* și rând, și coloană: al treilea pas trece dedesubt */
     margin-top: 40px;
     text-align: end;
   }
@@ -2774,42 +2776,14 @@ h2 {
   background-position: 10% 71%;
   background-size: cover;
 }
-/* intrarea în ecran e detectată de IntersectionObserver (clasa .in-view);
-   zoomul e o singură tranziție de transform, adică lucru pentru compositor */
-.s2::after {
-  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
-}
-html.js-motion .s2::after {
-  transform: scale(1.13);
-}
-html.js-motion .s2.in-view::after {
-  transform: scale(1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .s2::after,
-  .s2.in-view::after {
-    transform: none;
-    transition: none;
-  }
-}
-
-/* Fundaluri vii și pentru hero, secțiunea 3 și secțiunea 4.
-   Același mecanism: IntersectionObserver pune .in-view, restul e o tranziție
-   de transform pe un strat — nimic legat de scroll. */
+/* straturile de imagine ale secțiunilor (poziționare; mișcarea o dă
+   parallaxul de mai jos) */
 .sec-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background-repeat: no-repeat;
-  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
-}
-/* starea de pornire există doar dacă JS poate să o încheie */
-html.js-motion .sec-bg {
-  transform: scale(1.13);
-}
-html.js-motion .in-view .sec-bg {
-  transform: none;
 }
 .s3 .sec-bg {
   /* specificitate mai mare decât `.s3 > *`, care altfel îi dă position:relative */
@@ -2821,7 +2795,27 @@ html.js-motion .in-view .sec-bg {
   background-size: cover;
 }
 .s3::before {
-  z-index: 1; /* vinieta rămâne peste stratul care se mișcă */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      var(--shadow-section) 0%,
+      transparent 14%,
+      transparent 86%,
+      var(--shadow-section) 100%
+    ),
+    linear-gradient(
+      180deg,
+      #04090ce8 0%,
+      transparent 18%,
+      transparent 82%,
+      #04090ce8 100%
+    );
+  box-shadow: inset 0 0 72px 24px var(--shadow-section);
 }
 .apply .sec-bg {
   position: absolute;
@@ -2833,104 +2827,82 @@ html.js-motion .in-view .sec-bg {
   background-size: cover, cover;
 }
 .apply {
-  position: relative;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: var(--rail) 1fr 100px;
+  gap: 30px;
+  padding: 32px 24px 34px 0;
+  border-bottom: 1px solid var(--line);
+  background-color: var(--ink-page);
 }
 .apply > *:not(.sec-bg) {
   position: relative;
   z-index: 1;
 }
-
-/* hero: fotografia e deja un <img>, o scalăm direct */
 .hero {
   overflow: hidden;
 }
+
+/* ——— PARALLAX ———
+   Mișcarea nu mai e o tranziție pornită o dată, ci urmează scroll-ul:
+   JS pune pe fiecare secțiune `--p`, de la 1 (secțiunea vine de jos) la -1
+   (a ieșit pe sus), 0 când e în dreptul ochiului. Fundalul se lasă dus în
+   sensul scroll-ului, textul se opune puțin — de aici adâncimea.
+   Totul trece prin `translate`/`scale` (proprietăți separate), ca să nu
+   calce peste `transform`, folosit de reveal-uri și de driftul hero. */
+/* tipat: browserul știe că e un număr, deci nu invalidează stilul întregului
+   subarbore la fiecare frame și poate ține valoarea pe compositor */
+@property --p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+html.js-motion [data-live-bg] {
+  --p: 0;
+  --par: 30px; /* cât se lasă dus fundalul */
+  --par-text: -9px; /* cât se opune textul */
+}
+@media (max-width: 700px) {
+  html.js-motion [data-live-bg] {
+    --par: 12px;
+    --par-text: -5px;
+  }
+}
+
+.sec-bg,
+.s2::after,
 .hero .hero-image {
-  transition: transform 2.6s cubic-bezier(0.2, 0.65, 0.3, 1);
+  will-change: translate;
 }
-html.js-motion .hero .hero-image {
-  transform: scale(1.1);
-}
-html.js-motion .hero.in-view .hero-image {
-  transform: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sec-bg,
-  .in-view .sec-bg,
-  .hero .hero-image,
-  .hero.in-view .hero-image {
-    transform: none;
-    transition: none;
-  }
+html.js-motion [data-live-bg] .sec-bg,
+html.js-motion [data-live-bg] .hero-image,
+html.js-motion [data-live-bg].s2::after {
+  translate: 0 calc(var(--p) * var(--par));
+  scale: 1.09; /* acoperă deplasarea, ca să nu apară margini */
 }
 
-/* Text și imagine se mișcă împreună, în direcții opuse — de aici senzația de
-   adâncime. Ambele pornesc din aceeași clasă .in-view, pusă de observer, și au
-   aceeași durată, deci par un singur gest, nu două animații separate.
-   Reveal-urile pe elemente (data-rev) rămân peste asta: ele dau cascada,
-   blocul dă profunzimea. */
-[data-live-bg] .section-head,
-[data-live-bg] .s3-cta,
-[data-live-bg] .items,
-[data-live-bg] .apply-content {
-  transform: translate3d(0, 16px, 0) scale(0.965);
-  transform-origin: 50% 70%;
-  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
-  will-change: transform;
-}
-[data-live-bg].in-view .section-head,
-[data-live-bg].in-view .s3-cta,
-[data-live-bg].in-view .items,
-[data-live-bg].in-view .apply-content {
-  transform: none;
-  will-change: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-live-bg] .section-head,
-  [data-live-bg] .s3-cta,
-  [data-live-bg] .items,
-  [data-live-bg] .apply-content,
-  [data-live-bg].in-view .section-head,
-  [data-live-bg].in-view .s3-cta,
-  [data-live-bg].in-view .items,
-  [data-live-bg].in-view .apply-content {
-    transform: none;
-    transition: none;
-  }
-}
-
-/* Hero: același gest, dar pe proprietățile separate `scale` și `translate`.
-   Driftul de scroll scrie `transform` pe .hero-copy — dacă am folosi tot
-   transform aici, una ar șterge-o pe cealaltă. Așa se compun. */
-html.js-motion [data-live-bg] .hero-copy,
-html.js-motion [data-live-bg] .hero-art-notes {
-  scale: 0.965;
-  translate: 0 16px;
-  transform-origin: 50% 70%;
-  transition:
-    scale 2.6s cubic-bezier(0.2, 0.65, 0.3, 1),
-    translate 2.6s cubic-bezier(0.2, 0.65, 0.3, 1);
+html.js-motion [data-live-bg] .section-head,
+html.js-motion [data-live-bg] .s3-cta,
+html.js-motion [data-live-bg] .items,
+html.js-motion [data-live-bg] .apply-content,
+html.js-motion [data-live-bg] .hero-copy {
+  translate: 0 calc(var(--p) * var(--par-text));
 }
 html.js-motion [data-live-bg] .hero-art-notes {
-  scale: 0.98;
-  translate: 0 10px;
-}
-html.js-motion [data-live-bg].in-view .hero-copy,
-html.js-motion [data-live-bg].in-view .hero-art-notes {
-  scale: 1;
-  translate: 0 0;
+  translate: 0 calc(var(--p) * var(--par-text) * 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-live-bg] .hero-copy,
-  [data-live-bg] .hero-art-notes,
-  [data-live-bg].in-view .hero-copy,
-  [data-live-bg].in-view .hero-art-notes {
-    scale: 1;
-    translate: 0 0;
-    transition: none;
+  html.js-motion [data-live-bg] .sec-bg,
+  html.js-motion [data-live-bg] .hero-image,
+  html.js-motion [data-live-bg].s2::after,
+  html.js-motion [data-live-bg] .section-head,
+  html.js-motion [data-live-bg] .s3-cta,
+  html.js-motion [data-live-bg] .items,
+  html.js-motion [data-live-bg] .apply-content,
+  html.js-motion [data-live-bg] .hero-copy,
+  html.js-motion [data-live-bg] .hero-art-notes {
+    translate: none;
+    scale: none;
   }
 }
 
@@ -2972,4 +2944,8 @@ html.js-motion [data-live-bg].in-view .hero-art-notes {
 }
 .s1 .item {
   border-color: var(--line);
+}
+/* pasul 2 rămâne în pagină, dar ascuns — ține locul, nu se vede */
+.s1 .item:nth-child(2) {
+  visibility: hidden;
 }
