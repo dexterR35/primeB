@@ -315,12 +315,7 @@ html.js-motion .handwritten[data-rev] {
 html.js-motion .handwritten[data-rev].is-in {
   transform: rotate(-7deg);
 }
-html.js-motion .round-seal[data-rev] {
-  transform: rotate(-10deg) scale(0.86);
-}
-html.js-motion .round-seal[data-rev].is-in {
-  transform: rotate(-10deg);
-}
+
 
 /* Hero copy drifts and fades as the first section takes over (JS-driven).
    Only active once the page has actually been scrolled. */
@@ -382,10 +377,7 @@ html.js-motion .footer-links span {
   html.js-motion .access-stamp[data-rev="stamp"].is-in {
     transform: rotate(-14deg) !important;
   }
-  html.js-motion .round-seal[data-rev],
-  html.js-motion .round-seal[data-rev].is-in {
-    transform: rotate(-10deg) !important;
-  }
+
   .loader-stamp {
     transition: opacity 0.3s ease;
   }

@@ -129,7 +129,6 @@
     { sel: '.section-photo', kind: 'photo', step: 120 },
     { sel: '.access-scene', kind: 'photo', step: 0 },
     { sel: '.section-note > span', kind: 'fade', step: 120 },
-    { sel: '.section-note .round-seal', kind: 'fade', step: 0 },
     { sel: '.access-note', kind: 'fade', step: 140 },
     { sel: '.access-document', kind: 'card', step: 0 },
     { sel: '.access-stamp', kind: 'stamp', step: 420 },

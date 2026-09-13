@@ -177,7 +177,7 @@
   /* — imagini — */
   --img-hero-dossier: url("assets/hero-dossier.png");
   --img-grain: url("assets/grain.svg");
-  --img-archival-paper: url("assets/archival-paper.png");
+  --img-s1: url("assets/s1.png");
   --img-s2: url("assets/s2.png");
   --img-s3: url("assets/s3.png");
   --img-access-card: url("assets/access-paper-card.png");
@@ -340,7 +340,7 @@ i {
   border: 1px solid var(--red-edge);
   background:
     var(--bg-primary),
-    var(--img-archival-paper) center/400px;
+    var(--img-s1) center/400px;
   box-shadow: inset 0 0 0 3px var(--shadow-btn);
   color: var(--cream);
   font: 600 20px/1.2 var(--label);
@@ -536,9 +536,7 @@ i {
 }
 .content-section.light {
   color: var(--ink-on-paper);
-  background:
-    var(--bg-section-light),
-    var(--img-archival-paper) center/780px;
+  background: var(--img-s1) center bottom / cover no-repeat;
   border: 0;
   clip-path: polygon(
     0 0.7%,
@@ -662,7 +660,9 @@ h2 {
   display: block;
 }
 .s2 {
-  background: var(--bg-section), var(--img-s2) 20% 65% / cover;
+  background:
+    var(--bg-section),
+    var(--img-s2) 20% 65% / cover;
 }
 .s2 .section-head h2 {
   font: 700 clamp(30px, 3.2vw, 60px) / 1.06 var(--serif);
@@ -704,39 +704,12 @@ h2 {
 .s2 .item-dash {
   display: none;
 }
-.round-seal {
-  width: 100%;
-  max-width: 115px;
-  aspect-ratio: 1;
-  border: 3px double var(--paper-seal);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  transform: rotate(-10deg);
-  opacity: 0.9;
-}
-.round-seal span {
-  font: 9px var(--label);
-  letter-spacing: 0.12em;
-}
-.round-seal b {
-  font: 700 34px/1 var(--serif);
-  border: 1px solid var(--line-seal);
-  border-radius: 50%;
-  padding: 8px;
-}
-.round-seal small {
-  font: 9px var(--label);
-  letter-spacing: 0.18em;
-}
+
 .s3 {
   background:
     var(--bg-section),
-    var(--img-s3) left/contain;
-    background-repeat: no-repeat;
+    var(--img-s3) center center /cover no-repeat;
+  background-repeat: no-repeat;
 }
 .s3 h2 {
   font-size: clamp(29px, 2.65vw, 41px);
@@ -1029,7 +1002,7 @@ h2 {
   margin: 16px auto;
 }
 .v2 .hero-image {
-  object-position: center top;
+  object-position: center bottom;
   opacity: 1;
 }
 .v2 .hero:after {
@@ -1167,10 +1140,9 @@ h2 {
   }
   .content-section {
     gap: 22px;
-    grid-template-columns: var(--rail) minmax(210px, 0.9fr) minmax(
-        0,
-        1.55fr
-      ) 74px;
+    grid-template-columns:
+      var(--rail) minmax(210px, 0.9fr) minmax(0, 1.55fr)
+      74px;
   }
   .item {
     padding-inline: 12px;
@@ -1209,17 +1181,7 @@ h2 {
   .s2 .item p {
     font-size: 13px;
   }
-  .round-seal b {
-    font-size: 25px;
-    padding: 4px;
-  }
-  .round-seal span {
-    font-size: 7px;
-    letter-spacing: 0.01em;
-  }
-  .round-seal small {
-    font-size: 8px;
-  }
+
   .access-wrap {
     grid-template-columns: 65px 1fr 85px;
     gap: 24px;
@@ -1627,10 +1589,7 @@ h2 {
   .section-note > span {
     max-width: 210px;
   }
-  .round-seal {
-    width: 72px;
-    flex: none;
-  }
+
   .v2 .access-wrap {
     grid-template-columns: 1fr;
     padding: 32px 10px;
@@ -1839,7 +1798,9 @@ h2 {
   background: var(--scrim-photo);
   box-shadow: inset 0 0 35px var(--shadow-photo);
 }
-.section-photo.photo-2,.section-photo.photo-3 {
+.section-photo.photo-2,
+.section-photo.photo-3,
+.section-photo.photo-1 {
   visibility: hidden !important;
 }
 .photo-1 img {
@@ -2244,21 +2205,12 @@ h2 {
     max-width: none;
     line-height: 1.5;
   }
-  .round-seal {
-    width: 90px;
-  }
-  .round-seal span,
-  .round-seal small {
-    font-size: 10px;
-  }
-  .round-seal b {
-    font-size: 30px;
-  }
+
   .v2 .access-wrap {
     padding: 36px 16px;
   }
   .access-card {
-    background-image: var(--img-archival-paper);
+    background-image: var(--img-s1);
     background-size: 600px auto;
     padding: 62px 18px 24px;
     border: 1px solid var(--paper-edge);
@@ -2534,11 +2486,11 @@ h2 {
   }
 }
 
-/* SECȚIUNEA 3 — titlul în dreapta, mare; pașii pe un rând, jos, pe toată
+/* SECȚIUNEA 3 — titlul sus, pe mijloc; pașii pe un rând, jos, pe toată
    lățimea. Doar de la 701 px în sus; pe telefon secțiunea rămâne stivuită. */
 @media (min-width: 701px) {
-  /* fotografia intră sub text la lățimi medii: un văl dinspre dreapta și
-     unul dinspre poalele secțiunii țin titlul și pașii lizibili */
+  /* fotografia intră sub text: un văl de sus ține titlul lizibil,
+     unul de jos ține pașii lizibili */
   .v2 .s3::after {
     content: "";
     position: absolute;
@@ -2546,13 +2498,7 @@ h2 {
     z-index: 0;
     pointer-events: none;
     background:
-      linear-gradient(
-        270deg,
-        #04090cf2 0%,
-        #04090cd9 28%,
-        #04090c8f 47%,
-        transparent 64%
-      ),
+      linear-gradient(180deg, #04090cf2 0%, #04090cab 18%, transparent 38%),
       linear-gradient(0deg, #04090ced 0%, #04090cab 16%, transparent 34%);
   }
   .v2 .s3 > * {
@@ -2560,16 +2506,16 @@ h2 {
     z-index: 1;
   }
 
-  /* titlul: coloana din dreapta, mai lat și mai mare */
-  /* rândul titlului rămâne cât textul; restul înălțimii cade sub pași */
+  /* titlul: sus, pe mijloc; restul înălțimii cade sub pași */
   .v2 .s3 {
     grid-template-rows: auto 1fr;
   }
   .v2 .s3 .section-head {
     grid-column: 2;
-    justify-self: end;
-    max-width: min(54%, 640px);
-    text-align: end;
+    justify-self: center;
+    align-self: start;
+    max-width: min(72%, 760px);
+    text-align: center;
     margin: 0;
     padding-bottom: 8px;
   }
@@ -2583,7 +2529,7 @@ h2 {
     margin-top: 16px;
   }
   .v2 .s3 .section-head .red-rule {
-    margin-inline: auto 0;
+    margin-inline: auto;
   }
   /* figura e deja ascunsă, dar cu visibility încă ocupa înălțime în coloană */
   .v2 .s3 .section-photo {
@@ -2593,23 +2539,23 @@ h2 {
   /* pașii: un rând, la baza secțiunii, pe toată lățimea coloanei */
   .v2 .s3 .items {
     grid-column: 2;
-    justify-self: end;
-    align-self: start;
-    width: min(54%, 640px);
-    grid-template-columns: minmax(0, 1fr);
-    grid-auto-rows: auto;
+    justify-self: stretch;
+    align-self: end; /* pașii stau pe un rând, la baza secțiunii */
+    width: auto;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     justify-items: end; /* fiecare pas ia lățimea textului, nu a coloanei */
-    gap: 0;
-    margin-top: 6px;
+    gap: 0 22px;
+    margin-top: 40px;
     text-align: end;
   }
   .v2 .s3 .item {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: fit-content;
     max-width: 100%;
     border: 0;
     border-bottom: 1px solid var(--line);
-    padding: 0 0 16px;
+    padding: 0 0 12px;
   }
   .v2 .s3 .item > * {
     padding: 0;
@@ -2617,20 +2563,20 @@ h2 {
   }
   .v2 .s3 .item-no {
     display: block;
-    margin-top: 12px;
+    margin-top: 10px;
     color: var(--red-item);
     font: 600 15px var(--label);
     letter-spacing: 0.12em;
   }
   .v2 .s3 .item h3 {
-    margin: 8px 0 0;
-    font: 600 17px/1.3 var(--label);
+    margin: 5px 0 0;
+    font: 600 16px/1.25 var(--label);
     letter-spacing: 0.09em;
     text-transform: uppercase;
   }
   .v2 .s3 .item p {
-    margin-top: 6px;
-    font: 15px/1.6 var(--mono);
+    margin-top: 4px;
+    font: 14px/1.5 var(--mono);
     opacity: 0.86;
   }
   .v2 .s3 .item-dash {
