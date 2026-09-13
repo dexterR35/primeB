@@ -1,0 +1,403 @@
+/* Adresa Secretă - loading screen, intro and scroll motion.
+   Everything here is opt-in: the rules only bite once the inline head script
+   has added .js-motion to <html>, so the page stays fully usable without JS. */
+
+:root {
+  --ease-out: cubic-bezier(0.2, 0.65, 0.3, 1);
+  --rev-dur: 850ms;
+}
+
+/* ---------------------------------------------------------------- loading */
+
+html.is-loading,
+html.is-loading body {
+  overflow: hidden;
+}
+html.is-loading {
+  scroll-behavior: auto;
+}
+
+.loader {
+  display: none;
+}
+html.js-motion .loader {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  place-items: center;
+  padding: 24px;
+  color: var(--white);
+  background-color: var(--ink-loader);
+  background-image: var(--bg-loader);
+  transition:
+    opacity 0.9s ease,
+    visibility 0.9s step-end;
+}
+.loader:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--img-grain) repeat;
+  opacity: 0.12;
+  mix-blend-mode: screen;
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--scrim-loader);
+}
+.loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+/* The class selector above would otherwise beat the UA rule for [hidden]. */
+html.js-motion .loader[hidden] {
+  display: none;
+}
+
+.loader-frame {
+  position: absolute;
+  inset: 22px;
+  border: 1px solid var(--line-loader);
+  pointer-events: none;
+}
+.loader-frame .cross {
+  position: absolute;
+  opacity: 0.5;
+}
+.loader-frame .cross:nth-child(1) {
+  top: -15px;
+  left: -15px;
+}
+.loader-frame .cross:nth-child(2) {
+  top: -15px;
+  right: -15px;
+}
+.loader-frame .cross:nth-child(3) {
+  bottom: -15px;
+  left: -15px;
+}
+.loader-frame .cross:nth-child(4) {
+  bottom: -15px;
+  right: -15px;
+}
+
+.loader-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+}
+.loader-eyebrow {
+  font: 400 13px/1.4 var(--label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sage-600);
+}
+.loader-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loader-brand strong {
+  font: 700 clamp(25px, 5.2vw, 38px)/1.1 var(--serif);
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+}
+.loader-stamp {
+  margin: 2px 0 6px;
+  font-size: clamp(24px, 4.6vw, 38px);
+  color: var(--red-stamp-ink);
+  opacity: 0;
+  position: absolute;
+  transform: rotate(-13deg) scale(1.7);
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s cubic-bezier(0.16, 1.3, 0.4, 1);
+}
+.loader-stamp.is-in {
+  opacity: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-13deg) scale(1);
+}
+
+.loader-track {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 2px;
+  background: var(--line-track);
+  overflow: hidden;
+}
+.loader-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--bg-progress);
+  transition: width 0.35s linear;
+}
+.loader-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+  font: 400 12px/1.3 var(--label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage-400);
+}
+.loader-meta b {
+  font-weight: 600;
+  color: var(--sage-100);
+  font-variant-numeric: tabular-nums;
+}
+.loader-note {
+  max-width: 330px;
+  font: 12px/1.6 var(--label);
+  letter-spacing: 0.12em;
+  color: var(--sage-700);
+  text-transform: uppercase;
+}
+.loader-dossier {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  font: 12px/1.4 var(--label);
+  letter-spacing: 0.2em;
+  color: var(--sage-800);
+  text-align: center;
+}
+@media (max-width: 700px) {
+  html.js-motion .loader {
+    padding: 20px;
+  }
+  .loader-frame {
+    inset: 14px;
+  }
+  .loader-inner {
+    gap: 14px;
+    max-width: 340px;
+  }
+  .loader-brand strong {
+    font-size: clamp(21px, 6.4vw, 30px);
+    letter-spacing: 0.025em;
+  }
+  .loader-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .loader-stamp {
+    margin: 6px 0 12px;
+    font-size: clamp(21px, 6.4vw, 30px);
+  }
+  .loader-track,
+  .loader-meta {
+    max-width: 280px;
+  }
+  .loader-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .loader-note {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    max-width: 290px;
+  }
+  .loader-dossier {
+    bottom: 22px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 380px) {
+  .loader-brand strong {
+    font-size: 20px;
+  }
+  .loader-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .loader-stamp {
+    font-size: 22px;
+  }
+}
+
+/* ------------------------------------------------------- scroll reveals */
+
+html.js-motion [data-rev] {
+  opacity: 0;
+  transition:
+    opacity var(--rev-dur) var(--ease-out) var(--rd, 0ms),
+    transform var(--rev-dur) var(--ease-out) var(--rd, 0ms);
+  will-change: opacity, transform;
+}
+html.js-motion [data-rev="up"],
+html.js-motion [data-rev="hero"] {
+  transform: translate3d(0, 24px, 0);
+}
+html.js-motion [data-rev="hero"] {
+  --rev-dur: 1000ms;
+}
+html.js-motion [data-rev="left"] {
+  transform: translate3d(-22px, 0, 0);
+}
+html.js-motion [data-rev="right"] {
+  transform: translate3d(22px, 0, 0);
+}
+html.js-motion [data-rev="fade"] {
+  transform: none;
+}
+html.js-motion [data-rev="rule"] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+html.js-motion .v2 .section-head [data-rev="rule"] {
+  transform-origin: center;
+}
+html.js-motion [data-rev="card"] {
+  transform: translate3d(0, 34px, 0) scale(0.985);
+}
+
+html.js-motion [data-rev].is-in {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Photographs settle out of a slow push-in; the end state is the original.
+   .section-photo wraps an <img>; .access-scene is the image itself. */
+html.js-motion [data-rev="photo"] {
+  transform: none;
+}
+html.js-motion [data-rev="photo"] img,
+html.js-motion img[data-rev="photo"] {
+  transform: scale(1.07);
+  transition: transform 1.6s var(--ease-out) var(--rd, 0ms);
+}
+html.js-motion img[data-rev="photo"] {
+  transition:
+    opacity var(--rev-dur) var(--ease-out) var(--rd, 0ms),
+    transform 1.6s var(--ease-out) var(--rd, 0ms);
+}
+html.js-motion [data-rev="photo"].is-in img,
+html.js-motion img[data-rev="photo"].is-in {
+  transform: none;
+}
+
+/* The stamp keeps its rotation, so it needs its own pair of states. */
+html.js-motion [data-rev="stamp"] {
+  transform: rotate(-13deg) scale(1.45);
+}
+html.js-motion [data-rev="stamp"].is-in {
+  transform: rotate(-13deg) scale(1);
+}
+html.js-motion .access-stamp[data-rev="stamp"] {
+  transform: rotate(-14deg) scale(1.45);
+}
+html.js-motion .access-stamp[data-rev="stamp"].is-in {
+  transform: rotate(-14deg) scale(1);
+}
+html.js-motion .handwritten[data-rev] {
+  transform: rotate(-7deg) translate3d(0, 18px, 0);
+}
+html.js-motion .handwritten[data-rev].is-in {
+  transform: rotate(-7deg);
+}
+html.js-motion .round-seal[data-rev] {
+  transform: rotate(-10deg) scale(0.86);
+}
+html.js-motion .round-seal[data-rev].is-in {
+  transform: rotate(-10deg);
+}
+
+/* Hero copy drifts and fades as the first section takes over (JS-driven).
+   Only active once the page has actually been scrolled. */
+html.js-motion .hero.is-drift .hero-copy,
+html.js-motion .hero.is-drift .hero-art-notes {
+  transform: translate3d(0, var(--py, 0px), 0);
+}
+
+/* Interactive polish that does not move the layout. */
+html.js-motion .primary {
+  transition:
+    background-color 0.3s ease,
+    filter 0.3s ease,
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s ease;
+}
+html.js-motion .primary:hover {
+  transform: translateY(-2px);
+}
+html.js-motion .primary:active {
+  transform: translateY(0);
+}
+html.js-motion .site-nav nav a,
+html.js-motion .footer-links span {
+  transition: color 0.25s ease;
+}
+
+@media (hover: hover) and (min-width: 1001px) {
+  html.js-motion .s2 .item:hover {
+    border-top-color: var(--red-line);
+  }
+}
+
+/* --------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  html.js-motion [data-rev],
+  html.js-motion [data-rev].is-in {
+    transform: none !important;
+    transition-duration: 0.35s !important;
+    transition-delay: 0ms !important;
+  }
+  html.js-motion [data-rev="photo"] img,
+  html.js-motion [data-rev="photo"].is-in img,
+  html.js-motion img[data-rev="photo"],
+  html.js-motion img[data-rev="photo"].is-in {
+    transform: none !important;
+    transition: none !important;
+  }
+  html.js-motion .handwritten[data-rev],
+  html.js-motion .handwritten[data-rev].is-in {
+    transform: rotate(-7deg) !important;
+  }
+  html.js-motion [data-rev="stamp"],
+  html.js-motion [data-rev="stamp"].is-in {
+    transform: rotate(-13deg) !important;
+  }
+  html.js-motion .access-stamp[data-rev="stamp"],
+  html.js-motion .access-stamp[data-rev="stamp"].is-in {
+    transform: rotate(-14deg) !important;
+  }
+  html.js-motion .round-seal[data-rev],
+  html.js-motion .round-seal[data-rev].is-in {
+    transform: rotate(-10deg) !important;
+  }
+  .loader-stamp {
+    transition: opacity 0.3s ease;
+  }
+  .loader-stamp,
+  .loader-stamp.is-in {
+    transform: rotate(-13deg);
+  }
+  html.js-motion .hero.is-drift .hero-copy,
+  html.js-motion .hero.is-drift .hero-art-notes {
+    transform: none !important;
+  }
+  html.js-motion .primary:hover {
+    transform: none;
+  }
+}

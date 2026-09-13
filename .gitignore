@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Accidental nested copy of assets/
+assets/assets/
