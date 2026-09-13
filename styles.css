@@ -114,7 +114,10 @@
      Fundalurile compuse: aici se reglează atmosfera fiecărei zone. */
   --bg-site: linear-gradient(115deg, #03070acc, #061019e8);
   --bg-nav: linear-gradient(90deg, #060c10d9, #081118b8);
-  --bg-primary: linear-gradient(135deg, #a10813ed, #8b0611e8);
+  --bg-primary:
+    radial-gradient(135% 120% at 16% -15%, #c31424 0%, transparent 58%),
+    radial-gradient(120% 150% at 88% 115%, #6d0711 0%, transparent 62%),
+    linear-gradient(135deg, #a10813, #8b0611);
   --bg-section: linear-gradient(110deg, #050c1200, #06131b00);
   --bg-section-light: linear-gradient(#f3f0e65c, #dfdbd335);
   --bg-s3: linear-gradient(135deg, #03090ced, #081116eb);
@@ -339,9 +342,7 @@ i {
   gap: 16px;
   padding: 14px 34px;
   border: 1px solid var(--red-edge);
-  background:
-    var(--bg-primary),
-    var(--img-s1) center/400px;
+  background: var(--bg-primary);
   box-shadow: inset 0 0 0 3px var(--shadow-btn);
   color: var(--cream);
   font: 600 20px/1.2 var(--label);
@@ -535,9 +536,9 @@ i {
 }
 .content-section.light {
   color: var(--ink-on-paper);
-  background: var(--img-s1) center bottom / cover no-repeat;
+  background: var(--img-s1) center center / cover no-repeat;
   border: 0;
-  clip-path: polygon(
+  /* clip-path: polygon(
     0 0.7%,
     5% 0,
     12% 0.65%,
@@ -558,7 +559,7 @@ i {
     19% 100%,
     10% 99.3%,
     0 100%
-  );
+  ); */
   padding-top: 38px;
   padding-bottom: 38px;
 }
@@ -1020,7 +1021,9 @@ h2 {
   min-height: 650px;
 }
 .v2 .hero-copy {
-  margin: 0 0 0 55px;
+  /* 200px jos / 25px stânga pe ecran mare; scad singure pe ecrane mici
+     și scunde, fără reguli separate. Pe telefon marginea e oricum 0. */
+  margin: 0 0 clamp(40px, 22vh, 200px) clamp(12px, 1.8vw, 25px);
   text-align: center;
   width: 100%;
 }
@@ -2479,18 +2482,38 @@ h2 {
   }
   .v2 .s2 .photo-2 img {
     object-position: 50% 56%;
-  } /* Casete simple: o linie de dosar deasupra,numărul roșu,titlul,textul. */
+  }
+
+  /* titlul + fotografia sus; pașii pe un rând, jos — aceeași structură ca s3 */
+  .v2 .s2 {
+    grid-template-rows: auto 1fr auto;
+    align-content: stretch;
+  }
+  .v2 .s2 .index-rail,
+  .v2 .s2 .section-note {
+    grid-row: 1 / 4;
+  }
   .v2 .s2 .items {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: stretch;
+    align-self: end;
+    width: auto;
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-    gap: 0 26px;
+    justify-items: end;
+    gap: 0 22px;
     border: 0;
-    margin-top: 4px;
+    margin-top: 40px;
+    text-align: end;
   }
   .v2 .s2 .item {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    max-width: 100%;
     border: 0;
     border-bottom: 1px solid var(--line);
-    padding: 0;
+    padding: 0 0 12px;
     transition: border-color 0.3s ease;
   }
   .v2 .s2 .item > * {
@@ -2499,20 +2522,23 @@ h2 {
   }
   .v2 .s2 .item-no {
     display: block;
-    margin-top: 14px;
-    color: var(--red);
+    grid-row: auto;
+    margin-top: 10px;
+    color: var(--red-item);
     font: 600 15px var(--label);
     letter-spacing: 0.12em;
   }
   .v2 .s2 .item h3 {
-    margin: 10px 0 0;
-    font: 600 17px/1.3 var(--label);
+    margin: 5px 0 0;
+    font: 600 16px/1.25 var(--label);
     letter-spacing: 0.09em;
     text-transform: uppercase;
+    border-right: 0;
   }
   .v2 .s2 .item p {
-    margin-top: 10px;
-    font: 15px/1.6 var(--mono);
+    grid-column: auto;
+    margin-top: 4px;
+    font: 14px/1.5 var(--mono);
     opacity: 0.86;
     align-self: auto;
   }
@@ -2528,13 +2554,6 @@ h2 {
     aspect-ratio: auto;
     min-height: clamp(200px, 22vw, 280px);
     max-height: none;
-  }
-  .v2 .s2 .items {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 26px;
-  }
-  .v2 .s2 .items .item:nth-child(n + 3) {
-    margin-top: 26px;
   }
 }
 
@@ -2674,6 +2693,11 @@ h2 {
     align-content: center;
   }
 }
+@media (min-width: 701px) and (min-height: 700px) {
+  .v2 .s2 {
+    align-content: stretch;
+  }
+}
 @media (max-width: 700px) and (max-height: 739px) {
   .v2 .hero,
   .v2 .s2,
@@ -2748,7 +2772,7 @@ h2 {
 .s2::after {
   background-image: var(--img-s2);
   background-position: 10% 71%;
-  background-size: contain;
+  background-size: cover;
 }
 /* intrarea în ecran e detectată de IntersectionObserver (clasa .in-view);
    zoomul e o singură tranziție de transform, adică lucru pentru compositor */
@@ -2908,4 +2932,44 @@ html.js-motion [data-live-bg].in-view .hero-art-notes {
     translate: 0 0;
     transition: none;
   }
+}
+
+/* SECȚIUNEA 1 — fotografia e întunecată acum, deci textul trece pe alb și
+   primește un văl care îl ține lizibil. Imaginea merge pe strat, ca la
+   celelalte, ca să aibă aceeași mișcare la intrarea în ecran. */
+.content-section.s1 {
+  color: var(--white);
+  background-image: none;
+  background-color: var(--ink-page);
+}
+.s1 .sec-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--img-s1);
+  background-position: center;
+  background-size: cover;
+}
+/* vălul: mai greu sus și jos, unde stau titlul și casetele */
+.s1::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #04090ce0 0%,
+    #04090c8c 22%,
+    #04090c59 50%,
+    #04090ca6 78%,
+    #04090ce6 100%
+  );
+}
+.s1 > *:not(.sec-bg) {
+  position: relative;
+  z-index: 1;
+}
+.s1 .item {
+  border-color: var(--line);
 }
