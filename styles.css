@@ -107,6 +107,7 @@
   --shadow-btn: #28030938;
   --shadow-redaction: #b6bab536;
   --shadow-photo: #02080a35;
+  --shadow-section: #04090c; /* umbra curată a secțiunii, nu halo-ul din poză */
   --red-stamp-outline: #b90d2288; /* conturul interior al ștampilei */
 
   /* ============ SUPRAFEȚE ȘI VĂLURI ============
@@ -469,12 +470,10 @@ i {
   content: "";
   position: absolute;
   inset: 12% -2% 2%;
-  background:
-    var(--bg-redaction),
-    var(--img-hero-dossier) center/600px;
+ background: linear-gradient(155deg,#000d,#03080bdd);
   /* border: 2px solid var(--line-redaction); */
   box-shadow: inset 0 0 0 3px var(--shadow-redaction);
-  opacity: 0.92;
+  opacity: 0.98;
   transition: opacity 0.3s;
 }
 .redacted:hover:after,
@@ -660,9 +659,9 @@ h2 {
   display: block;
 }
 .s2 {
-  background:
-    var(--bg-section),
-    var(--img-s2) 20% 65% / cover;
+  background-color: var(--ink-page);
+  /* imaginea stă pe stratul .s2::after, ca să poată fi mișcată */
+  overflow: hidden;
 }
 .s2 .section-head h2 {
   font: 700 clamp(30px, 3.2vw, 60px) / 1.06 var(--serif);
@@ -706,10 +705,40 @@ h2 {
 }
 
 .s3 {
+  background-color: var(--ink-page);
+  /* imaginea stă pe stratul .sec-bg, ca să poată fi mișcată */
+  overflow: hidden;
+}
+
+/* taie halo-ul pictat din poze și pune o umbră egală pe marginea secțiunii */
+.s2::before,
+.s3::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
-    var(--bg-section),
-    var(--img-s3) center center /cover no-repeat;
-  background-repeat: no-repeat;
+    linear-gradient(
+      90deg,
+      var(--shadow-section) 0%,
+      transparent 14%,
+      transparent 86%,
+      var(--shadow-section) 100%
+    ),
+    linear-gradient(
+      180deg,
+      #04090ce8 0%,
+      transparent 18%,
+      transparent 82%,
+      #04090ce8 100%
+    );
+  box-shadow: inset 0 0 72px 24px var(--shadow-section);
+}
+.s2 > *,
+.s3 > * {
+  position: relative;
+  z-index: 1;
 }
 .s3 h2 {
   font-size: clamp(29px, 2.65vw, 41px);
@@ -891,9 +920,7 @@ h2 {
   gap: 30px;
   padding: 32px 24px 34px 0;
   border-bottom: 1px solid var(--line);
-  background:
-    var(--bg-apply),
-    var(--img-hero-dossier) center/cover;
+  background-color: var(--ink-page);
 }
 .apply h2 {
   font-size: clamp(36px, 3.7vw, 52px);
@@ -1006,7 +1033,21 @@ h2 {
   opacity: 1;
 }
 .v2 .hero:after {
-  background: var(--scrim-hero-wide);
+  /* background: var(--scrim-hero-wide); */
+  background: linear-gradient(
+      90deg,
+      var(--shadow-section) 0%,
+      transparent 14%,
+      transparent 86%,
+      var(--shadow-section) 100%
+    ),
+    linear-gradient(
+      180deg,
+      #04090c00 0%,
+      transparent 18%,
+      transparent 82%,
+      #04090ce8 100%
+    );
 }
 .v2 .hero-art-notes {
   top: auto;
@@ -2198,6 +2239,17 @@ h2 {
     font-size: 12px;
     gap: 24px;
   }
+  .v2 .s3 .s3-cta {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: center;
+  }
+  .v2 .s3 .items {
+    grid-row: 4;
+  }
+  .v2 .s3 .section-note {
+    grid-row: 5;
+  }
   .section-note br {
     display: initial;
   }
@@ -2506,9 +2558,19 @@ h2 {
     z-index: 1;
   }
 
-  /* titlul: sus, pe mijloc; restul înălțimii cade sub pași */
+  /* titlul sus, CTA pe mijloc, pașii jos */
   .v2 .s3 {
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .v2 .s3 .s3-cta {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: center;
+    align-self: center;
+  }
+  .v2 .s3 .index-rail,
+  .v2 .s3 .section-note {
+    grid-row: 1 / 4;
   }
   .v2 .s3 .section-head {
     grid-column: 2;
@@ -2539,6 +2601,7 @@ h2 {
   /* pașii: un rând, la baza secțiunii, pe toată lățimea coloanei */
   .v2 .s3 .items {
     grid-column: 2;
+    grid-row: 3;
     justify-self: stretch;
     align-self: end; /* pașii stau pe un rând, la baza secțiunii */
     width: auto;
@@ -2663,5 +2726,186 @@ h2 {
     flex-direction: column;
     width: 100%;
     text-align: center;
+  }
+}
+
+/* FUNDALURI VII — imaginea secțiunii se apropie încet cât derulezi prin ea.
+   Rulează pe compositor (animation-timeline: view()), deci nu costă nimic
+   pe thread-ul principal: nu e JS, nu e scroll listener, nu e repaint —
+   doar un transform pe un strat. Unde nu există suport, imaginea stă fixă. */
+.s2::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* peste fundalul secțiunii, sub vinietă și sub conținut */
+  pointer-events: none;
+  background-repeat: no-repeat;
+  transform: scale(1.06);
+}
+.s2::before {
+  z-index: 1; /* vinieta rămâne peste imaginea care se mișcă */
+}
+.s2::after {
+  background-image: var(--img-s2);
+  background-position: 10% 71%;
+  background-size: contain;
+}
+/* intrarea în ecran e detectată de IntersectionObserver (clasa .in-view);
+   zoomul e o singură tranziție de transform, adică lucru pentru compositor */
+.s2::after {
+  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+html.js-motion .s2::after {
+  transform: scale(1.13);
+}
+html.js-motion .s2.in-view::after {
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .s2::after,
+  .s2.in-view::after {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Fundaluri vii și pentru hero, secțiunea 3 și secțiunea 4.
+   Același mecanism: IntersectionObserver pune .in-view, restul e o tranziție
+   de transform pe un strat — nimic legat de scroll. */
+.sec-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+/* starea de pornire există doar dacă JS poate să o încheie */
+html.js-motion .sec-bg {
+  transform: scale(1.13);
+}
+html.js-motion .in-view .sec-bg {
+  transform: none;
+}
+.s3 .sec-bg {
+  /* specificitate mai mare decât `.s3 > *`, care altfel îi dă position:relative */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--img-s3);
+  background-position: center 50%;
+  background-size: cover;
+}
+.s3::before {
+  z-index: 1; /* vinieta rămâne peste stratul care se mișcă */
+}
+.apply .sec-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* vălul stă pe același strat, peste fotografie, ca înainte */
+  background-image: var(--bg-apply), var(--img-hero-dossier);
+  background-position: center, center;
+  background-size: cover, cover;
+}
+.apply {
+  position: relative;
+  overflow: hidden;
+}
+.apply > *:not(.sec-bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* hero: fotografia e deja un <img>, o scalăm direct */
+.hero {
+  overflow: hidden;
+}
+.hero .hero-image {
+  transition: transform 2.6s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+html.js-motion .hero .hero-image {
+  transform: scale(1.1);
+}
+html.js-motion .hero.in-view .hero-image {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sec-bg,
+  .in-view .sec-bg,
+  .hero .hero-image,
+  .hero.in-view .hero-image {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Text și imagine se mișcă împreună, în direcții opuse — de aici senzația de
+   adâncime. Ambele pornesc din aceeași clasă .in-view, pusă de observer, și au
+   aceeași durată, deci par un singur gest, nu două animații separate.
+   Reveal-urile pe elemente (data-rev) rămân peste asta: ele dau cascada,
+   blocul dă profunzimea. */
+[data-live-bg] .section-head,
+[data-live-bg] .s3-cta,
+[data-live-bg] .items,
+[data-live-bg] .apply-content {
+  transform: translate3d(0, 16px, 0) scale(0.965);
+  transform-origin: 50% 70%;
+  transition: transform 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
+  will-change: transform;
+}
+[data-live-bg].in-view .section-head,
+[data-live-bg].in-view .s3-cta,
+[data-live-bg].in-view .items,
+[data-live-bg].in-view .apply-content {
+  transform: none;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-live-bg] .section-head,
+  [data-live-bg] .s3-cta,
+  [data-live-bg] .items,
+  [data-live-bg] .apply-content,
+  [data-live-bg].in-view .section-head,
+  [data-live-bg].in-view .s3-cta,
+  [data-live-bg].in-view .items,
+  [data-live-bg].in-view .apply-content {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Hero: același gest, dar pe proprietățile separate `scale` și `translate`.
+   Driftul de scroll scrie `transform` pe .hero-copy — dacă am folosi tot
+   transform aici, una ar șterge-o pe cealaltă. Așa se compun. */
+html.js-motion [data-live-bg] .hero-copy,
+html.js-motion [data-live-bg] .hero-art-notes {
+  scale: 0.965;
+  translate: 0 16px;
+  transform-origin: 50% 70%;
+  transition:
+    scale 2.6s cubic-bezier(0.2, 0.65, 0.3, 1),
+    translate 2.6s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+html.js-motion [data-live-bg] .hero-art-notes {
+  scale: 0.98;
+  translate: 0 10px;
+}
+html.js-motion [data-live-bg].in-view .hero-copy,
+html.js-motion [data-live-bg].in-view .hero-art-notes {
+  scale: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-live-bg] .hero-copy,
+  [data-live-bg] .hero-art-notes,
+  [data-live-bg].in-view .hero-copy,
+  [data-live-bg].in-view .hero-art-notes {
+    scale: 1;
+    translate: 0 0;
+    transition: none;
   }
 }

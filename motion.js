@@ -270,6 +270,27 @@
     frame();
   };
 
+  /* --------------------------------------------------- fundaluri vii */
+
+  /* Un IntersectionObserver, nu scroll: callback-ul se declanșează o dată,
+     la intrarea secțiunii în ecran, iar zoomul e o tranziție de transform
+     pe compositor. Zero cost pe fiecare frame de scroll. */
+  const startLiveBackgrounds = () => {
+    if (reduced || !('IntersectionObserver' in window)) return;
+    const sections = doc.querySelectorAll('[data-live-bg]');
+    if (!sections.length) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          entry.target.classList.toggle('in-view', entry.isIntersecting);
+        }
+      },
+      { rootMargin: '10% 0px', threshold: 0 }
+    );
+    for (const section of sections) io.observe(section);
+  };
+
   /* ---------------------------------------------------------------- boot */
 
   const finish = () => {
@@ -289,6 +310,7 @@
 
     startReveals();
     startHeroDrift();
+    startLiveBackgrounds();
 
     // Warm the remaining artwork once the page is interactive.
     const warm = () => DEFERRED_BG.forEach(preload);
