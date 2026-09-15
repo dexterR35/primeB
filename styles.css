@@ -2891,25 +2891,17 @@ html.js-motion [data-live-bg].in-view.s2::after {
   scale: var(--bg-scale);
 }
 
+/* Blocurile de text se opun puțin scroll-ului — atât. Zoomul de intrare
+   (scale 0.965 → 1, 2,4s) a fost scos: rula peste reveal-ul fiecărui element
+   din interior, deci același text era animat de două ori în același timp.
+   Intrarea o face reveal-ul, mișcarea la scroll o face translate-ul de aici.
+   Hero-ul nu apare în listă: acolo mișcarea la scroll o dă driftul din
+   motion.js, altfel textul ar fi dus de două mișcări deodată. */
 html.js-motion [data-live-bg] .section-head,
 html.js-motion [data-live-bg] .s3-cta,
 html.js-motion [data-live-bg] .items,
-html.js-motion [data-live-bg] .apply-content,
-html.js-motion [data-live-bg] .hero-copy {
+html.js-motion [data-live-bg] .apply-content {
   translate: 0 calc(var(--p) * var(--par-text));
-  scale: 0.965;
-  transform-origin: 50% 70%;
-  transition: scale 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
-}
-html.js-motion [data-live-bg].in-view .section-head,
-html.js-motion [data-live-bg].in-view .s3-cta,
-html.js-motion [data-live-bg].in-view .items,
-html.js-motion [data-live-bg].in-view .apply-content,
-html.js-motion [data-live-bg].in-view .hero-copy {
-  scale: 1;
-}
-html.js-motion [data-live-bg] .hero-art-notes {
-  translate: 0 calc(var(--p) * var(--par-text) * 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2919,9 +2911,7 @@ html.js-motion [data-live-bg] .hero-art-notes {
   html.js-motion [data-live-bg] .section-head,
   html.js-motion [data-live-bg] .s3-cta,
   html.js-motion [data-live-bg] .items,
-  html.js-motion [data-live-bg] .apply-content,
-  html.js-motion [data-live-bg] .hero-copy,
-  html.js-motion [data-live-bg] .hero-art-notes {
+  html.js-motion [data-live-bg] .apply-content {
     translate: none;
     scale: none;
   }

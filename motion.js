@@ -116,42 +116,54 @@
 
   /* -------------------------------------------------------------- reveal */
 
-  /* { selector, animația, decalajul între elementele grupului } */
+  /* { selector, animația, decalajul între elementele grupului }
+     Decalajul se numără în interiorul secțiunii, nu pe toată pagina: al
+     treilea titlu de secțiune intră la fel de repede ca primul. */
+  const STEP = 120; // pasul comun între elementele unui grup (pașii 01-02-03)
+  /* at = de la ce milisecundă începe grupul, step = pasul dintre elementele
+     lui. Ambele se numără de la intrarea secțiunii în ecran. */
   const GROUPS = [
     { sel: '.hero-copy > *', kind: 'hero', step: 110 },
     { sel: '.hero-rail > *', kind: 'fade', step: 90 },
-    { sel: '.hero-art-notes > small', kind: 'fade', step: 0 },
-    { sel: '.hero-art-notes .stamp', kind: 'stamp', step: 0 },
-    { sel: '.hero-art-notes .handwritten', kind: 'up', step: 120 },
-    { sel: '.index-rail', kind: 'left', step: 0 },
-    { sel: '.section-head .eyebrow', kind: 'up', step: 0 },
-    { sel: '.section-head h2', kind: 'up', step: 90 },
-    { sel: '.section-head > p:not(.eyebrow)', kind: 'up', step: 160 },
-    { sel: '.section-head .red-rule', kind: 'rule', step: 220 },
-    { sel: '.section-photo', kind: 'photo', step: 120 },
-    { sel: '.access-scene', kind: 'photo', step: 0 },
-    { sel: '.section-note > span', kind: 'fade', step: 120 },
-    { sel: '.access-note', kind: 'fade', step: 140 },
-    { sel: '.access-document', kind: 'card', step: 0 },
-    { sel: '.access-stamp', kind: 'stamp', step: 420 },
+    { sel: '.hero-art-notes > small', kind: 'fade' },
+    { sel: '.hero-art-notes .stamp', kind: 'stamp' },
+    { sel: '.hero-art-notes .handwritten', kind: 'up', at: 120 },
+    { sel: '.index-rail', kind: 'left' },
+    { sel: '.section-head .eyebrow', kind: 'up' },
+    { sel: '.section-head h2', kind: 'up', at: 90 },
+    { sel: '.section-head > p:not(.eyebrow)', kind: 'up', at: 160 },
+    { sel: '.section-head .red-rule', kind: 'rule', at: 220 },
+    { sel: '.section-photo', kind: 'photo', at: 120, step: STEP },
+    { sel: '.access-scene', kind: 'photo' },
+    { sel: '.section-note > span', kind: 'fade', at: 120, step: STEP },
+    { sel: '.access-note', kind: 'fade', at: 140, step: 140 },
+    { sel: '.access-document', kind: 'card' },
+    { sel: '.access-stamp', kind: 'stamp', at: 420 },
     { sel: '.apply-content > *', kind: 'up', step: 90 },
     { sel: '.site-footer > div,.site-footer > small', kind: 'up', step: 90 },
+    // pașii 01-02-03: același decalaj în toate secțiunile
+    { sel: '.items .item', kind: 'up', step: STEP },
   ];
 
+  /* Secțiunea de care ține un element; decalajele se numără în interiorul ei. */
+  const scopeOf = (node) => node.closest('.hero, .content-section, .access-wrap, .apply, .site-footer') ?? doc.body;
+
   const markTargets = () => {
-    for (const { sel, kind, step } of GROUPS) {
-      [...doc.querySelectorAll(sel)].forEach((node, index) => {
-        if (node.hasAttribute('data-rev')) return;
+    for (const { sel, kind, at = 0, step = 0 } of GROUPS) {
+      const seen = new Map(); // câte elemente din grup are fiecare secțiune
+      for (const node of doc.querySelectorAll(sel)) {
+        if (node.hasAttribute('data-rev')) continue;
+        const scope = scopeOf(node);
+        const index = seen.get(scope) ?? 0;
+        /* Ce nu se randează deloc (display:none dintr-un media query, ex.
+           pasul 02 pe telefon) nu ocupă un rând în cascadă; ce e doar
+           visibility:hidden își păstrează locul, deci și ritmul. */
+        if (node.getClientRects().length) seen.set(scope, index + 1);
+
         node.setAttribute('data-rev', kind);
-        if (step) node.style.setProperty('--rd', `${index * step}ms`);
-      });
-    }
-    // Items stagger inside their own row rather than across the whole page.
-    for (const list of doc.querySelectorAll('.items')) {
-      [...list.querySelectorAll('.item')].forEach((item, index) => {
-        item.setAttribute('data-rev', 'up');
-        item.style.setProperty('--rd', `${index * 100}ms`);
-      });
+        const delay = at + index * step;
+        if (delay) node.style.setProperty('--rd', `${delay}ms`);
+      }
     }
   };
 
@@ -170,54 +182,50 @@
     settle(node);
   };
 
-  /* A plain rect sweep rather than IntersectionObserver: the list only ever
-     shrinks, it needs no feature detection and it cannot leave content
-     stranded at opacity 0 if a callback never arrives. */
-  let pending = [];
-  let sweepQueued = false;
-
-  const sweep = () => {
-    sweepQueued = false;
-    const view = window.innerHeight || 800;
-    // Elements sitting in the bottom 7% only wait for a further scroll while
-    // there is one left to make; at the end of the page they reveal at once.
-    const atEnd = view + window.scrollY >= (root.scrollHeight || 0) - 2;
-    const edge = atEnd ? view : view * 0.93;
-
-    pending = pending.filter((node) => {
-      const r = node.getBoundingClientRect();
-      if (!r.width && !r.height) {
-        reveal(node); // hidden by a media query
-        return false;
-      }
-      // Anything whose top has crossed the trigger line is revealed, including
-      // what a jump to an anchor scrolled straight past: content must never be
-      // left at opacity 0 above the fold on the way back up.
-      if (r.top < edge) {
-        reveal(node);
-        return false;
-      }
-      return true;
-    });
-
-    if (!pending.length) {
-      window.removeEventListener('scroll', queueSweep);
-      window.removeEventListener('resize', queueSweep);
-    }
-  };
-
-  const queueSweep = () => {
-    if (sweepQueued) return;
-    sweepQueued = true;
-    requestAnimationFrame(sweep);
-  };
-
+  /* Declanșarea se face cu IntersectionObserver: browserul anunță singur ce a
+     intrat în ecran, deci nu se măsoară nimic la fiecare scroll.
+     Pornirea e cu 7% înainte de marginea de jos, ca la varianta cu măsurători.
+     Nimic nu poate rămâne invizibil: ce a fost sărit (un salt la o ancoră) se
+     vede ca ieșit pe sus și intră imediat, iar ce e ascuns de un media query
+     (lățime și înălțime zero) e scos din așteptare pe loc. */
   const startReveals = () => {
-    pending = [...doc.querySelectorAll('[data-rev]')];
-    window.addEventListener('scroll', queueSweep, { passive: true });
-    window.addEventListener('resize', queueSweep);
-    sweep();
-    window.addEventListener('load', queueSweep);
+    const targets = [...doc.querySelectorAll('[data-rev]')];
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(reveal);
+      return;
+    }
+
+    const pending = new Set(targets);
+
+    const take = (node) => {
+      pending.delete(node);
+      io.unobserve(node);
+      reveal(node);
+      if (!pending.size) window.removeEventListener('scroll', atEnd);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting, boundingClientRect: r } of entries) {
+          const skipped = r.top < 0; // a rămas deasupra ecranului
+          const hidden = !r.width && !r.height;
+          if (!isIntersecting && !skipped && !hidden) continue;
+          take(target);
+        }
+      },
+      { rootMargin: '0px 0px -7% 0px' }
+    );
+
+    /* Ultimii 7% de pagină nu mai pot trece linia de pornire — footer-ul ar
+       rămâne invizibil. La capătul paginii intră tot ce a mai rămas. */
+    const atEnd = () => {
+      if (window.innerHeight + window.scrollY < (root.scrollHeight || 0) - 2) return;
+      for (const node of [...pending]) take(node);
+    };
+
+    for (const node of targets) io.observe(node);
+    window.addEventListener('scroll', atEnd, { passive: true });
+    atEnd();
   };
 
   /* ------------------------------------------------------ hero on scroll */

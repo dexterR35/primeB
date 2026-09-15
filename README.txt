@@ -47,14 +47,33 @@ MOTION
   La intrare: hero-ul urcă în cascadă (supratitlu → titlu → lede → buton → notă),
   ștampila și textul scris de mână intră ultimele.
   La scroll: fiecare secțiune își aduce pe rând supratitlul, titlul, textul,
-  linia roșie, fotografia (push-in lent de la 1.07) și cele patru carduri,
-  decalate câte 100 ms. Fișa de acces urcă, ștampila CONFIDENȚIAL se „trântește".
+  linia roșie, fotografia (push-in lent de la 1.07) și pașii 01-02-03,
+  decalați câte 120 ms. Fișa de acces urcă, ștampila CONFIDENȚIAL se „trântește".
   Textul din hero se depărtează și se stinge ușor cât scrollezi peste el
   (doar peste 700 px — pe mobil e oprit, vezi secțiunea MOBIL).
 
-  Reveal-urile se fac cu un sweep pe getBoundingClientRect (nu IntersectionObserver),
-  ca să nu existe riscul de conținut rămas invizibil dacă un callback nu ajunge;
-  la scroll maxim se declanșează și ce se află în ultimii 7% de ecran.
+  Decalajele se numără ÎN INTERIORUL secțiunii (GROUPS din motion.js: `at` =
+  de când începe grupul, `step` = pasul dintre elementele lui). Înainte
+  indexul se număra pe toată pagina, așa că titlul secțiunii 3 pornea cu
+  180 ms întârziere față de al secțiunii 1; acum toate secțiunile intră la fel.
+
+  O SINGURĂ ANIMAȚIE PE ELEMENT: blocurile de text (.section-head, .items,
+  .apply-content, .hero-copy) aveau și un zoom de intrare de 2,4 s (scale
+  0.965 → 1, pornit de .in-view) PESTE reveal-ul fiecărui copil — două
+  animații pe același text în același timp. Zoomul a fost scos din styles.css;
+  a rămas: intrarea = reveal, mișcarea la scroll = translate-ul de parallax.
+  Hero-ul a fost scos și din parallaxul de text: acolo mișcarea la scroll o
+  face driftul din motion.js, deci nu mai e dus de două mișcări deodată.
+  Fotografiile de fundal își păstrează push-in-ul (e singura lor animație).
+
+  Reveal-urile pornesc cu IntersectionObserver (linia de pornire la 93% din
+  ecran, ca înainte); nu se mai măsoară nimic la fiecare scroll.
+  Nimic nu poate rămâne invizibil: ce a fost sărit (salt la o ancoră) se vede
+  ca ieșit pe sus și intră imediat, ce e ascuns de un media query (cutie 0×0)
+  e scos din așteptare, iar la capătul paginii intră tot ce a mai rămas —
+  ultimii 7% nu mai pot trece linia de pornire (footer-ul).
+  Verificat în browser real: după parcurgerea paginii, la revenirea sus și
+  după un salt la o ancoră, niciun element nu rămâne la opacity 0.
   După ce un element a ajuns, atributul data-rev și clasa is-in sunt ȘTERSE,
   deci pagina în repaus e exact markup-ul original, iar textul revine la
   randarea subpixel a browserului.
