@@ -323,6 +323,8 @@
         for (const entry of entries) {
           const s = sections.find((x) => x.el === entry.target);
           if (!s) continue;
+          // zoomul de intrare (scale în CSS) se reia la fiecare intrare
+          s.el.classList.toggle('in-view', entry.isIntersecting);
           if (entry.isIntersecting) live.add(s);
           else {
             live.delete(s);

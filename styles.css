@@ -2858,26 +2858,37 @@ h2 {
 }
 html.js-motion [data-live-bg] {
   --p: 0;
-  --par: 30px; /* cât se lasă dus fundalul */
-  --par-text: -9px; /* cât se opune textul */
+  --par: 60px; /* cât se lasă dus fundalul */
+  --par-text: -24px; /* cât se opune textul */
+  --bg-scale: 1.14; /* acoperă deplasarea, ca să nu apară margini */
 }
 @media (max-width: 700px) {
   html.js-motion [data-live-bg] {
-    --par: 12px;
-    --par-text: -5px;
+    --par: 28px;
+    --par-text: -10px;
+    --bg-scale: 1.1;
   }
 }
 
 .sec-bg,
 .s2::after,
 .hero .hero-image {
-  will-change: translate;
+  will-change: translate, scale;
 }
+/* translate urmează scroll-ul (fără tranziție); scale face zoomul de intrare,
+   pornit de clasa .in-view pusă de observer */
 html.js-motion [data-live-bg] .sec-bg,
 html.js-motion [data-live-bg] .hero-image,
 html.js-motion [data-live-bg].s2::after {
   translate: 0 calc(var(--p) * var(--par));
-  scale: 1.09; /* acoperă deplasarea, ca să nu apară margini */
+  scale: calc(var(--bg-scale) + 0.12);
+  transform: none;
+  transition: scale 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+html.js-motion [data-live-bg].in-view .sec-bg,
+html.js-motion [data-live-bg].in-view .hero-image,
+html.js-motion [data-live-bg].in-view.s2::after {
+  scale: var(--bg-scale);
 }
 
 html.js-motion [data-live-bg] .section-head,
@@ -2886,6 +2897,16 @@ html.js-motion [data-live-bg] .items,
 html.js-motion [data-live-bg] .apply-content,
 html.js-motion [data-live-bg] .hero-copy {
   translate: 0 calc(var(--p) * var(--par-text));
+  scale: 0.965;
+  transform-origin: 50% 70%;
+  transition: scale 2.4s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+html.js-motion [data-live-bg].in-view .section-head,
+html.js-motion [data-live-bg].in-view .s3-cta,
+html.js-motion [data-live-bg].in-view .items,
+html.js-motion [data-live-bg].in-view .apply-content,
+html.js-motion [data-live-bg].in-view .hero-copy {
+  scale: 1;
 }
 html.js-motion [data-live-bg] .hero-art-notes {
   translate: 0 calc(var(--p) * var(--par-text) * 0.5);
@@ -2948,4 +2969,100 @@ html.js-motion [data-live-bg] .hero-art-notes {
 /* pasul 2 rămâne în pagină, dar ascuns — ține locul, nu se vede */
 .s1 .item:nth-child(2) {
   visibility: hidden;
+}
+
+/* ——— MOBIL: CURĂȚENIE ———
+   Fără linii și casete decorative, hero fără gol dedesubt, fișa de acces
+   întreagă. Animațiile (reveal + parallax) rămân neatinse. */
+@media (max-width: 700px) {
+  /* liniile și casetele */
+  .site-nav,
+  .access-wrap,
+  .v2 .apply {
+    border-bottom: 0;
+  }
+  .v2 .index-rail {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .v2 .section-note {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .footer-links {
+    border-block: 0;
+    padding: 0;
+  }
+
+  /* secțiunea 2: pașii ca în celelalte secțiuni, nu tabel cu chenar */
+  .v2 .s2 .items {
+    border: 0;
+    gap: 24px;
+  }
+  .v2 .s2 .item {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .v2 .s2 .item-no {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .v2 .s2 .item h3 {
+    padding: 6px 0 4px;
+  }
+  .v2 .s2 .item p {
+    padding: 0;
+  }
+
+  /* secțiunea 1: pasul ascuns nu mai lasă gol pe telefon */
+  .s1 .item:nth-child(2) {
+    display: none;
+  }
+
+  /* hero: textul stă centrat în spațiul rămas sub fotografie */
+  .v2 .hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .v2 .hero-image {
+    flex-shrink: 0;
+  }
+  .v2 .hero-copy {
+    margin-block: auto;
+  }
+  /* ștampila deasupra titlului, nu peste cuvinte */
+  .v2 .hero h1 {
+    margin-top: 40px;
+  }
+  .v2 .hero .hero-stamp {
+    left: 50%;
+    right: auto;
+    top: -38px;
+    transform: translateX(-50%) rotate(-6deg);
+  }
+
+  /* fișa de acces: imaginea întreagă, la proporția ei, fără spațiul gol
+     al cardului HTML (ascuns oricum) */
+  .v2 .access-wrap {
+    display: block;
+    min-height: 0;
+    padding: 0;
+  }
+  .access-document {
+    display: none;
+  }
+  .access-scene {
+    position: relative;
+    display: block;
+    height: auto;
+    aspect-ratio: 1672 / 941;
+    object-fit: cover;
+  }
+}
+@media (max-width: 700px) and (min-height: 740px) {
+  .v2 .hero {
+    --hero-img: clamp(260px, 80vw, 380px);
+  }
 }
