@@ -277,21 +277,13 @@ html.js-motion [data-rev].is-in {
 }
 
 /* Photographs settle out of a slow push-in; the end state is the original.
-   .section-photo wraps an <img>; .access-scene is the image itself. */
-html.js-motion [data-rev="photo"] {
-  transform: none;
-}
-html.js-motion [data-rev="photo"] img,
+   Only .access-scene uses it now: the image is the reveal target itself. */
 html.js-motion img[data-rev="photo"] {
   transform: scale(1.07);
-  transition: transform 1.6s var(--ease-out) var(--rd, 0ms);
-}
-html.js-motion img[data-rev="photo"] {
   transition:
     opacity var(--rev-dur) var(--ease-out) var(--rd, 0ms),
     transform 1.6s var(--ease-out) var(--rd, 0ms);
 }
-html.js-motion [data-rev="photo"].is-in img,
 html.js-motion img[data-rev="photo"].is-in {
   transform: none;
 }
@@ -343,13 +335,6 @@ html.js-motion .footer-links span {
   transition: color 0.25s ease;
 }
 
-@media (hover: hover) and (min-width: 1001px) {
-  html.js-motion .s2 .item:hover,
-  html.js-motion .s3 .item:hover {
-    border-bottom-color: var(--red-line);
-  }
-}
-
 /* --------------------------------------------------- reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
@@ -359,8 +344,6 @@ html.js-motion .footer-links span {
     transition-duration: 0.35s !important;
     transition-delay: 0ms !important;
   }
-  html.js-motion [data-rev="photo"] img,
-  html.js-motion [data-rev="photo"].is-in img,
   html.js-motion img[data-rev="photo"],
   html.js-motion img[data-rev="photo"].is-in {
     transform: none !important;

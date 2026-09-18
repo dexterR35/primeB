@@ -30,7 +30,7 @@ ECRANUL DE ÎNCĂRCARE
   SE ÎNCARCĂ MATERIALELE → ACCES APROBAT, apoi ștampila CONFIDENȚIAL.
 
   Ordinea: DOM gata + fonturile gata + imaginile care contează
-           (toate <img> non-lazy + hero-dossier.png, grain.svg, archival-paper.png)
+           (toate <img> non-lazy + hero-image.png, grain.svg, archival-paper.png)
            → bara urcă la 100% (~0,4 s) → ștampila CONFIDENȚIAL
            → pauză de 2 secunde (cerută, ca ecranul să poată fi citit)
            → loader-ul se stinge în 0,9 s și intră hero-ul.
