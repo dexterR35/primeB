@@ -103,10 +103,15 @@
         if (!pending) refresh();
       },
       take() {
-        const current = pending;
+        // Dacă prime() nu a apucat să ruleze (autocomplete fără focus, de
+        // exemplu), cerem un token acum și îl consumăm pe ACELA. Înainte,
+        // `current || pending` întorcea tokenul proaspăt fără să-l scoată din
+        // pending, deci aceeași valoare pleca și la trimiterea următoare —
+        // a doua oară serverul o refuza, fiind deja consumată.
+        const current = pending || refresh();
         pending = null;
         refresh();
-        return current || pending || Promise.resolve({ token: '', error: null });
+        return current || Promise.resolve({ token: '', error: null });
       }
     };
   })();

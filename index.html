@@ -38,18 +38,18 @@
     />
     <meta
       property="og:image"
-      content="https://adresasecreta.ro/assets/og-image.jpg"
+      content="https://adresasecreta.ro/assets/generated/social-preview.jpg"
     />
     <meta
       property="og:image:secure_url"
-      content="https://adresasecreta.ro/assets/og-image.jpg"
+      content="https://adresasecreta.ro/assets/generated/social-preview.jpg"
     />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content="1672" />
+    <meta property="og:image:height" content="941" />
     <meta
       property="og:image:alt"
-      content="Dosar din piele neagră cu sigiliu roșu AS și ștampila CONFIDENȚIAL"
+      content="Hartă aurie și invitație cu sigiliu roșu — Adresa Secretă"
     />
 
     <!-- Twitter -->
@@ -64,11 +64,11 @@
     />
     <meta
       name="twitter:image"
-      content="https://adresasecreta.ro/assets/og-image.jpg"
+      content="https://adresasecreta.ro/assets/generated/social-preview.jpg"
     />
     <meta
       name="twitter:image:alt"
-      content="Dosar din piele neagră cu sigiliu roșu AS și ștampila CONFIDENȚIAL"
+      content="Hartă aurie și invitație cu sigiliu roșu — Adresa Secretă"
     />
 
     <!-- Icons & manifest -->
@@ -88,27 +88,8 @@
       content="black-translucent"
     />
 
-    <!-- Critical assets -->
-    <link
-      rel="preload"
-      as="image"
-      href="assets/hero-image-mobile.png"
-      media="(max-width: 1100px)"
-      fetchpriority="high"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="assets/hero-image.png"
-      media="(min-width: 1101px)"
-      fetchpriority="high"
-    />
-    <!-- Served over HTTP(S) you can also preload the two leading faces; left out
-     here because a crossorigin font preload fails when the file is opened
-     straight from disk:
-<link rel="preload" as="font" type="font/ttf" href="assets/fonts/bodoni-moda-bold.ttf" crossorigin>
-<link rel="preload" as="font" type="font/otf" href="assets/fonts/NimbusMonoPS-Regular.otf" crossorigin>
--->
+    <link rel="preload" as="image" href="assets/generated/hero-map-v2.webp" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/ttf" href="assets/fonts/bodoni-moda-bold.ttf" crossorigin />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="motion.css" />
     <link rel="stylesheet" href="modal.css" />
@@ -145,7 +126,7 @@
               "width": 180,
               "height": 180
             },
-            "image": "https://adresasecreta.ro/assets/og-image.jpg",
+            "image": "https://adresasecreta.ro/assets/generated/social-preview.jpg",
             "contactPoint": {
               "@type": "ContactPoint",
               "contactType": "cereri de acces",
@@ -171,9 +152,9 @@
             "about": { "@id": "https://adresasecreta.ro/#organizatie" },
             "primaryImageOfPage": {
               "@type": "ImageObject",
-              "url": "https://adresasecreta.ro/assets/og-image.jpg",
-              "width": 1200,
-              "height": 630
+              "url": "https://adresasecreta.ro/assets/generated/social-preview.jpg",
+              "width": 1672,
+              "height": 941
             }
           }
         ]
@@ -181,6 +162,7 @@
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#despre">Sari la conținut</a>
     <svg
       class="filter-defs"
       xmlns="http://www.w3.org/2000/svg"
@@ -235,474 +217,85 @@
         >
       </div>
       <small class="loader-dossier" aria-hidden="true"
-        >A · 0216 · MMXXVI</small
+        >AS · 0216 · MMXXVI</small
       >
     </div>
     <div class="site v2">
       <header class="site-nav">
-        <span class="cross" aria-hidden="true"> </span>
-        <a class="brand" href="#top">
-          <strong>ADRESA SECRETĂ</strong>
-        </a>
-        <nav aria-label="Navigație principală">
-          <a href="#despre">Despre</a>
-          <a href="#cum-functioneaza">Cum funcționează</a>
-          <a href="#acces">Acces</a>
-          <a href="#intrebari">Întrebări</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <a class="primary nav-cta" href="#contact"
-          >Vreau Să Aflu <span>→</span>
-        </a>
-        <small class="nav-note">DISCRET<br />EXCLUSIV<br />REAL</small>
-        <details class="mobile-menu">
-          <summary>Meniu</summary>
-          <nav aria-label="Navigație mobilă">
-            <a href="#despre">Despre</a>
-            <a href="#cum-functioneaza">Cum funcționează</a>
-            <a href="#acces">Acces</a>
-            <a href="#intrebari">Întrebări</a>
-            <a href="#contact">Contact</a>
-          </nav>
-        </details>
+        <a class="brand" href="#top" aria-label="Adresa Secretă — prima pagină"><strong>ADRESA SECRETĂ</strong></a>
+        <nav class="desktop-nav" aria-label="Navigație principală"><a href="#despre">Despre</a><a href="#cum-functioneaza">Experiențe</a><a href="#acces">Invitație</a><a href="#contact">Acces</a></nav>
+        <a class="primary nav-cta" href="#contact">Cere o invitație <span aria-hidden="true">→</span></a>
+        <details class="mobile-menu"><summary>Meniu <span aria-hidden="true">☰</span></summary><nav aria-label="Navigație mobilă"><a href="#despre">Despre</a><a href="#cum-functioneaza">Experiențe</a><a href="#acces">Invitație</a><a href="#contact">Acces</a></nav></details>
       </header>
-      <section class="hero" id="top" data-live-bg>
-        <picture class="hero-media">
-          <source
-            media="(max-width: 1100px)"
-            srcset="assets/hero-image-mobile.png"
-            width="941"
-            height="1672"
-          />
-          <img
-            class="hero-image"
-            src="assets/hero-image.png"
-            alt="Hartă aurie și obiecte de călătorie pe un fundal albastru închis"
-            fetchpriority="high"
-            width="2048"
-            height="1152"
-          />
-        </picture>
-        <aside class="hero-rail">
-         
-          <b>0216</b>
-          <i> </i>
-          <small>DOSARE<br />PENTRU<br />CEI CARE<br />ȘTIU</small>
-       
-        </aside>
+      <main>
+      <section class="hero screen" id="top" data-live-bg aria-labelledby="hero-title">
+        <img class="hero-image" src="assets/generated/hero-map-v2.webp" alt="Hartă aurie gravată în fundalul bleumarin, busolă și plic cu sigiliu roșu A" fetchpriority="high" width="1672" height="941" />
+        <span class="stamp hero-stamp" aria-hidden="true">CONFIDENȚIAL</span>
         <div class="hero-copy">
-          <p class="eyebrow">
-            DOSAR NR. 0216 - ACCES RESTRICȚIONAT
-            <span class="chevrons" aria-hidden="true">▸▸</span>
-          </p>
-          <h1>
-            <span class="stamp hero-stamp" aria-hidden="true">CONFIDENȚIAL</span>
-            Există O
-            <span class="redacted" tabindex="0" title="Adresă">Adresă</span> Pe
-            Care<br class="hero-break" />
-            Nimeni N-o Găsește Singur
-          </h1>
-          <p class="lede">Se ajunge acolo doar dacă cineva îți spune cum.</p>
-          <a href="#contact" class="primary">VREAU SĂ AFLU →</a>
-          <p class="hero-footnote">
-            ACCES DOAR PE BAZĂ DE INVITAȚIE<br />DOSAR 0216 - ALPHA
-          </p>
+          <p class="eyebrow">ACCES DOAR PE BAZĂ DE INVITAȚIE</p>
+          <h1 id="hero-title"><span>Există o <em>adresă</em></span><span>pe care nu o</span><span>găsești singur.</span></h1>
+          <p class="lede">Ajungi acolo doar dacă cineva îți spune cum.</p>
+          <a href="#contact" class="primary hero-cta">Vreau să aflu <span aria-hidden="true">→</span></a>
+          <p class="hero-footnote">O invitație personală. O experiență discretă.</p>
         </div>
-        <div class="hero-art-notes">
-          <small
-            >INFORMAȚII SENSIBILE<br />UTILIZARE RESTRICȚIONATĂ<br />DOAR PENTRU
-            PERSOANE AUTORIZATE</small
-          >
-          <p class="handwritten">Unele locuri<br />nu sunt pe hărți.</p>
-        </div>
+        <div class="hero-bottom"><span>DOSAR NR. 0216</span><a href="#despre">Descoperă povestea <span aria-hidden="true">↓</span></a></div>
       </section>
-      <section class="content-section s1 light" id="despre" data-live-bg>
+      <section class="content-section s1 screen" id="despre" data-live-bg aria-labelledby="about-title">
+        <div class="sec-bg" aria-hidden="true"></div><aside class="index-rail"><div><b>01</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre" aria-current="step"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe"><span></span></a><a href="#acces" aria-label="Invitație"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><a class="sec-tag" href="#contact">Acces privat</a>
+        <div class="section-head"><p class="eyebrow">CE GĂSEȘTI ACOLO</p><h2 id="about-title">Un loc fără nume</h2><p class="serif-subtitle">Cei care știu de el nu vorbesc despre el.</p><i class="red-rule" aria-hidden="true"></i></div>
+        <div class="s1-story"><p>Nu apare pe nicio hartă. Nu are firmă la intrare și nici program afișat.<br class="desktop-break" /> Nu îl găsești din întâmplare. Îl descoperi doar prin invitație.</p><p>Odată ajuns, nu mai trebuie să te prezinți. Ești deja așteptat.<br class="desktop-break" /> Fără cozi, fără agitație. Fiecare detaliu este ales pentru tine,<br class="desktop-break" /> în deplină discreție.</p><p class="closing-quote">Aici ajungi doar dacă ești invitat.</p><i class="red-rule" aria-hidden="true"></i></div>
+        <div class="sec-foot"><span>Discret. Exclusiv. Personal.</span><a href="#cum-functioneaza">Nu toți primesc coordonatele. <b aria-hidden="true">→</b></a></div>
+      </section>
+      <section class="content-section s2 screen" id="cum-functioneaza" aria-labelledby="experience-title">
         <div class="sec-bg" aria-hidden="true"></div>
-        <aside class="index-rail">
-          <div>
-            <b>01</b>
-            <span>/05</span>
-          </div>
-          <small>DISCRET<br />EXCLUSIV<br />REAL</small>
-        </aside>
-        <div class="section-head">
-          <p class="eyebrow">CE GĂSEȘTI ACOLO</p>
-          <h2>Un Loc Fără Nume</h2>
-          <p>Cei care știu de el, nu vorbesc despre el.</p>
-          <i class="red-rule"> </i>
-        </div>
-        <div class="s1-story">
-          <p>
-            Nu e pe nicio hartă. Nu are firmă, nu are program, nu are o ușă pe
-            care o găsești singur. Există pentru că rămâne nespus.
-          </p>
-          <p>
-            Odată ajuns acolo, nu te mai prezinți. Cineva te știe deja. Nu stai
-            la rând. Nu primești ce primește toată lumea. Totul se așază în
-            jurul tău — croit pe cum joci, fără martori și fără anunț.
-          </p>
-          <p class="handwritten">Se ajunge doar dacă ești chemat.</p>
-        </div>
-        <aside class="section-note">
-          <span>AS 0216</span>
-          <i> </i>
-          <span>NU TOȚI PRIMESC COORDONATELE</span>
-        </aside>
+        <aside class="index-rail"><div><b>02</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe" aria-current="step"><span></span></a><a href="#acces" aria-label="Invitație"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><a class="sec-tag" href="#contact">Acces privat</a>
+        <header class="section-head"><p class="eyebrow">ODATĂ AJUNS ACOLO</p><h2 id="experience-title">Ce se întâmplă<br />la adresa secretă</h2><p>Experiențe care nu se anunță public.</p></header>
+        <div class="items s2-steps">
+          <article class="item"><div class="item-image"><img src="assets/generated/woman-lounge.webp" alt="Femeie în rochie neagră, așezată picior peste picior pe canapeaua unui salon cu șemineu" loading="lazy" width="1254" height="1254" /></div><span class="item-no">01</span><h3>Spațiul tău</h3><p>Un cadru intim, fără aglomerație<br />și fără priviri indiscrete.</p></article>
+          <article class="item"><div class="item-image"><img src="assets/generated/woman-entrance.webp" alt="Gazdă în rochie neagră la intrarea luminată a clubului, între doi lei sculptați" loading="lazy" width="1254" height="1254" /></div><span class="item-no">02</span><h3>Grija pentru detalii</h3><p>Spune-ne ce îți dorești.<br />De restul ne ocupăm noi.</p></article>
+          <article class="item"><div class="item-image"><img src="assets/generated/private-evening.webp" alt="Masă de joc albastră, jetoane și pahar de cristal într-un salon luminat discret" loading="lazy" width="1254" height="1254" /></div><span class="item-no">03</span><h3>Seri pe bază de invitație</h3><p>Întâlniri discrete,<br />rezervate celor invitați.</p></article>
+        </div><div class="sec-foot"><span>Discreție în fiecare detaliu.</span><nav class="page-arrows" aria-label="Continuă explorarea"><a href="#despre" aria-label="Secțiunea anterioară">←</a><span>02 / 05</span><a href="#acces" aria-label="Secțiunea următoare">→</a></nav></div>
       </section>
-      <section class="content-section s2" id="cum-functioneaza">
-        <aside class="index-rail">
-          <div>
-            <b>02</b>
-            <span>/05</span>
-          </div>
-          <small>FĂRĂ<br />ANUNȚ<br />PUBLIC</small>
-        </aside>
-        <div class="s2-frame">
-          <header class="s2-copy section-head">
-            <p class="eyebrow">ODATĂ AJUNS ACOLO</p>
-            <h2>Ce Se Întâmplă<br />La Adresa Secretă</h2>
-            <p>Nimic din ce primești nu se anunță public.</p>
-          </header>
-          <div class="items s2-steps">
-            <article class="item">
-              <span class="item-no">01</span>
-              <h3>Spațiul Tău</h3>
-              <p>Fără aglomerație, fără priviri străine.</p>
-            </article>
-            <article class="item">
-              <span class="item-no">02</span>
-              <h3>Cineva Se Ocupă De Detalii</h3>
-              <p>Tu ceri. Restul e rezolvat.</p>
-            </article>
-            <article class="item">
-              <span class="item-no">03</span>
-              <h3>Seri Fără Invitație Publică</h3>
-              <p>Ajungi doar dacă ești chemat.</p>
-            </article>
-          </div>
-        </div>
-        <aside class="section-note">
-          <span>AS 0216</span>
-          <i> </i>
-          <span>TOTUL SE REZOLVĂ DISCRET</span>
-        </aside>
+      <section class="access-wrap screen" id="acces" aria-labelledby="invitation-title">
+        <img class="access-scene" src="assets/generated/invitation-dossier.webp" alt="Dosar din piele albastră, hărți vechi, stilou și sigiliu roșu" loading="lazy" width="1672" height="941" />
+        <aside class="index-rail"><div><b>03</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe"><span></span></a><a href="#acces" aria-label="Invitație" aria-current="step"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><a class="sec-tag" href="#contact">Acces privat</a>
+        <header class="section-head"><p class="eyebrow">O INVITAȚIE PERSONALĂ</p><h2 id="invitation-title">Accesul începe cu o invitație.</h2><p class="serif-subtitle">Detaliile rămân între noi.</p><i class="red-rule" aria-hidden="true"></i></header>
+        <div class="access-document"><article class="access-card"><p class="access-top">FIȘĂ DE ACCES</p><div class="access-main"><h3>ADRESA SECRETĂ</h3><div class="file-number"><small>DOSAR NR.</small><b>0216</b></div></div><div class="access-grid"><div><span>CLASIFICARE</span><b>Acces restricționat</b></div><div><span>ACCES</span><b>Doar prin invitație</b></div><div><span>VALIDARE</span><b>Analiză individuală</b></div></div><p class="access-bottom">Invitația este personală. Detaliile nu sunt publice.</p></article><span class="stamp access-stamp">CONFIDENȚIAL</span></div>
+        <p class="access-quote closing-quote">Nu primești doar o adresă. Primești o invitație.</p>
+        <div class="sec-foot"><span>Discret. Exclusiv. Personal.</span><nav class="page-arrows" aria-label="Continuă explorarea"><a href="#cum-functioneaza" aria-label="Secțiunea anterioară">←</a><span>03 / 05</span><a href="#intrebari" aria-label="Secțiunea următoare">→</a></nav></div>
       </section>
-      <section class="access-wrap" id="acces">
-        <img
-          class="access-scene"
-          src="assets/s4bg3.png"
-          alt=""
-          loading="lazy"
-          width="1672"
-          height="941"
-        />
-        <aside class="index-rail">
-          <div>
-            <b>03</b>
-            <span>/05</span>
-          </div>
-          <small>DOAR<br />PERSOANE<br />AUTORIZATE</small>
-        </aside>
-        <div class="access-document">
-          <article class="access-card">
-            <div class="card-inner">
-              <div class="access-top">
-                <span>FIȘĂ DE ACCES</span>
-                <span>SERIE A // LIMITATĂ</span>
-              </div>
-              <div class="access-main">
-                <div>
-                  <h2>ADRESA SECRETĂ</h2>
-                  <p>MEMBRU DIN: 2026 · STATUT: NECONFIRMAT PUBLIC</p>
-                </div>
-                <div class="file-number">
-                  <small>DOSAR NR.</small>
-                  <b>0216</b>
-                  <i> </i>
-                </div>
-              </div>
-              <div class="access-grid">
-                <span>CLASIFICARE<b>ACCES RESTRICȚIONAT</b> </span>
-                <span>CATEGORIE<b>MEMBRU SELECT</b> </span>
-                <span
-                  >NIVEL ACCES<b
-                    class="access-redaction"
-                    aria-label="Confidențial"
-                  >
-                  </b>
-                </span>
-                <span>VALIDARE<b>ÎN ANALIZĂ</b> </span>
-                <span>EXP. NR.<b>0216-A</b> </span>
-              </div>
-              <div class="access-bottom">
-                <p>
-                  OBSERVAȚII: &nbsp; ACCESUL SE FACE DOAR PE BAZĂ DE
-                  INVITAȚIE.<br />
-                  <span>DETALIILE NU SUNT PUBLICE.</span>
-                </p>
-                <div class="barcode-wrap">
-                  <div class="barcode" aria-hidden="true"></div>
-                  <span>AS-0216</span>
-                </div>
-              </div>
-            </div>
-          </article>
-          <span class="stamp access-stamp">CONFIDENȚIAL</span>
-        </div>
-        <aside class="access-note">
-          INFORMAȚII<br />PE CARE<br />ALȚII<br />NU LE VOR<br />VEDEA
-          NICIODATĂ.<i class="red-rule"> </i>
-        </aside>
+      <section class="content-section s3 screen" id="intrebari" data-live-bg aria-labelledby="private-title">
+        <div class="sec-bg" aria-hidden="true"></div><aside class="index-rail"><div><b>04</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe"><span></span></a><a href="#acces" aria-label="Invitație"><span></span></a><a href="#intrebari" aria-label="Experiența privată" aria-current="step"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><p class="sec-tag">O invitație aparte</p>
+        <div class="section-head"><h2 id="private-title">Nu e doar un bonus.<br />E o ușă deschisă<br />pentru puțini.</h2><p class="s3-copy">Un loc în care fiecare detaliu este pregătit înainte să ajungi. Descoperă o experiență discretă, într-un cadru intim, în ritmul tău.</p><a href="#contact" class="primary s3-cta">Descoperă experiența <span aria-hidden="true">→</span></a><small class="s3-note">Acces pe bază de invitație</small></div>
+        <div class="sec-foot"><span>Calitate, nu cantitate.</span><nav class="page-arrows" aria-label="Continuă explorarea"><a href="#acces" aria-label="Secțiunea anterioară">←</a><span>04 / 05</span><a href="#contact" aria-label="Secțiunea următoare">→</a></nav></div>
       </section>
-      <section class="content-section s3" id="intrebari" data-live-bg>
-        <div class="sec-bg" aria-hidden="true"></div>
-        <aside class="index-rail">
-          <div>
-            <b>04</b>
-            <span>/05</span>
-          </div>
-          <small>CALITATE<br />NU<br />CANTITATE</small>
-        </aside>
-        <div class="section-head">
-          <p class="eyebrow">DE CE E SECRETĂ</p>
-          <h2>Nu E Un Bonus. E O Ușă Care Se Deschide Pentru Puțini.</h2>
-          <p class="s3-copy">
-            Distracție garantată. Experiență perfectă. Un loc în care fiecare
-            detaliu este pregătit înainte să ajungi, iar totul se desfășoară
-            discret, fără aglomerație, fără compromisuri și fără experiențe
-            standard.
-          </p>
-          <i class="red-rule"> </i>
-        </div>
-        <a href="#contact" class="primary s3-cta">Play</a>
-        <aside class="section-note">
-          <span>ÎNCHIS PÂNĂ LA URMĂTOAREA INVITAȚIE</span>
-          <i> </i>
-        </aside>
+      <section class="apply screen" id="contact" data-live-bg aria-labelledby="apply-title">
+        <div class="sec-bg" aria-hidden="true"></div><aside class="index-rail"><div><b>05</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe"><span></span></a><a href="#acces" aria-label="Invitație"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces" aria-current="step"><span></span></a></nav></div><small>DOCUMENTE<br />VERIFICATE<br />MANUAL</small></aside><span class="sec-tag">Acces privat</span>
+        <div class="apply-layout"><div class="apply-content"><p class="eyebrow">NU TOȚI PRIMESC COORDONATELE</p><h2 id="apply-title">Cere acces la<br />adresa secretă</h2><p class="apply-intro">Analizăm personal fiecare cerere. Te contactăm discret, la adresa de e-mail indicată.</p><i class="red-rule" aria-hidden="true"></i><p class="apply-note">Fiecare cerere este analizată individual.</p></div><form class="access-form" id="access-form" method="post" autocomplete="on" novalidate>
+      <p class="form-heading">CERERE DE ACCES</p>
+      <div class="hp" aria-hidden="true"><label for="company">Companie</label><input id="company" name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+      <div class="form-field"><label for="fullName">Nume complet</label><input required id="fullName" name="fullName" type="text" autocomplete="name" minlength="2" maxlength="80" spellcheck="false" placeholder="Prenume și nume" aria-describedby="name-error" /><p id="name-error" class="field-error" data-error-for="fullName" hidden></p></div>
+      <div class="form-field"><label for="email">Adresă de e-mail</label><input required id="email" name="email" type="email" autocomplete="email" maxlength="254" inputmode="email" spellcheck="false" autocapitalize="off" placeholder="nume@exemplu.ro" aria-describedby="email-error" /><p id="email-error" class="field-error" data-error-for="email" hidden></p></div>
+      <div class="form-field"><label for="signature">Semnătură</label><input id="signature" name="signature" type="text" disabled aria-disabled="true" placeholder="Numele tău va apărea aici" aria-describedby="signature-help signature-error" /><small id="signature-help" class="field-help">Se generează automat din numele complet.</small><p id="signature-error" class="field-error" data-error-for="signature" hidden></p></div>
+      <button class="primary submit-button" type="submit">TRIMITE CEREREA</button>
+      <p class="form-note">Prin trimiterea cererii, accepți să fii contactat în legătură cu solicitarea ta de acces.</p>
+      <p class="form-status" role="status" aria-live="polite"></p>
+      <p class="success" role="status" tabindex="-1">Cererea a fost trimisă. Te vom contacta discret.</p>
+    </form></div>
+        <footer class="site-footer"><div class="footer-brand"><a href="#top">ADRESA SECRETĂ</a><span>Nu se caută. Se primește.</span></div><div class="footer-links"><span>Confidențialitate</span><i aria-hidden="true"></i><span>Termeni</span><i aria-hidden="true"></i><span>Joc responsabil</span></div><small>Doar pe bază de invitație.</small></footer>
       </section>
-      <section class="apply" id="contact" data-live-bg>
-        <div class="sec-bg" aria-hidden="true"></div>
-        <aside class="index-rail">
-          <div>
-            <b>05</b>
-            <span>/05</span>
-          </div>
-          <small>DOCUMENTE<br />VERIFICATE<br />MANUAL</small>
-        </aside>
-        <div class="apply-content">
-          <p class="eyebrow">NU TOȚI PRIMESC COORDONATELE</p>
-          <h2>Cere Să Afli Adresa</h2>
-          <p class="apply-intro">
-            Analizăm fiecare cerere personal. Te contactăm discret, doar pe
-            tine.
-          </p>
-          <form
-            class="access-form"
-            id="access-form"
-            method="post"
-            autocomplete="on"
-            novalidate
-          >
-            <div class="hp" aria-hidden="true">
-              <label for="company">Companie</label>
-              <input
-                id="company"
-                name="company"
-                type="text"
-                tabindex="-1"
-                autocomplete="off"
-              />
-            </div>
-            <div class="form-field">
-              <label for="fullName"
-                >Nume complet<input
-                  required
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  autocomplete="name"
-                  minlength="2"
-                  maxlength="80"
-                  spellcheck="false"
-                  placeholder="Cum te numești"
-                />
-              </label>
-              <p class="field-error" data-error-for="fullName" hidden></p>
-            </div>
-            <div class="form-field">
-              <label for="email"
-                >Adresă de email<input
-                  required
-                  id="email"
-                  type="email"
-                  name="email"
-                  autocomplete="email"
-                  maxlength="254"
-                  inputmode="email"
-                  spellcheck="false"
-                  autocapitalize="off"
-                  placeholder="Unde te contactăm discret"
-                />
-              </label>
-              <p class="field-error" data-error-for="email" hidden></p>
-            </div>
-            <div class="form-field">
-              <label for="signature"
-                >Semnătură<input
-                  required
-                  id="signature"
-                  name="signature"
-                  type="text"
-                  disabled
-                  aria-disabled="true"
-                  placeholder="Se completează automat"
-                />
-              </label>
-              <p class="field-error" data-error-for="signature" hidden></p>
-            </div>
-            <button class="primary" type="submit">Trimite Cererea</button>
-            <p class="form-note">
-              Prin trimitere, accepți să fii contactat confidențial în legătură
-              cu accesul tău.
-            </p>
-            <p class="form-status" role="status" aria-live="polite"></p>
-            <p class="success" role="status" tabindex="-1">
-              Cererea a fost trimisă. Te vom contacta discret.
-            </p>
-          </form>
-        </div>
-        <aside class="section-note">
-          <span
-            >UN PAS MAI APROAPE DE LOCUL PE CARE L-O
-            MERIȚI.</span
-          >
-          <i> </i>
-        </aside>
-      </section>
-      <footer class="site-footer">
-        <span class="cross" aria-hidden="true"> </span>
-        <div class="footer-brand">
-          <strong>ADRESA SECRETĂ</strong>
-          <span>- &nbsp; Nu se caută. Se primește.</span>
-        </div>
-        <div class="footer-links">
-          <span>Confidențialitate</span>
-          <span>·</span>
-          <span>Termeni</span>
-          <span>·</span>
-          <span>Joc Responsabil</span>
-        </div>
-        <small
-          >DOSAR NR. 0216<br />CAZ ÎNCHIS. PÂNĂ LA URMĂTOAREA INVITAȚIE.</small
-        >
-        <span class="cross" aria-hidden="true"> </span>
-      </footer>
+      </main>
     </div>
-
-    <div
-      class="modal"
-      id="acces-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="acces-modal-title"
-      hidden
-    >
-      <div class="modal-panel">
-        <div class="modal-frame" aria-hidden="true">
-          <span class="cross"></span>
-          <span class="cross"></span>
-          <span class="cross"></span>
-          <span class="cross"></span>
-        </div>
-        <button class="modal-close" type="button" aria-label="Închide">
-          <span>Închide</span><i aria-hidden="true">&times;</i>
-        </button>
-        <div class="modal-body">
-          <p class="modal-eyebrow">DOSAR NR. 0216 - CERERE DE ACCES</p>
-          <h2 id="acces-modal-title">Cere Să Afli Adresa</h2>
-          <p class="modal-lede">
-            Analizăm fiecare cerere personal. Te contactăm discret, doar pe
-            tine.
-          </p>
-          <i class="modal-rule" aria-hidden="true"></i>
-          <form
-            class="access-form"
-            id="modal-access-form"
-            method="post"
-            autocomplete="on"
-            novalidate
-          >
-            <div class="hp" aria-hidden="true">
-              <label for="modal-company">Companie</label>
-              <input
-                id="modal-company"
-                name="company"
-                type="text"
-                tabindex="-1"
-                autocomplete="off"
-              />
-            </div>
-            <div class="form-field">
-              <label for="modal-fullName"
-                >Nume complet<input
-                  required
-                  id="modal-fullName"
-                  name="fullName"
-                  type="text"
-                  autocomplete="name"
-                  minlength="2"
-                  maxlength="80"
-                  spellcheck="false"
-                  placeholder="Cum te numești"
-                />
-              </label>
-              <p class="field-error" data-error-for="fullName" hidden></p>
-            </div>
-            <div class="form-field">
-              <label for="modal-email"
-                >Adresă de email<input
-                  required
-                  id="modal-email"
-                  type="email"
-                  name="email"
-                  autocomplete="email"
-                  maxlength="254"
-                  inputmode="email"
-                  spellcheck="false"
-                  autocapitalize="off"
-                  placeholder="Unde te contactăm discret"
-                />
-              </label>
-              <p class="field-error" data-error-for="email" hidden></p>
-            </div>
-            <div class="form-field">
-              <label for="modal-signature"
-                >Semnătură<input
-                  required
-                  id="modal-signature"
-                  name="signature"
-                  type="text"
-                  disabled
-                  aria-disabled="true"
-                  placeholder="Se completează automat"
-                />
-              </label>
-              <p class="field-error" data-error-for="signature" hidden></p>
-            </div>
-            <button class="primary" type="submit">Trimite Cererea</button>
-            <p class="form-note">
-              Prin trimitere, accepți să fii contactat confidențial în legătură
-              cu accesul tău.
-            </p>
-            <p class="form-status" role="status" aria-live="polite"></p>
-            <p class="success" role="status" tabindex="-1">
-              Cererea a fost trimisă. Te vom contacta discret.
-            </p>
-          </form>
-          <small class="modal-dossier">Acces doar pe bază de invitație</small>
-        </div>
-        <span class="stamp modal-stamp" aria-hidden="true">CONFIDENȚIAL</span>
-      </div>
-    </div>
+    <div class="modal" id="acces-modal" role="dialog" aria-modal="true" aria-labelledby="acces-modal-title" hidden><div class="modal-panel"><button class="modal-close" type="button" aria-label="Închide"><span>Închide</span><i aria-hidden="true">×</i></button><div class="modal-body"><p class="modal-eyebrow">DOSAR NR. 0216 · ACCES PRIVAT</p><h2 id="acces-modal-title">Cere acces la<br />adresa secretă</h2><p class="modal-lede">Analizăm personal fiecare cerere. Te contactăm discret, la adresa de e-mail indicată.</p><i class="red-rule" aria-hidden="true"></i><form class="access-form" id="modal-access-form" method="post" autocomplete="on" novalidate>
+      <p class="form-heading">CERERE DE ACCES</p>
+      <div class="hp" aria-hidden="true"><label for="modal-company">Companie</label><input id="modal-company" name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+      <div class="form-field"><label for="modal-fullName">Nume complet</label><input required id="modal-fullName" name="fullName" type="text" autocomplete="name" minlength="2" maxlength="80" spellcheck="false" placeholder="Prenume și nume" aria-describedby="modal-name-error" /><p id="modal-name-error" class="field-error" data-error-for="fullName" hidden></p></div>
+      <div class="form-field"><label for="modal-email">Adresă de e-mail</label><input required id="modal-email" name="email" type="email" autocomplete="email" maxlength="254" inputmode="email" spellcheck="false" autocapitalize="off" placeholder="nume@exemplu.ro" aria-describedby="modal-email-error" /><p id="modal-email-error" class="field-error" data-error-for="email" hidden></p></div>
+      <div class="form-field"><label for="modal-signature">Semnătură</label><input id="modal-signature" name="signature" type="text" disabled aria-disabled="true" placeholder="Numele tău va apărea aici" aria-describedby="modal-signature-help modal-signature-error" /><small id="modal-signature-help" class="field-help">Se generează automat din numele complet.</small><p id="modal-signature-error" class="field-error" data-error-for="signature" hidden></p></div>
+      <button class="primary submit-button" type="submit">TRIMITE CEREREA</button>
+      <p class="form-note">Prin trimiterea cererii, accepți să fii contactat în legătură cu solicitarea ta de acces.</p>
+      <p class="form-status" role="status" aria-live="polite"></p>
+      <p class="success" role="status" tabindex="-1">Cererea a fost trimisă. Te vom contacta discret.</p>
+    </form><small class="modal-dossier">Doar pe bază de invitație.</small></div></div></div>
   </body>
 </html>

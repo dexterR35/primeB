@@ -36,32 +36,38 @@
     doc.documentElement.classList.remove('modal-open');
 
     const done = () => {
+      clearTimeout(timer);
+      modal.removeEventListener('transitionend', onEnd);
       modal.hidden = true;
       opener?.focus({ preventScroll: true });
       opener = null;
     };
-    // ascundem după ce se termină estomparea
-    const timer = setTimeout(done, 400);
-    modal.addEventListener('transitionend', function once(e) {
+    const onEnd = (e) => {
       if (e.target !== modal || e.propertyName !== 'opacity') return;
-      modal.removeEventListener('transitionend', once);
-      clearTimeout(timer);
       done();
-    });
+    };
+    /* Plasa de siguranță pentru cazul în care estomparea nu pornește deloc
+       (filă în fundal, animații oprite din sistem): ascundem oricum după
+       400 ms. Ascultătorul se scoate pe AMBELE drumuri — altfel cel rămas
+       prindea tranziția următoarei deschideri și închidea modalul singur. */
+    const timer = setTimeout(done, 400);
+    modal.addEventListener('transitionend', onEnd);
   };
 
   /* Butoanele roșii care duceau la #contact deschid acum modalul.
      Link-urile de navigație „Contact" continuă să coboare la secțiune. */
   doc.addEventListener('click', (e) => {
-    const trigger = e.target.closest('a.primary[href="#contact"], [data-modal="acces"]');
+    const target = e.target instanceof Element ? e.target : null;
+    const trigger = target?.closest('a.primary[href="#contact"], [data-modal="acces"]');
     if (trigger) {
       e.preventDefault();
       open(trigger);
-      return;
     }
-    if (e.target.closest('.modal-close')) close();
   });
 
+  /* Închiderea trece doar pe aici: clicul pe .modal-close urcă oricum până la
+     buton. Înainte mai exista și o ramură în listener-ul de mai sus, deci
+     close() rula de două ori la fiecare clic, cu două cronometre în paralel. */
   closeBtn?.addEventListener('click', close);
 
   /* Focusul rămâne în modal cât timp e deschis. */

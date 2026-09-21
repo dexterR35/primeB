@@ -252,7 +252,7 @@
       // section's main content, so fading it out while it is being read
       // would be wrong. At the very top the drift is off as well, so the
       // first screen renders exactly as designed, with no promoted layers.
-      if (y <= 0 || window.innerWidth <= 700) {
+      if (y <= 0 || window.innerWidth <= 1000) {
         clear();
         return;
       }

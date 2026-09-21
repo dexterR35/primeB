@@ -285,6 +285,7 @@ html.js-motion img[data-rev="photo"] {
     transform 1.6s var(--ease-out) var(--rd, 0ms);
 }
 html.js-motion img[data-rev="photo"].is-in {
+  opacity: var(--photo-opacity, 1);
   transform: none;
 }
 

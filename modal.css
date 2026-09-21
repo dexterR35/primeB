@@ -1,423 +1,164 @@
-/* Adresa Secretă — modalul „Cere Să Afli Adresa".
-   Construit din aceleași piese ca ecranul de încărcare și restul paginii:
-   fundalul de dosar, cadrul cu cruci, ștampila CONFIDENȚIAL, câmpurile
-   formularului. Se închide doar din butonul ÎNCHIDE. */
+/* Access dialog — shares the page's typography, fields and red gradient. */
+html.modal-open,html.modal-open body {
+  overflow: hidden;
+}
 
-   :root {
-    /* vălul de peste pagină și panoul modalului */
-    --veil-modal: #040a0eef;
-    --bg-modal-panel: #0a141bfa;
-    --img-modal-bg: url("assets/modal-bg.png");
-    /* fotografia e întunecată, dar textul stă peste ea: văl mai greu în
-       stânga-sus, unde sunt titlul și formularul, mai ușor spre colțul cu plicul */
-    --scrim-modal: linear-gradient(
-      150deg,
-      #050d11d6 0%,
-      #050d11b5 40%,
-      #040a0d96 68%,
-      #04090cc2 100%
-    );
-  }
-  
-  html.modal-open,
-  html.modal-open body {
-    overflow: hidden;
-  }
-  
-  .modal[hidden] {
-    display: none;
-  }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #03090ee8;
+  backdrop-filter: blur(7px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s,visibility .35s step-end;
+}
+
+.modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .35s,visibility 0s;
+}
+
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 50px 44px 30px;
+  border: 1px solid var(--gold);
+  background: var(--bg-apply), var(--img-hero-image) 70% center/cover;
+  box-shadow: 0 25px 90px #0009;
+  transform: translateY(18px) scale(.985);
+  transition: transform .4s cubic-bezier(.2,.65,.3,1);
+}
+
+.modal.is-open .modal-panel {
+  transform: none;
+}
+
+.modal-close {
+  position: absolute;
+  z-index: 3;
+  right: 15px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  min-height: 40px;
+  color: var(--gold);
+  font: 14px var(--label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 7px 10px;
+}
+
+.modal-close:hover {
+  color: var(--white);
+}
+
+.modal-close i {
+  font: 26px/1 var(--body);
+}
+
+.modal-eyebrow {
+  font: 12px var(--label);
+  letter-spacing: .2em;
+  color: var(--gold);
+  margin: 7px 0 17px;
+}
+
+.modal h2 {
+  font-size: 44px;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+}
+
+.modal-lede {
+  font-size: 17px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 18px;
+}
+
+.modal .red-rule {
+  margin: 23px 0;
+}
+
+.modal .access-form {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  gap: 20px;
+}
+
+.modal .form-heading {
+  display: none;
+}
+
+.modal .access-form input {
+  height: 52px;
+  font-size: 17px;
+}
+
+.modal .submit-button {
+  min-height: 61px;
+  font-size: 20px;
+}
+
+.modal .form-note {
+  font-size: 13px;
+}
+
+.modal-dossier {
+  display: block;
+  text-align: center;
+  margin-top: 19px;
+  font: 12px var(--mono);
+  color: var(--gold);
+}
+
+@media(max-width:760px) {
   .modal {
-    position: fixed;
-    inset: 0;
-    z-index: 300;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-    background: var(--veil-modal);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.35s ease,
-      visibility 0.35s step-end;
-  }
-  .modal.is-open {
-    opacity: 1;
-    visibility: visible;
-    transition:
-      opacity 0.35s ease,
-      visibility 0s;
-  }
-  .modal:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: var(--img-grain) repeat;
-    opacity: 0.1;
-    mix-blend-mode: screen;
-  }
-  
-  .modal-panel {
-    position: relative;
-    width: 100%;
-    max-width: 560px;
-    max-height: calc(100vh - 48px);
-    overflow: auto;
-    color: var(--white);
-    background-color: var(--bg-modal-panel);
-    background-image: var(--scrim-modal), var(--img-modal-bg);
-    background-repeat: no-repeat, no-repeat;
-    background-size: cover, cover;
-    background-position: center, right bottom;
-    border:1px solid var(--line);
-    box-shadow: 0 24px 60px var(--shadow-card);
-    padding: 40px 42px 34px;
-    transform: translate3d(0, 16px, 0) scale(0.985);
-    transition: transform 0.4s cubic-bezier(0.2, 0.65, 0.3, 1);
-  }
-  .modal.is-open .modal-panel {
-    transform: none;
-  }
-  
-  /* cadrul interior cu cruci, ca pe ecranul de încărcare */
-  .modal-frame {
-    position: absolute;
-    inset: 14px;
-    /* border: 1px solid var(--line-loader); */
-    pointer-events: none;
-  }
-  
-  .modal-frame .cross {
-    display: none !important;
-  }
-  .modal-frame .cross {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    opacity: 0.45;
-  }
-  .modal-frame .cross:before {
-    width: 22px;
-    top: 10px;
-  }
-  .modal-frame .cross:after {
-    height: 22px;
-    left: 10px;
-  }
-  .modal-frame .cross:nth-child(1) {
-    top: -11px;
-    left: -11px;
-  }
-  .modal-frame .cross:nth-child(2) {
-    top: -11px;
-    right: -11px;
-  }
-  .modal-frame .cross:nth-child(3) {
-    bottom: -11px;
-    left: -11px;
-  }
-  .modal-frame .cross:nth-child(4) {
-    bottom: -11px;
-    right: -11px;
-  }
-  
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 3;
-    display: inline-flex;
+    padding: 12px;
     align-items: center;
-    gap: 9px;
-    min-height: 40px;
-    padding: 8px 13px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--sage-400);
-    font: 600 12px/1 var(--label);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    transition:
-      color 0.25s ease,
-      border-color 0.25s ease,
-      background-color 0.25s ease;
   }
-  .modal-close i {
-    font: 400 19px/1 var(--label);
-    transform: translateY(-1px);
+  .modal-panel {
+    padding: 47px 24px 25px;
+    max-height: calc(100dvh - 24px);
   }
-  .modal-close:hover {
-    color: var(--white);
-    border-color: var(--red-edge);
-    background: var(--red);
-  }
-  
-  .modal-body {
-    position: relative;
-    z-index: 2;
+  .modal h2 {
+    font-size: clamp(32px,9vw,43px);
   }
   .modal-eyebrow {
-    font: 400 12px/1.4 var(--label);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--sage-600);
-    margin-bottom: 14px;
-    /* padding-right: 110px; */
-  }
-  .modal-body h2 {
-    font: 700 clamp(29px, 4vw, 41px)/1.06 var(--serif);
-    letter-spacing: -0.02em;
+    font-size: 10px;
+    margin-top: 4px;
   }
   .modal-lede {
-    font: 15px/1.6 var(--mono);
-    color: var(--sage-200);
-    margin-top: 12px;
+    font-size: 16px;
   }
-  .modal-rule {
-    height: 3px;
-    width: 29px;
-    background: var(--red);
-    margin: 18px 0 26px;
+  .modal .access-form {
+    gap: 18px;
   }
-  
-  .modal form {
-    display: grid;
-    gap: 16px;
+  .modal .field-help {
+    font-size: 12px;
   }
-  .modal .form-field {
-    display: grid;
-    gap: 7px;
-    min-width: 0;
+  .modal .submit-button {
+    font-size: 18px;
   }
-  .modal label {
-    display: block;
-    padding: 0;
-    font: 14px/1.3 var(--mono);
-    color: var(--sage-300);
-  }
-  .modal input {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    min-height: 48px;
-    margin-top: 7px;
-    padding: 10px 13px;
-    background: #050b0f99;
-    border: 1px solid var(--line-input);
-    outline: none;
-    color: var(--white);
-    font: 16px/1.4 var(--mono);
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-  .modal input:hover:not(:disabled) {
-    border-color: var(--sage-600);
-  }
-  .modal input:focus {
-    border-color: var(--red-edge);
-    background: #071116cc;
-    box-shadow: 0 0 0 1px var(--red-edge);
-  }
-  .modal input[aria-invalid="true"] {
-    border-color: #f2b8b5;
-    box-shadow: 0 0 0 1px #f2b8b540;
-  }
-  .modal input::placeholder {
-    color: var(--sage-500);
-  }
-  .modal input:disabled {
-    color: var(--sage-300);
-    cursor: not-allowed;
-    background: #07101580;
-    border-color: var(--line);
-    opacity: 1;
-  }
-  .modal button.primary {
-    width: 100%;
-    margin-top: 4px;
-    font-size: 20px;
-    min-height: 58px;
-  }
-  .modal .form-note {
-    font: 12px/1.55 var(--label);
-    letter-spacing: 0.05em;
-    color: var(--sage-550);
-    margin: 0;
-  }
-  .modal .field-error,
-  .modal .form-status {
-    color: #f2b8b5;
-    font: 12px/1.45 var(--mono);
-    margin: 0 2px;
-  }
-  .modal .field-error {
-    min-height: 17px;
-  }
-  .modal .field-error[hidden] {
-    display: block;
-    visibility: hidden;
-  }
-  .modal .form-status {
-    padding-top: 2px;
-  }
-  .modal .success {
-    display: none;
-    font: 15px/1.5 var(--mono);
-    color: var(--sage-100);
-  }
-  .modal .sent .success {
-    display: block;
-  }
-  .modal .sent button.primary {
-    opacity: 0.55;
-    pointer-events: none;
-  }
-  
-  /* ștampila, ca semn discret în colț */
-  .modal-stamp {
-    position: absolute;
-    right: 26px;
-    bottom: 20px;
-    z-index: 1;
-    pointer-events: none;
-    font-size: 26px;
-    opacity: 0.5;
-  }
-  .modal-dossier {
-    display: block;
-    margin-top: 22px;
-    padding-right: 130px; /* lasă loc ștampilei */
-    font: 12px/1.4 var(--label);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--sage-800);
-  }
-  
-  @media (max-width: 700px) {
-    .modal {
-      padding: 14px;
-    }
-    .modal-panel {
-      padding: 34px 22px 26px;
-      max-height: calc(100vh - 28px);
-    }
-    .modal-frame {
-      inset: 10px;
-    }
-    .modal-eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      padding-right: 96px;
-    }
-    .modal-lede {
-      font-size: 14px;
-    }
-    .modal form {
-      gap: 14px;
-    }
-    .modal input {
-      min-height: 46px;
-      padding: 9px 12px;
-    }
-    .modal-close {
-      top: 12px;
-      right: 12px;
-      padding: 8px 11px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-    }
-    .modal-stamp {
-      right: 16px;
-      bottom: 12px;
-      font-size: 19px;
-      opacity: 0.4;
-    }
-    .modal-dossier {
-      padding-right: 104px;
-      margin-top: 18px;
-    }
-  }
-  @media (max-width: 400px) {
-    .modal-panel {
-      padding-inline: 18px;
-    }
-    .modal-eyebrow {
-      padding-right: 88px;
-    }
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    .modal,
-    .modal-panel,
-    .modal.is-open .modal-panel {
-      transition-duration: 0.15s;
-      transform: none;
-    }
-  }
+}
 
-  /* Final mobile modal: full-width, safe-area aware and easy to scroll. */
-  @media (max-width: 700px) {
-    .modal {
-      place-items: end center;
-      padding: 10px 0 0;
-    }
-    .modal-panel {
-      width: 100%;
-      max-width: none;
-      max-height: calc(100dvh - 10px);
-      padding: 54px clamp(18px, 5.5vw, 26px)
-        calc(28px + env(safe-area-inset-bottom));
-      border-inline: 0;
-      border-bottom: 0;
-      overscroll-behavior: contain;
-    }
-    .modal-close {
-      top: 10px;
-      right: clamp(12px, 4vw, 20px);
-      min-height: 42px;
-    }
-    .modal-body h2 {
-      max-width: 12ch;
-      font-size: clamp(30px, 9vw, 40px);
-      line-height: 1.08;
-    }
-    .modal-rule {
-      margin: 16px 0 22px;
-    }
-    .modal form {
-      gap: 13px;
-    }
-    .modal input {
-      min-height: 48px;
-      font-size: 16px;
-    }
-    .modal button.primary {
-      min-height: 54px;
-      font-size: 18px;
-    }
-    .modal-dossier {
-      padding-right: 96px;
-      font-size: 10px;
-      line-height: 1.5;
-    }
+@media(prefers-reduced-motion:reduce) {
+  .modal,.modal-panel {
+    transition: opacity .15s;
+    transform: none;
   }
-
-  @media (max-width: 400px) {
-    .modal-panel {
-      padding-inline: 17px;
-    }
-    .modal-eyebrow {
-      padding-right: 78px;
-      font-size: 10px;
-    }
-    .modal-body h2 {
-      font-size: clamp(28px, 8.8vw, 35px);
-    }
-  }
-  
+}
