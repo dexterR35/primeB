@@ -11,12 +11,11 @@
   if (!modal) return;
 
   const closeBtn = modal.querySelector('.modal-close');
-  const form = modal.querySelector('form');
-  const firstField = modal.querySelector('input');
+  const firstField = modal.querySelector('input:not([tabindex="-1"])');
   let opener = null; // butonul de unde s-a deschis, ca să-i redăm focusul
 
   const focusable = () =>
-    [...modal.querySelectorAll('button, input, a[href], [tabindex]:not([tabindex="-1"])')]
+    [...modal.querySelectorAll('button, input:not([tabindex="-1"]), a[href], [tabindex]:not([tabindex="-1"])')]
       .filter((el) => !el.disabled && el.offsetParent !== null);
 
   const open = (trigger = null) => {
@@ -80,12 +79,5 @@
       e.preventDefault();
       first.focus();
     }
-  });
-
-  /* Demo, ca și formularul din pagină: nu trimite nimic. */
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    form.classList.add('sent');
-    form.querySelector('.success')?.focus?.();
   });
 })();

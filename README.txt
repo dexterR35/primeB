@@ -14,7 +14,10 @@ FIȘIERE
                     ordinea hero-ului pe mobil (vezi mai jos).
   motion.css        ecranul de încărcare, reveal-urile la scroll, reduced-motion
   motion.js         preloader, secvența de intrare, reveal-urile, drift-ul hero
+  form.js           validare + trimiterea ambelor formulare către Apps Script
+  modal.js          deschiderea, închiderea și focusul modalului de acces
   interactions.js   meniul mobil (se închide la alegerea unei secțiuni sau Escape)
+  apps-script/      backend-ul Google Sheets și instrucțiunile de publicare
   site.webmanifest  nume, culori, iconițe (PWA / add-to-home-screen)
   robots.txt        + sitemap.xml
   assets/           doar imaginile, textura, grain-ul și fonturile folosite,
@@ -30,7 +33,8 @@ ECRANUL DE ÎNCĂRCARE
   SE ÎNCARCĂ MATERIALELE → ACCES APROBAT, apoi ștampila CONFIDENȚIAL.
 
   Ordinea: DOM gata + fonturile gata + imaginile care contează
-           (toate <img> non-lazy + hero-image.png, grain.svg, archival-paper.png)
+           (toate <img> non-lazy + imaginea hero selectată responsive,
+           grain.svg, archival-paper.png)
            → bara urcă la 100% (~0,4 s) → ștampila CONFIDENȚIAL
            → pauză de 2 secunde (cerută, ca ecranul să poată fi citit)
            → loader-ul se stinge în 0,9 s și intră hero-ul.
@@ -124,7 +128,9 @@ OBSERVAȚII
   fi folosit și de ecranul de încărcare.
   history.scrollRestoration = 'manual': la reîncărcare pagina pornește de sus,
   ca intro-ul să se vadă întotdeauna.
-  Formularul este demo: nu trimite și nu salvează cereri.
+  Formularele din pagină și modal trimit în Google Sheets după ce URL-ul /exec
+  al deployment-ului este pus în ENDPOINT din form.js. Setup-ul complet este
+  descris în apps-script/README.md; destinația este prime_2026_B.
   Etichetele din footer păstrează mockup-ul; nu au fost furnizate documente legale.
   Fonturi locale: Bodoni Moda, Barlow Condensed, Nimbus Mono PS, Z003 (+ licențe).
 

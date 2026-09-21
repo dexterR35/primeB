@@ -105,6 +105,22 @@
   --shadow-btn: #28030938;
   --shadow-redaction: #b6bab536;
   --shadow-section: #04090c; /* umbra curată a secțiunii, nu halo-ul din poză */
+  --section-pad-y: 55px;
+  --scrim-section:
+    linear-gradient(
+      90deg,
+      var(--shadow-section) 0%,
+      transparent 14%,
+      transparent 86%,
+      var(--shadow-section) 100%
+    ),
+    linear-gradient(
+      180deg,
+      #04090ce8 0%,
+      transparent 18%,
+      transparent 82%,
+      #04090ce8 100%
+    );
   --red-stamp-outline: #b90d2288; /* conturul interior al ștampilei */
 
   /* ============ SUPRAFEȚE ȘI VĂLURI ============
@@ -290,11 +306,8 @@ i {
   align-items: center;
   /* border-bottom: 1px solid var(--line); */
   /* background: var(--bg-nav); */
-  position: absolute;
+  position: relative;
   width: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
   z-index: 15;
 }
 
@@ -381,6 +394,13 @@ i {
   object-position: 70% 48%;
   opacity: 0.88;
   z-index: 0;
+}
+.hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  overflow: hidden;
 }
 .hero:after {
   content: "";
@@ -520,40 +540,11 @@ i {
   display: grid;
   grid-template-columns: var(--rail) minmax(240px, 0.95fr) minmax(0, 1.8fr) 95px;
   gap: 28px;
-  padding: 34px 24px 32px 0;
-  /* border-bottom: 1px solid var(--line); */
-  /* background:
-    var(--bg-section),
-    var(--img-hero-image) 20% 45% / cover; */
+  padding: var(--section-pad-y) 24px var(--section-pad-y) 0;
 }
 .content-section.light {
   color: var(--ink-on-paper);
-  /* background: var(--img-s1) center center / cover no-repeat; */
   border: 0;
-  /* clip-path: polygon(
-    0 0.7%,
-    5% 0,
-    12% 0.65%,
-    23% 0,
-    38% 0.6%,
-    49% 0,
-    60% 0.5%,
-    73% 0,
-    85% 0.6%,
-    100% 0,
-    100% 99.4%,
-    92% 100%,
-    82% 99.3%,
-    69% 100%,
-    55% 99.2%,
-    41% 100%,
-    30% 99.3%,
-    19% 100%,
-    10% 99.3%,
-    0 100%
-  ); */
-  padding-top: 38px;
-  padding-bottom: 38px;
 }
 .index-rail {
   border-right: 1px solid currentColor;
@@ -666,34 +657,28 @@ h2 {
   min-height: 0;
   height: auto;
 }
-/* taie halo-ul pictat din poze și pune o umbră egală pe marginea secțiunii */
-.s3::before {
+.v2 .content-section.s3 {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+/* același văl pe toate secțiunile: umbră pe laterale + sus/jos */
+.s1::before,
+.s2::before,
+.s3::before,
+.access-wrap::before,
+.apply::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      var(--shadow-section) 0%,
-      transparent 14%,
-      transparent 86%,
-      var(--shadow-section) 100%
-    ),
-    linear-gradient(
-      180deg,
-      #04090ce8 0%,
-      transparent 18%,
-      transparent 82%,
-      #04090ce8 100%
-    );
+  background: var(--scrim-section);
   box-shadow: inset 0 0 72px 24px var(--shadow-section);
 }
 .s2 > *,
 .s3 > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .s3 h2 {
   font-size: clamp(29px, 2.65vw, 41px);
@@ -704,11 +689,10 @@ h2 {
   grid-template-columns: var(--rail) minmax(0, 1fr) 130px;
   align-items: center;
   gap: 30px;
-  padding: 40px 24px;
+  padding: var(--section-pad-y) 24px;
   min-height: 600px;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
-  /* background: var(--ink-access); */
 }
 .access-scene {
   position: absolute;
@@ -720,13 +704,7 @@ h2 {
   object-position: center 60%;
   opacity: 1;
 }
-/* .access-wrap:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: var(--scrim-access);
-} */
+/* .access-wrap:before lives with the shared section scrim */
 .access-note {
   position: relative;
   z-index: 3;
@@ -734,8 +712,10 @@ h2 {
   letter-spacing: 0.12em;
   color: var(--sage-300);
 }
-.access-wrap > .access-note:first-of-type {
-  align-self: end;
+.access-wrap > .index-rail {
+  position: relative;
+  z-index: 3;
+  align-self: stretch;
 }
 .access-wrap > .access-note:last-of-type {
   align-self: start;
@@ -873,7 +853,7 @@ h2 {
   display: grid;
   grid-template-columns: var(--rail) 1fr 100px;
   gap: 30px;
-  padding: 32px 24px 34px 0;
+  padding: var(--section-pad-y) 24px var(--section-pad-y) 0;
   border-bottom: 1px solid var(--line);
   background-color: var(--ink-page);
 }
@@ -886,11 +866,15 @@ h2 {
 }
 .apply form {
   display: grid;
-  grid-template-columns: 1fr 1fr 0.85fr;
+  grid-template-columns: 1fr 1fr 1fr 0.85fr;
   gap: 14px;
   margin-top: 22px;
 }
+.form-field {
+  min-width: 0;
+}
 .apply label {
+  display: block;
   border: 1px solid var(--line-input);
   padding: 11px 18px 9px;
   font: 14px/1.3 var(--mono);
@@ -910,6 +894,11 @@ h2 {
 .apply input::placeholder {
   color: var(--sage-500);
 }
+.apply input:disabled {
+  color: var(--sage-300);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
 .apply button {
   font-size: 22px;
   min-height: 70px;
@@ -920,6 +909,37 @@ h2 {
   font: 12px/1.5 var(--label);
   letter-spacing: 0.05em;
   margin-top: 0;
+}
+.hp {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.field-error,
+.form-status {
+  grid-column: 1/-1;
+  color: #f2b8b5;
+  font: 12px/1.45 var(--mono);
+  margin: 6px 0 0;
+}
+.field-error:empty,
+.form-status:empty {
+  display: none;
+}
+.access-form .field-error {
+  min-height: 17px;
+}
+.sent > .form-field,
+.sent > button,
+.sent > .form-note,
+.sent > .form-status {
+  display: none;
 }
 .success {
   display: none;
@@ -974,7 +994,8 @@ h2 {
   letter-spacing: 0.06em;
 } /* Invitation layout (.v2): centred composition,quiet symmetry,generous margins. */
 .v2 .hero {
-  min-height: 650px;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .v2 .hero-copy {
   /* 200px jos / 25px stânga pe ecran mare; scad singure pe ecrane mici
@@ -991,7 +1012,7 @@ h2 {
   margin: 16px auto;
 }
 .v2 .hero-image {
-  object-position: center;
+  object-position: bottom;
   opacity: 1;
 }
 .v2 .hero-art-notes {
@@ -1013,7 +1034,11 @@ h2 {
 .v2 .content-section {
   grid-template-columns: var(--rail) 1fr 120px;
   row-gap: 30px;
-  padding-block: 55px;
+  padding-block: var(--section-pad-y);
+}
+.v2 .access-wrap,
+.v2 .apply {
+  padding-block: var(--section-pad-y);
 }
 .v2 .section-head {
   grid-column: 2;
@@ -1035,15 +1060,9 @@ h2 {
   grid-column: 3;
   grid-row: 1/3;
 }
-.v2 .access-wrap {
-  padding-block: 65px;
-}
 .v2 .access-document {
   max-width: 1040px;
   transform: none;
-}
-.v2 .apply {
-  padding-block: 55px;
 }
 .v2 .apply-content {
   text-align: center;
@@ -1122,7 +1141,7 @@ h2 {
     font-size: 11px;
   }
   .access-wrap {
-    grid-template-columns: 65px 1fr 85px;
+    grid-template-columns: var(--rail) 1fr 85px;
     gap: 24px;
     padding-inline: 20px;
   }
@@ -1225,9 +1244,9 @@ h2 {
     grid-row: 1/3;
   }
   .access-wrap {
-    grid-template-columns: 45px 1fr 65px;
+    grid-template-columns: var(--rail) 1fr 65px;
     gap: 12px;
-    padding: 35px 12px;
+    padding: var(--section-pad-y) 12px;
   }
   .access-note {
     letter-spacing: 0.05em;
@@ -1296,6 +1315,7 @@ h2 {
 @media (max-width: 700px) {
   :root {
     --rail: 48px;
+    --section-pad-y: 32px;
   }
   .site-nav {
     grid-template-columns: 1fr auto auto;
@@ -1343,7 +1363,7 @@ h2 {
   .v2 .content-section {
     grid-template-columns: var(--rail) 1fr;
     gap: 22px 18px;
-    padding: 34px 20px 34px 0;
+    padding: var(--section-pad-y) 20px var(--section-pad-y) 0;
     min-height: 0;
   }
   .index-rail {
@@ -1362,6 +1382,11 @@ h2 {
   .v2 .section-head {
     text-align: left;
     grid-column: 2;
+    max-width: none;
+    justify-self: stretch;
+  }
+  .v2 .s1-story {
+    text-align: left;
     max-width: none;
     justify-self: stretch;
   }
@@ -1415,7 +1440,7 @@ h2 {
 
   .v2 .access-wrap {
     grid-template-columns: 1fr;
-    padding: 32px 10px;
+    padding: var(--section-pad-y) 10px;
     gap: 16px;
     min-height: 0;
   }
@@ -1502,7 +1527,7 @@ h2 {
   .v2 .apply {
     grid-template-columns: var(--rail) 1fr;
     gap: 20px 18px;
-    padding: 32px 20px 32px 0;
+    padding: var(--section-pad-y) 20px var(--section-pad-y) 0;
   }
   .apply .index-rail {
     grid-row: 1/3;
@@ -1704,7 +1729,7 @@ h2 {
   }
   .v2 .access-wrap {
     grid-template-columns: minmax(0, 1fr);
-    padding: 40px 24px;
+    padding: var(--section-pad-y) 24px;
   }
   .access-note {
     display: none;
@@ -1743,6 +1768,9 @@ h2 {
   }
   .apply form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .apply .form-field:last-of-type {
+    grid-column: 1/-1;
   }
   .apply button {
     grid-column: 1/-1;
@@ -1786,7 +1814,7 @@ h2 {
   .v2 .content-section {
     grid-template-columns: minmax(0, 1fr);
     gap: 26px;
-    padding: 28px 24px 36px;
+    padding: var(--section-pad-y) 24px;
   }
   .v2 .index-rail {
     grid-column: 1;
@@ -1816,6 +1844,17 @@ h2 {
   .v2 .section-head {
     grid-column: 1;
     grid-row: 2;
+  }
+  .v2 .s1-story {
+    grid-column: 1;
+    grid-row: 3;
+    text-align: left;
+    max-width: none;
+    justify-self: stretch;
+  }
+  .v2 .s1-story .handwritten {
+    max-width: none;
+    font-size: 28px;
   }
   .section-head h2,
   .s3 h2 {
@@ -1853,7 +1892,15 @@ h2 {
   .v2 .s3 .s3-cta {
     grid-column: 1;
     grid-row: 3;
-    justify-self: center;
+    justify-self: end;
+  }
+  .v2 .s3 .section-head {
+    justify-self: end;
+    max-width: min(100%, 560px);
+    text-align: right;
+  }
+  .v2 .s3 .section-head .red-rule {
+    margin-inline: auto 0;
   }
   .v2 .s3 .section-note {
     grid-row: 4;
@@ -1867,7 +1914,7 @@ h2 {
   }
 
   .v2 .access-wrap {
-    padding: 36px 16px;
+    padding: var(--section-pad-y) 16px;
   }
   .access-card {
     background-image: var(--img-s1);
@@ -1924,7 +1971,7 @@ h2 {
   }
   .v2 .apply {
     grid-template-columns: minmax(0, 1fr);
-    padding: 28px 24px 36px;
+    padding: var(--section-pad-y) 24px;
     gap: 24px;
   }
   .apply .index-rail {
@@ -1942,6 +1989,9 @@ h2 {
   .apply form {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
+  }
+  .apply .form-field:last-of-type {
+    grid-column: auto;
   }
   .apply label {
     padding: 14px;
@@ -2016,7 +2066,8 @@ h2 {
   .v2 .hero {
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   .hero-rail {
     display: none;
@@ -2083,35 +2134,24 @@ h2 {
     font-size: 26px;
     max-width: 45%;
   }
-} /* SECȚIUNEA 3 — titlul și butonul Play, centrați. Doar de la 701 px în sus;
-   pe telefon secțiunea rămâne stivuită. */
+} /* SECȚIUNEA 04/05 — textul și butonul Play sunt așezate în dreapta. */
 @media (min-width: 701px) {
-  /* fotografia intră sub text: un văl de sus ține titlul lizibil */
-  .v2 .s3::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(180deg, #04090cf2 0%, #04090cab 18%, transparent 38%),
-      linear-gradient(0deg, #04090ced 0%, #04090cab 16%, transparent 34%);
-  }
   .v2 .s3 > * {
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   /* titlul, apoi CTA */
   .v2 .s3 {
+    --s3-right-offset: clamp(16px, 4vw, 64px);
     grid-template-rows: auto auto;
   }
   .v2 .s3 .s3-cta {
     grid-column: 2;
     grid-row: 2;
-    justify-self: center;
+    justify-self: end;
     align-self: start;
-    margin-top: 12px;
+    margin: 12px var(--s3-right-offset) 0 0;
   }
   .v2 .s3 .index-rail,
   .v2 .s3 .section-note {
@@ -2119,11 +2159,12 @@ h2 {
   }
   .v2 .s3 .section-head {
     grid-column: 2;
-    justify-self: center;
+    justify-self: end;
     align-self: start;
-    max-width: min(72%, 760px);
-    text-align: center;
-    margin: 0;
+    width: min(72%, 760px);
+    max-width: 760px;
+    text-align: right;
+    margin: 0 var(--s3-right-offset) 0 0;
     padding-bottom: 8px;
   }
   .v2 .s3 .section-head h2 {
@@ -2133,32 +2174,21 @@ h2 {
   }
   .v2 .s3 .section-head > p:not(.eyebrow) {
     font-size: 17px;
+    line-height: 1.7;
     margin-top: 16px;
+    margin-left: auto;
+    max-width: 620px;
   }
   .v2 .s3 .section-head .red-rule {
-    margin-inline: auto;
+    margin-inline: auto 0;
   }
 }
 
-/* Ecran plin: hero, s1 și s2 — dar numai dacă ecranul are loc.
-   Sub 700px înălțime (și sub 820px pe telefon, unde antetul ia 137px)
-   secțiunile revin la înălțimea cerută de conținut, ca nimic să nu fie tăiat.
-   Antetul stă în flux deasupra hero-ului, așa că din hero se scade.
+/* Ecran plin: s2 și s4 (clasă .s3) — dar numai dacă ecranul are loc.
+   Sub 700px înălțime secțiunile revin la înălțimea cerută de conținut.
+   Antetul stă în flux deasupra hero-ului; hero-ul e 100vh.
    100vh rămâne ca rezervă pentru browserele fără dvh. */
-:root {
-  --nav-h: 80px;
-}
-@media (max-width: 700px) {
-  :root {
-    --nav-h: 77px; /* pe telefon antetul are doar numele și meniul */
-  }
-}
 @media (min-height: 700px) {
-  .v2 .hero {
-    min-height: calc(100vh - var(--nav-h));
-    min-height: calc(100dvh - var(--nav-h));
-  }
-  .v2 .s1,
   .v2 .s2 {
     min-height: 100vh;
     min-height: 100dvh;
@@ -2167,7 +2197,8 @@ h2 {
 @media (max-width: 700px) and (max-height: 739px) {
   .v2 .hero,
   .v2 .s1,
-  .v2 .s2 {
+  .v2 .s2,
+  .v2 .content-section.s3 {
     min-height: 0;
   }
   /* pe telefoanele scunde fotografia hero se strânge după înălțimea ecranului,
@@ -2226,7 +2257,7 @@ h2 {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   background: var(--img-s2) center / cover no-repeat;
 }
@@ -2237,18 +2268,18 @@ h2 {
   grid-template-columns: var(--rail) minmax(0, 1fr) 120px;
   grid-template-rows: minmax(0, 1fr);
   gap: 0;
-  padding: 0;
+  padding-block: var(--section-pad-y);
+  padding-inline: 0;
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
   background-color: #05080c;
 }
-/* rail-ul cu numărul și nota din dreapta stau ca la celelalte capitole */
 .v2 .s2 > .index-rail,
 .v2 .s2 > .section-note {
   z-index: 2;
   grid-row: 1;
-  padding-block: 4.8vh 6.2vh;
+  padding-block: 0;
 }
 .v2 .s2 > .index-rail {
   grid-column: 1;
@@ -2263,7 +2294,7 @@ h2 {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100%;
-  padding: 4.8vh 4.5vw 6.2vh;
+  padding: 0 4.5vw;
 }
 .v2 .s2 .s2-copy,
 .v2 .s2 .section-head {
@@ -2333,7 +2364,7 @@ h2 {
     grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: 28px 24px 36px;
+    padding: var(--section-pad-y) 24px;
   }
   .v2 .s2 > .index-rail {
     grid-column: 1;
@@ -2343,7 +2374,7 @@ h2 {
   .s2-frame {
     grid-column: 1;
     grid-row: 2;
-    padding: 28px 0 32px;
+    padding: 0;
   }
   .v2 .s2 > .section-note {
     grid-column: 1;
@@ -2388,7 +2419,7 @@ h2 {
 }
 .apply > *:not(.sec-bg) {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 /* ——— PARALLAX ———
    Mișcarea nu mai e o tranziție pornită o dată, ci urmează scroll-ul:
@@ -2445,6 +2476,7 @@ html.js-motion [data-live-bg].in-view .hero-image {
 html.js-motion [data-live-bg]:not(.s2) .section-head,
 html.js-motion [data-live-bg] .s3-cta,
 html.js-motion [data-live-bg]:not(.s2) .items,
+html.js-motion [data-live-bg] .s1-story,
 html.js-motion [data-live-bg] .apply-content {
   translate: 0 calc(var(--p) * var(--par-text));
 }
@@ -2455,6 +2487,7 @@ html.js-motion [data-live-bg] .apply-content {
   html.js-motion [data-live-bg] .section-head,
   html.js-motion [data-live-bg] .s3-cta,
   html.js-motion [data-live-bg] .items,
+  html.js-motion [data-live-bg] .s1-story,
   html.js-motion [data-live-bg] .apply-content {
     translate: none;
     scale: none;
@@ -2470,40 +2503,42 @@ html.js-motion [data-live-bg] .apply-content {
   background-color: var(--ink-page);
   overflow: hidden;
 }
+.v2 .content-section.s1 {
+  min-height: 0;
+  height: auto;
+}
+.v2 .s1-story {
+  grid-column: 2;
+  grid-row: 2;
+  max-width: 640px;
+  justify-self: center;
+  text-align: center;
+}
+.s1-story p {
+  font: 18px/1.75 var(--mono);
+  margin: 0 auto 1.15em;
+  max-width: 38em;
+  opacity: 0.92;
+}
+.s1-story p:last-child {
+  margin-bottom: 0;
+}
+.s1-story .handwritten {
+  display: block;
+  margin-top: 28px;
+  transform: rotate(-5deg);
+}
 .s1 .sec-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   background-image: var(--img-s1);
   background-position: center;
-  background-size: contain;
-}
-/* vălul: mai greu sus și jos, unde stau titlul și casetele */
-.s1::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    #04090ce0 0%,
-    #04090c8c 22%,
-    #04090c59 50%,
-    #04090ca6 78%,
-    #04090ce6 100%
-  );
+  background-size: cover;
 }
 .s1 > *:not(.sec-bg) {
   position: relative;
-  z-index: 1;
-}
-.s1 .item {
-  border-color: var(--line);
-}
-/* pasul 2 rămâne în pagină, dar ascuns — ține locul, nu se vede */
-.s1 .item:nth-child(2) {
-  visibility: hidden;
+  z-index: 2;
 }
 
 /* ——— MOBIL: CURĂȚENIE ———
@@ -2529,11 +2564,6 @@ html.js-motion [data-live-bg] .apply-content {
     padding: 0;
   }
 
-  /* secțiunea 1: pasul ascuns nu mai lasă gol pe telefon */
-  .s1 .item:nth-child(2) {
-    display: none;
-  }
-
   /* fișa de acces: imaginea întreagă, la proporția ei, fără spațiul gol
      al cardului HTML (ascuns oricum) */
   .v2 .access-wrap {
@@ -2555,5 +2585,543 @@ html.js-motion [data-live-bg] .apply-content {
 @media (max-width: 700px) and (min-height: 740px) {
   .v2 .hero {
     --hero-img: clamp(260px, 80vw, 380px);
+  }
+}
+
+/* ======================================================================
+   FINAL MOBILE LAYOUT
+   Un singur strat la finalul cascadei ține toate secțiunile coerente,
+   indiferent de regulile responsive istorice de mai sus.
+   ====================================================================== */
+@media (max-width: 700px) {
+  :root {
+    --mobile-gutter: clamp(18px, 5.5vw, 26px);
+    --section-pad-y: clamp(44px, 12vw, 64px);
+  }
+
+  html {
+    scroll-padding-top: 72px;
+  }
+  body {
+    min-width: 320px;
+    overflow-x: hidden;
+    font-size: 15px;
+  }
+  #despre,
+  #cum-functioneaza,
+  #acces,
+  #intrebari,
+  #contact {
+    scroll-margin-top: 72px;
+  }
+
+  /* Navigation */
+  .site-nav {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    min-height: 68px;
+    padding: 12px var(--mobile-gutter);
+    background: #050b0fe8;
+    border-bottom: 1px solid var(--line-loader);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .site-nav > nav,
+  .site-nav > .cross,
+  .site-nav > .nav-note,
+  .site-nav > .nav-cta {
+    display: none;
+  }
+  .brand {
+    min-width: 0;
+  }
+  .brand strong {
+    overflow: hidden;
+    font-size: clamp(18px, 5.4vw, 23px);
+    line-height: 1.1;
+    text-overflow: ellipsis;
+  }
+  .mobile-menu {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    display: block;
+  }
+  .mobile-menu summary {
+    min-width: 72px;
+    min-height: 44px;
+    padding: 10px 13px;
+    border-color: var(--line-input);
+    background: #071018cc;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mobile-menu[open] summary {
+    border-color: var(--red-edge);
+    background: var(--red-deep);
+  }
+  .mobile-menu nav {
+    top: calc(100% + 8px);
+    right: 0;
+    width: min(82vw, 300px);
+    max-width: calc(100vw - (2 * var(--mobile-gutter)));
+    padding: 8px;
+    gap: 2px;
+    background: #071018f7;
+    border-color: var(--line-input);
+    box-shadow: 0 18px 45px #000b;
+  }
+  .mobile-menu nav a {
+    min-height: 48px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line-loader);
+    font-size: 15px;
+  }
+  .mobile-menu nav a:last-child {
+    border-bottom: 0;
+  }
+
+  /* Hero */
+  .v2 .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: calc(100vh - 68px);
+    min-height: calc(100svh - 68px);
+  }
+  .v2 .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .v2 .hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .v2 .hero:after {
+    inset: 0;
+    height: auto;
+    background:
+      linear-gradient(180deg, #03090d2e 0%, #03090d73 30%, #03090d96 58%, #03090dd9 100%),
+      linear-gradient(90deg, #03090d66, transparent 50%, #03090d52);
+  }
+  .v2 .hero-copy {
+    align-self: center;
+    margin: 0;
+    padding: 56px var(--mobile-gutter) 54px;
+  }
+  .hero h1,
+  .v2 .hero h1 {
+    max-width: 13ch;
+    margin: 32px auto 18px;
+    font-size: clamp(36px, 10.5vw, 54px);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .hero .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .hero .lede {
+    max-width: 32ch;
+    margin: 0 auto 24px;
+    font-size: clamp(15px, 4.3vw, 18px);
+  }
+  .v2 .hero-copy > .primary {
+    width: min(100%, 360px);
+    min-height: 54px;
+  }
+  .hero-footnote {
+    margin-top: 18px;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  .v2 .hero-art-notes {
+    display: none;
+  }
+  .v2 .handwritten {
+    max-width: 48%;
+    font-size: clamp(22px, 7vw, 28px);
+  }
+  .v2 .hero .hero-stamp {
+    top: -34px;
+    font-size: clamp(15px, 4.6vw, 19px);
+  }
+
+  /* Shared section structure */
+  .v2 .content-section,
+  .v2 .s2,
+  .v2 .apply {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: var(--section-pad-y) var(--mobile-gutter);
+    gap: 28px;
+  }
+  .v2 .index-rail,
+  .v2 .s2 > .index-rail,
+  .v2 .apply .index-rail {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 0 14px;
+    border: 0;
+    border-bottom: 1px solid var(--line-index);
+    gap: 14px;
+  }
+  .index-rail div {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 7px;
+  }
+  .index-rail b {
+    font-size: clamp(34px, 10vw, 44px);
+    line-height: 1;
+  }
+  .index-rail div > span {
+    font-size: 15px;
+  }
+  .index-rail small {
+    margin-left: auto;
+    font-size: 10px;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
+    text-align: right;
+  }
+  .v2 .section-head,
+  .v2 .s2 .section-head {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    text-align: left;
+  }
+  .section-head h2,
+  .s3 h2 {
+    font-size: clamp(31px, 9vw, 43px);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .section-head .eyebrow {
+    margin-bottom: 10px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .section-head > p:not(.eyebrow) {
+    margin-top: 14px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .v2 .section-head .red-rule {
+    margin: 18px 0 0;
+  }
+  .v2 .section-note,
+  .v2 .s2 > .section-note {
+    grid-column: 1;
+    grid-row: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin: 2px 0 0;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 1px solid var(--line-note);
+    gap: 12px;
+    font-size: 10px;
+    line-height: 1.45;
+    text-align: left;
+  }
+  .section-note > span {
+    max-width: min(100%, 32ch);
+  }
+  .section-note > i {
+    flex: 0 0 22px;
+  }
+
+  /* Section 01 */
+  .v2 .s1-story {
+    grid-column: 1;
+    grid-row: auto;
+    max-width: none;
+    text-align: left;
+  }
+  .s1-story p {
+    max-width: none;
+    margin-bottom: 1.2em;
+    font-size: clamp(15px, 4.2vw, 17px);
+    line-height: 1.75;
+  }
+  .v2 .s1-story .handwritten {
+    max-width: none;
+    margin-top: 24px;
+    font-size: clamp(25px, 8vw, 32px);
+    text-align: left;
+  }
+
+  /* Section 02 */
+  .v2 .s2 {
+    display: grid;
+    grid-template-rows: auto auto auto;
+  }
+  .s2-frame {
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+    min-height: 0;
+    padding: 0;
+  }
+  .v2 .s2 .items {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    margin-top: 30px;
+    gap: 12px;
+    text-align: left;
+  }
+  .v2 .s2 .item {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 4px 14px;
+    align-items: start;
+    max-width: none;
+    padding: 15px 4px 15px 16px;
+    border: 0;
+    border-left: 2px solid var(--red-line);
+    background: transparent;
+    text-align: left;
+  }
+  .v2 .s2 .item-no {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    margin: 1px 0 0;
+  }
+  .v2 .s2 .item h3,
+  .v2 .s2 .item p {
+    grid-column: 2;
+    max-width: none;
+    text-align: left;
+  }
+  .v2 .s2 .item h3 {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+  .v2 .s2 .item p {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v2 .s2 > .section-note {
+    grid-row: 3;
+  }
+
+  /* Section 03 — use the full artwork cleanly on mobile */
+  .v2 .access-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    min-height: 0;
+    padding: var(--section-pad-y) 0 0;
+    background: var(--ink-access);
+  }
+  .v2 .access-wrap > .index-rail {
+    margin-inline: var(--mobile-gutter);
+    width: auto;
+  }
+  .access-scene {
+    grid-column: 1;
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1672 / 941;
+    object-fit: cover;
+    object-position: center;
+  }
+  .access-document,
+  .access-note {
+    display: none;
+  }
+
+  /* Section 04 — intentionally right aligned */
+  .v2 .s3 .section-head {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: stretch;
+    max-width: none;
+    text-align: right;
+  }
+  .v2 .s3 .section-head > p:not(.eyebrow) {
+    margin-left: auto;
+    max-width: 38ch;
+  }
+  .v2 .s3 .section-head .red-rule {
+    margin-inline: auto 0;
+  }
+  .v2 .s3 .s3-cta {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: end;
+    min-width: 150px;
+    margin: 0;
+  }
+  .v2 .s3 .section-note {
+    grid-row: 4;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  /* Section 05 and form */
+  .apply-content {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+    text-align: left;
+  }
+  .apply h2 {
+    font-size: clamp(32px, 9vw, 43px);
+    line-height: 1.08;
+  }
+  .apply-intro {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .apply form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    margin-top: 26px;
+  }
+  .apply .form-field,
+  .apply .form-field:last-of-type,
+  .apply button,
+  .apply .form-note,
+  .apply .form-status,
+  .apply .success {
+    grid-column: 1;
+  }
+  .apply label {
+    padding: 12px 14px 10px;
+  }
+  .apply input {
+    min-height: 38px;
+    font-size: 16px;
+  }
+  .apply button {
+    width: 100%;
+    min-height: 56px;
+    font-size: 19px;
+  }
+  .form-note {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  /* Footer */
+  .site-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    min-height: 0;
+    padding: 34px var(--mobile-gutter) 38px;
+  }
+  .site-footer > .cross {
+    display: none;
+  }
+  .footer-brand {
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .footer-brand strong {
+    font-size: 21px;
+  }
+  .footer-links {
+    justify-content: flex-start;
+    min-height: 0;
+    padding: 14px 0;
+    border: 0;
+    border-block: 1px solid var(--line-loader);
+    gap: 8px;
+    font-size: 13px;
+  }
+  .site-footer > small {
+    grid-column: 1;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  /* Smoother and less expensive on touch devices */
+  html.js-motion [data-live-bg] {
+    --par: 0px;
+    --par-text: 0px;
+  }
+}
+
+@media (max-width: 400px) {
+  :root {
+    --mobile-gutter: 17px;
+    --section-pad-y: 42px;
+  }
+  .site-nav {
+    min-height: 64px;
+    padding-block: 10px;
+  }
+  .brand strong {
+    font-size: 17px;
+  }
+  .mobile-menu summary {
+    min-width: 66px;
+    padding-inline: 10px;
+    font-size: 13px;
+  }
+  .v2 .hero {
+    min-height: calc(100vh - 64px);
+    min-height: calc(100svh - 64px);
+  }
+  .v2 .hero-copy {
+    padding-top: 34px;
+    padding-bottom: 42px;
+  }
+  .hero h1,
+  .v2 .hero h1 {
+    font-size: clamp(34px, 10.2vw, 42px);
+  }
+  .section-head h2,
+  .s3 h2,
+  .apply h2 {
+    font-size: clamp(29px, 9vw, 36px);
+  }
+  .v2 .s2 .item {
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 14px 2px 14px 13px;
+    gap: 4px 10px;
+  }
+  .v2 .s2 .item h3 {
+    font-size: 18px;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+  }
+}
+
+/* Tablet uses the portrait artwork too; keep its focal area centered. */
+@media (min-width: 701px) and (max-width: 1100px) {
+  .v2 .hero-image {
+    object-position: center;
+  }
+  .v2 .hero:after {
+    background:
+      linear-gradient(180deg, #03090d38, #03090d75 55%, #03090dd4),
+      linear-gradient(90deg, #03090d8f, transparent 72%);
   }
 }

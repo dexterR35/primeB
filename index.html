@@ -92,7 +92,15 @@
     <link
       rel="preload"
       as="image"
+      href="assets/hero-image-mobile.png"
+      media="(max-width: 1100px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
       href="assets/hero-image.png"
+      media="(min-width: 1101px)"
       fetchpriority="high"
     />
     <!-- Served over HTTP(S) you can also preload the two leading faces; left out
@@ -117,6 +125,7 @@
     </script>
     <script src="motion.js" defer></script>
     <script src="modal.js" defer></script>
+    <script src="form.js?v=20260921-2" defer></script>
     <script src="interactions.js" defer></script>
 
     <script type="application/ld+json">
@@ -258,14 +267,22 @@
         </details>
       </header>
       <section class="hero" id="top" data-live-bg>
-        <img
-          class="hero-image"
-          src="assets/hero-image.png"
-          alt="Dosar din piele neagră cu sigiliu roșu AS și șnur auriu"
-          fetchpriority="high"
-          width="1672"
-          height="941"
-        />
+        <picture class="hero-media">
+          <source
+            media="(max-width: 1100px)"
+            srcset="assets/hero-image-mobile.png"
+            width="941"
+            height="1672"
+          />
+          <img
+            class="hero-image"
+            src="assets/hero-image.png"
+            alt="Hartă aurie și obiecte de călătorie pe un fundal albastru închis"
+            fetchpriority="high"
+            width="2048"
+            height="1152"
+          />
+        </picture>
         <aside class="hero-rail">
          
           <b>0216</b>
@@ -304,7 +321,7 @@
         <aside class="index-rail">
           <div>
             <b>01</b>
-            <span>/04</span>
+            <span>/05</span>
           </div>
           <small>DISCRET<br />EXCLUSIV<br />REAL</small>
         </aside>
@@ -314,25 +331,17 @@
           <p>Cei care știu de el, nu vorbesc despre el.</p>
           <i class="red-rule"> </i>
         </div>
-        <div class="items">
-          <article class="item">
-            <span class="item-no">01</span>
-            <h3>Cineva Te Știe</h3>
-            <i class="item-dash"> </i>
-            <p>Nu te prezinți de fiecare dată.</p>
-          </article>
-          <article class="item">
-            <span class="item-no">02</span>
-            <h3>Fără Coadă</h3>
-            <i class="item-dash"> </i>
-            <p>Cererile tale nu stau la rând.</p>
-          </article>
-          <article class="item">
-            <span class="item-no">03</span>
-            <h3>Croit Pentru Tine</h3>
-            <i class="item-dash"> </i>
-            <p>Nimic generic, totul ajustat pe cum joci.</p>
-          </article>
+        <div class="s1-story">
+          <p>
+            Nu e pe nicio hartă. Nu are firmă, nu are program, nu are o ușă pe
+            care o găsești singur. Există pentru că rămâne nespus.
+          </p>
+          <p>
+            Odată ajuns acolo, nu te mai prezinți. Cineva te știe deja. Nu stai
+            la rând. Nu primești ce primește toată lumea. Totul se așază în
+            jurul tău — croit pe cum joci, fără martori și fără anunț.
+          </p>
+          <p class="handwritten">Se ajunge doar dacă ești chemat.</p>
         </div>
         <aside class="section-note">
           <span>AS 0216</span>
@@ -344,7 +353,7 @@
         <aside class="index-rail">
           <div>
             <b>02</b>
-            <span>/04</span>
+            <span>/05</span>
           </div>
           <small>FĂRĂ<br />ANUNȚ<br />PUBLIC</small>
         </aside>
@@ -378,27 +387,6 @@
           <span>TOTUL SE REZOLVĂ DISCRET</span>
         </aside>
       </section>
-      <section class="content-section s3" id="intrebari" data-live-bg>
-        <div class="sec-bg" aria-hidden="true"></div>
-        <aside class="index-rail">
-          <div>
-            <b>03</b>
-            <span>/04</span>
-          </div>
-          <small>CALITATE<br />NU<br />CANTITATE</small>
-        </aside>
-        <div class="section-head">
-          <p class="eyebrow">DE CE E SECRETĂ</p>
-          <h2>Nu E Un Bonus. E O Ușă Care Se Deschide Pentru Puțini.</h2>
-          <p>Distracție garantată. Experiență perfectă.</p>
-          <i class="red-rule"> </i>
-        </div>
-        <a href="#contact" class="primary s3-cta">Play</a>
-        <aside class="section-note">
-          <span>ÎNCHIS PÂNĂ LA URMĂTOAREA INVITAȚIE</span>
-          <i> </i>
-        </aside>
-      </section>
       <section class="access-wrap" id="acces">
         <img
           class="access-scene"
@@ -408,7 +396,13 @@
           width="1672"
           height="941"
         />
-        <aside class="access-note">DOAR<br />PERSOANE<br />AUTORIZATE</aside>
+        <aside class="index-rail">
+          <div>
+            <b>03</b>
+            <span>/05</span>
+          </div>
+          <small>DOAR<br />PERSOANE<br />AUTORIZATE</small>
+        </aside>
         <div class="access-document">
           <article class="access-card">
             <div class="card-inner">
@@ -460,12 +454,38 @@
           NICIODATĂ.<i class="red-rule"> </i>
         </aside>
       </section>
-      <section class="apply" id="contact" data-live-bg>
+      <section class="content-section s3" id="intrebari" data-live-bg>
         <div class="sec-bg" aria-hidden="true"></div>
         <aside class="index-rail">
           <div>
             <b>04</b>
-            <span>/04</span>
+            <span>/05</span>
+          </div>
+          <small>CALITATE<br />NU<br />CANTITATE</small>
+        </aside>
+        <div class="section-head">
+          <p class="eyebrow">DE CE E SECRETĂ</p>
+          <h2>Nu E Un Bonus. E O Ușă Care Se Deschide Pentru Puțini.</h2>
+          <p class="s3-copy">
+            Distracție garantată. Experiență perfectă. Un loc în care fiecare
+            detaliu este pregătit înainte să ajungi, iar totul se desfășoară
+            discret, fără aglomerație, fără compromisuri și fără experiențe
+            standard.
+          </p>
+          <i class="red-rule"> </i>
+        </div>
+        <a href="#contact" class="primary s3-cta">Play</a>
+        <aside class="section-note">
+          <span>ÎNCHIS PÂNĂ LA URMĂTOAREA INVITAȚIE</span>
+          <i> </i>
+        </aside>
+      </section>
+      <section class="apply" id="contact" data-live-bg>
+        <div class="sec-bg" aria-hidden="true"></div>
+        <aside class="index-rail">
+          <div>
+            <b>05</b>
+            <span>/05</span>
           </div>
           <small>DOCUMENTE<br />VERIFICATE<br />MANUAL</small>
         </aside>
@@ -477,35 +497,77 @@
             tine.
           </p>
           <form
-            onsubmit="
-              event.preventDefault();
-              this.classList.add('sent');
-            "
+            class="access-form"
+            id="access-form"
+            method="post"
+            autocomplete="on"
+            novalidate
           >
-            <label
-              >Nume complet<input
-                required
-                name="name"
-                autocomplete="name"
-                placeholder="Cum te numești"
+            <div class="hp" aria-hidden="true">
+              <label for="company">Companie</label>
+              <input
+                id="company"
+                name="company"
+                type="text"
+                tabindex="-1"
+                autocomplete="off"
               />
-            </label>
-            <label
-              >Adresă de email<input
-                required
-                type="email"
-                name="email"
-                autocomplete="email"
-                placeholder="Unde te contactăm discret"
-              />
-            </label>
+            </div>
+            <div class="form-field">
+              <label for="fullName"
+                >Nume complet<input
+                  required
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  autocomplete="name"
+                  minlength="2"
+                  maxlength="80"
+                  spellcheck="false"
+                  placeholder="Cum te numești"
+                />
+              </label>
+              <p class="field-error" data-error-for="fullName" hidden></p>
+            </div>
+            <div class="form-field">
+              <label for="email"
+                >Adresă de email<input
+                  required
+                  id="email"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  maxlength="254"
+                  inputmode="email"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  placeholder="Unde te contactăm discret"
+                />
+              </label>
+              <p class="field-error" data-error-for="email" hidden></p>
+            </div>
+            <div class="form-field">
+              <label for="signature"
+                >Semnătură<input
+                  required
+                  id="signature"
+                  name="signature"
+                  type="text"
+                  disabled
+                  aria-disabled="true"
+                  placeholder="Se completează automat"
+                />
+              </label>
+              <p class="field-error" data-error-for="signature" hidden></p>
+            </div>
             <button class="primary" type="submit">Trimite Cererea</button>
             <p class="form-note">
               Prin trimitere, accepți să fii contactat confidențial în legătură
               cu accesul tău.
             </p>
-            <p class="success" role="status">
-              Demo - formularul nu trimite încă cereri.
+            <p class="form-status" role="status" aria-live="polite"></p>
+            <p class="success" role="status" tabindex="-1">
+              Cererea a fost trimisă. Te vom contacta discret.
             </p>
           </form>
         </div>
@@ -563,31 +625,78 @@
             tine.
           </p>
           <i class="modal-rule" aria-hidden="true"></i>
-          <form>
-            <label
-              >Nume complet<input
-                required
-                name="name"
-                autocomplete="name"
-                placeholder="Cum te numești"
+          <form
+            class="access-form"
+            id="modal-access-form"
+            method="post"
+            autocomplete="on"
+            novalidate
+          >
+            <div class="hp" aria-hidden="true">
+              <label for="modal-company">Companie</label>
+              <input
+                id="modal-company"
+                name="company"
+                type="text"
+                tabindex="-1"
+                autocomplete="off"
               />
-            </label>
-            <label
-              >Adresă de email<input
-                required
-                type="email"
-                name="email"
-                autocomplete="email"
-                placeholder="Unde te contactăm discret"
-              />
-            </label>
+            </div>
+            <div class="form-field">
+              <label for="modal-fullName"
+                >Nume complet<input
+                  required
+                  id="modal-fullName"
+                  name="fullName"
+                  type="text"
+                  autocomplete="name"
+                  minlength="2"
+                  maxlength="80"
+                  spellcheck="false"
+                  placeholder="Cum te numești"
+                />
+              </label>
+              <p class="field-error" data-error-for="fullName" hidden></p>
+            </div>
+            <div class="form-field">
+              <label for="modal-email"
+                >Adresă de email<input
+                  required
+                  id="modal-email"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  maxlength="254"
+                  inputmode="email"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  placeholder="Unde te contactăm discret"
+                />
+              </label>
+              <p class="field-error" data-error-for="email" hidden></p>
+            </div>
+            <div class="form-field">
+              <label for="modal-signature"
+                >Semnătură<input
+                  required
+                  id="modal-signature"
+                  name="signature"
+                  type="text"
+                  disabled
+                  aria-disabled="true"
+                  placeholder="Se completează automat"
+                />
+              </label>
+              <p class="field-error" data-error-for="signature" hidden></p>
+            </div>
             <button class="primary" type="submit">Trimite Cererea</button>
             <p class="form-note">
               Prin trimitere, accepți să fii contactat confidențial în legătură
               cu accesul tău.
             </p>
+            <p class="form-status" role="status" aria-live="polite"></p>
             <p class="success" role="status" tabindex="-1">
-              Demo - formularul nu trimite încă cereri.
+              Cererea a fost trimisă. Te vom contacta discret.
             </p>
           </form>
           <small class="modal-dossier">Acces doar pe bază de invitație</small>

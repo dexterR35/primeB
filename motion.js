@@ -22,7 +22,7 @@
       .filter(Boolean)
       .map((el) =>
         el.tagName === 'IMG'
-          ? el.getAttribute('src')
+          ? (el.currentSrc || el.getAttribute('src'))
           : getComputedStyle(el).backgroundImage.match(/url\("?([^")]+)"?\)/)?.[1]
       )
       .filter(Boolean);
@@ -141,6 +141,7 @@
     { sel: '.site-footer > div,.site-footer > small', kind: 'up', step: 90 },
     // pașii 01-02-03: același decalaj în toate secțiunile
     { sel: '.items .item', kind: 'up', step: STEP },
+    { sel: '.s1-story > *', kind: 'up', step: 140 },
   ];
 
   /* Secțiunea de care ține un element; decalajele se numără în interiorul ei. */
