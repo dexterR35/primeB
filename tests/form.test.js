@@ -106,7 +106,7 @@ function setup({ post, get, formCount = 1 } = {}) {
   window.clearTimeout = id => timers.delete(id);
   const response = data => ({ ok: true, status: 200, text: () => Promise.resolve(JSON.stringify(data)) });
   const fetch = async (url, options = {}) => {
-    const request = { url, ...options };
+    const request = { url, ...options, startedAt: now };
     requests.push(request);
     if (request.method === 'POST') {
       request.payload = JSON.parse(request.body);
@@ -150,6 +150,7 @@ function setup({ post, get, formCount = 1 } = {}) {
     forms,
     requests,
     advance,
+    gets: () => requests.filter(request => request.method === 'GET'),
     posts: () => requests.filter(request => request.method === 'POST')
   };
 }
@@ -280,17 +281,118 @@ test('the deadline includes reading the POST body and releases loading state', a
     'A deadline must be explained separately from a network error.');
 });
 
-test('a stalled token response also has a deadline and never posts', async () => {
+test('a stalled token response retries once within the submission deadline and never posts', async () => {
   const app = setup({ get: () => ({ ok: true, status: 200, text: () => new Promise(() => {}) }) });
   app.forms[0].submit();
   await app.advance(10000);
   assert.match(app.forms[0].status.textContent, /Datele nu au fost încă trimise/);
   assert.equal(app.posts().length, 0);
   await app.advance(5000);
+  assert.equal(app.forms[0].results.length, 0, 'A cold start may still finish after 15 seconds.');
+  assert.equal(app.gets().length, 1);
+  await app.advance(10000);
+  assert.equal(app.gets()[0].signal.aborted, true);
+  assert.equal(app.forms[0].results.length, 0, 'The first token timeout is recoverable.');
+  await app.advance(500);
+  assert.equal(app.gets().length, 2);
+  await app.advance(24999);
+  assert.equal(app.forms[0].results.length, 0);
+  await app.advance(1);
   const detail = assertRecoverableError(app.forms[0]);
   assert.match(detail.message, /Datele nu au fost trimise/);
   assert.notEqual(detail.title, 'Trimitere neconfirmată');
+  assert.equal(app.gets()[1].signal.aborted, true);
   assert.equal(app.posts().length, 0);
+  await app.advance(120000);
+  assert.equal(app.gets().length, 2, 'A persistent failure cannot trigger an endless GET loop.');
+  assert.equal(app.forms[0].results.length, 1);
+});
+
+test('a failed focus prefetch recovers before sending the request exactly once', async () => {
+  const app = setup({
+    get: (_request, count, response) => count === 1
+      ? { ok: true, text: () => Promise.resolve('<html>Temporarily unavailable</html>') }
+      : response({ ok: true, token: 'fresh-after-prefetch-failure' })
+  });
+  const [form] = app.forms;
+  form.dispatchEvent({ type: 'focusin' });
+  await app.advance(10000);
+  assert.equal(app.gets().length, 1);
+  assert.equal(form.results.length, 0, 'Prefetch failures must not show an unsolicited popup.');
+  form.submit();
+  await app.advance();
+  assertResult(form, 'success');
+  assert.equal(app.gets().length, 2);
+  assert.equal(app.posts().length, 1);
+  assert.equal(app.posts()[0].payload.token, 'fresh-after-prefetch-failure');
+});
+
+test('a transient token service failure on immediate submit recovers safely', async t => {
+  const failures = {
+    html: () => ({ ok: true, text: () => Promise.resolve('<html>Unavailable</html>') }),
+    missingToken: response => response({ ok: true }),
+    http: () => ({ ok: false, status: 503, text: () => Promise.resolve('Unavailable') }),
+    network: () => Promise.reject(new TypeError('Failed to fetch'))
+  };
+  for (const [name, firstResponse] of Object.entries(failures)) {
+    await t.test(name, async () => {
+      const app = setup({
+        get: (_request, count, response) => count === 1
+          ? firstResponse(response)
+          : response({ ok: true, token: 'recovered-token' })
+      });
+      const [form] = app.forms;
+      form.submit();
+      await app.advance(499);
+      assert.equal(app.gets().length, 1, 'A transient failure waits briefly before retrying.');
+      assert.equal(app.posts().length, 0);
+      assert.equal(form.results.length, 0);
+      await app.advance(1301);
+      assertResult(form, 'success');
+      assert.equal(app.gets().length, 2);
+      assert.equal(app.posts().length, 1);
+      assert.equal(app.posts()[0].payload.token, 'recovered-token');
+      assert.ok(app.posts()[0].startedAt - app.gets()[1].startedAt >= 1300,
+        'A recovered token must also age before use.');
+    });
+  }
+});
+
+test('persistent token failure stops after two GETs and allows a deliberate retry', async () => {
+  let available = false;
+  const app = setup({
+    get: (_request, count, response) => available
+      ? response({ ok: true, token: `restored-token-${count}` })
+      : { ok: true, text: () => Promise.resolve('<html>Unavailable</html>') }
+  });
+  const [form] = app.forms;
+  form.submit();
+  await app.advance(120000);
+  const detail = assertRecoverableError(form);
+  assert.match(detail.message, /Serviciul formularului nu a răspuns corect/);
+  assert.equal(form.results.length, 1);
+  assert.equal(app.gets().length, 2);
+  assert.equal(app.posts().length, 0);
+  available = true;
+  form.submit();
+  await app.advance();
+  assertResult(form, 'success');
+  assert.equal(app.gets().length, 3);
+  assert.equal(app.posts().length, 1);
+});
+
+test('an immediate autofill submit waits for the token minimum age before POST', async () => {
+  const app = setup();
+  const [form] = app.forms;
+  form.submit();
+  await app.advance(1299);
+  assert.equal(app.gets().length, 1);
+  assert.equal(app.posts().length, 0);
+  assert.equal(form.results.length, 0);
+  await app.advance(1);
+  assertResult(form, 'success');
+  assert.equal(app.posts().length, 1);
+  assert.ok(app.posts()[0].startedAt - app.gets()[0].startedAt >= 1300);
 });
 
 test('a slow connection changes to awaiting confirmation only after the POST starts', async () => {

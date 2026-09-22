@@ -9,6 +9,7 @@
   const TOKEN_TIMEOUT_MS = 25000;
   const SUBMIT_TIMEOUT_MS = 60000;
   const TOKEN_MIN_AGE_MS = 1300;
+  const TOKEN_RETRY_DELAY_MS = 500;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} '’.\-]*$/u;
 
@@ -156,6 +157,7 @@
 
   function submitRequest(data, onPhase) {
     let tokenRetries = 0;
+    let connectionRetries = 0;
     const deadline = Date.now() + SUBMIT_TIMEOUT_MS;
     const remaining = () => {
       const ms = deadline - Date.now();
@@ -165,7 +167,14 @@
 
     async function attempt() {
       onPhase('connecting');
-      const tokenState = await tokens.take(Math.min(TOKEN_TIMEOUT_MS, remaining()));
+      let tokenState = await tokens.take(Math.min(TOKEN_TIMEOUT_MS, remaining()));
+      if (!tokenState.token && connectionRetries < 1) {
+        // Focus prefetch can fail before submission. A fresh GET is safe to retry:
+        // no personal data has been posted and no spreadsheet row was written.
+        connectionRetries += 1;
+        await delay(Math.min(TOKEN_RETRY_DELAY_MS, remaining()));
+        tokenState = await tokens.take(Math.min(TOKEN_TIMEOUT_MS, remaining()));
+      }
       if (!tokenState.token) throw tokenState.error || requestError('network');
       const waitForToken = Math.max(0, tokenState.readyAt - Date.now());
       if (waitForToken) await delay(Math.min(waitForToken, remaining()));
