@@ -953,7 +953,7 @@ i {
 
 /* S03: live text on the two leaves of the open invitation dossier. */
 .access-wrap {
-  --img-folio: url('assets/generated/open-invitation-folio.webp');
+  --img-folio: url('assets/generated/open-invitation-folio-aged-v2.webp');
   --folio-ink: #19212a;
   --folio-line: #57513c55;
   min-height: max(800px,100svh);
@@ -1416,11 +1416,13 @@ i {
   color: var(--paper-ink);
   color-scheme: light;
   border-color: #bc9e67;
-  /* Reuse only the blank paper at the center of the invitation's right page. */
+  /* Reuse the aged paper crop; faint edge wear keeps the dossier tactile. */
   background:
-    linear-gradient(#ead8b880,#ead8b880),
-    #ead8b8 url('assets/generated/open-invitation-folio.webp') 78% 48% / 400% 400% no-repeat;
-  box-shadow: 0 20px 70px #0003;
+    radial-gradient(ellipse at 0 8%,#8960341c,transparent 40%),
+    radial-gradient(ellipse at 100% 100%,#79522d21,transparent 46%),
+    linear-gradient(#ead8b833,#ead8b833),
+    #ead8b8 url('assets/generated/open-invitation-folio-aged-v2.webp') 78% 48% / 400% 400% no-repeat;
+  box-shadow: inset 0 0 28px #78552d1a, 0 20px 70px #0003;
 }
 
 .request-heading {
