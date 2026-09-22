@@ -1447,22 +1447,22 @@ i {
 .request-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  justify-content: flex-end;
   padding: 21px 36px;
   border-bottom: 1px solid var(--paper-line);
 }
 
-.request-heading .form-heading {
-  margin: 0;
-  color: var(--paper-ink);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: .2em;
+.request-reference {
+  position: relative;
+  display: grid;
+  align-items: center;
+  width: 160px;
+  min-height: 36px;
+  text-align: center;
 }
 
-.request-reference {
+.request-reference h3 {
+  margin: 0;
   color: var(--paper-muted);
   font: 11px/1.4 var(--mono);
   letter-spacing: .1em;
@@ -1472,6 +1472,23 @@ i {
   color: var(--paper-ink);
   font-weight: 400;
   margin-left: 8px;
+}
+
+.request-stamp {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 160px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 25px;
+  transform: translateY(-50%) rotate(-8deg);
+  pointer-events: none;
+}
+
+.request-stamp.is-ready {
+  color: #267044;
 }
 
 .request-fields,
@@ -2409,18 +2426,20 @@ i {
 @media(max-width:700px) {
   .request-heading {
     padding: 20px 22px;
-    gap: 10px 16px;
-  }
-  .request-heading .form-heading {
-    font-size: 14px;
-    letter-spacing: .16em;
   }
   .request-reference {
+    width: 136px;
+  }
+  .request-reference h3 {
     font-size: 10px;
     letter-spacing: .03em;
   }
   .request-reference b {
     margin-left: 4px;
+  }
+  .request-stamp {
+    width: 136px;
+    font-size: 21px;
   }
   .request-fields,
   .request-completion {

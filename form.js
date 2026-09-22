@@ -280,6 +280,15 @@
 
     const fullNameInput = form.elements.fullName;
     const signatureInput = form.elements.signature;
+    const requestStamp = form.querySelector('.request-stamp');
+    const syncRequestStamp = () => {
+      if (!requestStamp) return;
+      const data = values();
+      const ready = !rules.fullName(data.fullName) && !rules.email(data.email);
+      requestStamp.classList.toggle('is-ready', ready);
+      const label = ready ? 'ACCES' : 'CONFIDENȚIAL';
+      if (requestStamp.textContent !== label) requestStamp.textContent = label;
+    };
     const syncSignature = () => {
       if (!signatureInput) return;
       signatureInput.value = fullNameInput?.value || '';
@@ -287,6 +296,16 @@
     };
     fullNameInput?.addEventListener('input', syncSignature);
     syncSignature();
+    form.addEventListener('input', syncRequestStamp);
+    form.addEventListener('change', syncRequestStamp);
+    form.addEventListener('reset', () => {
+      window.setTimeout(() => {
+        syncSignature();
+        syncRequestStamp();
+      }, 0);
+    });
+    window.addEventListener('pageshow', syncRequestStamp);
+    syncRequestStamp();
 
     form.addEventListener('submit', event => {
       event.preventDefault();
