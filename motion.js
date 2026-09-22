@@ -9,7 +9,7 @@
 
   const doc = document;
   const root = doc.documentElement;
-  const HOLD_AFTER_READY = 2000; // requested dwell on the loading screen
+  const HOLD_AFTER_READY = 1000; // requested dwell on the loading screen
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
   /* Ce se preîncarcă nu mai e o listă de nume fixe (se rupea la fiecare
