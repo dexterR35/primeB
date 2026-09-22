@@ -1,6 +1,4 @@
-/* Adresa Secretă - loading screen, intro and scroll motion.
-   Everything here is opt-in: the rules only bite once the inline head script
-   has added .js-motion to <html>, so the page stays fully usable without JS. */
+
 
 :root {
   --ease-out: cubic-bezier(0.2, 0.65, 0.3, 1);
@@ -310,8 +308,6 @@ html.js-motion .handwritten[data-rev].is-in {
 }
 
 
-/* Hero copy drifts and fades as the first section takes over (JS-driven).
-   Only active once the page has actually been scrolled. */
 html.js-motion .hero.is-drift .hero-copy,
 html.js-motion .hero.is-drift .hero-art-notes {
   transform: translate3d(0, var(--py, 0px), 0);

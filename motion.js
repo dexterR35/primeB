@@ -1,9 +1,4 @@
-/* Adresa Secretă - loading screen, intro sequence and scroll reveals.
-   Order of operations:
-     1. mark the reveal targets while the loader still covers the page;
-     2. wait for the DOM, the fonts and the above-the-fold imagery;
-     3. hold the CONFIDENȚIAL screen 2 extra seconds so it can be read;
-     4. lift the loader, play the hero intro, then reveal on scroll. */
+
 (() => {
   'use strict';
 
@@ -12,8 +7,6 @@
   const HOLD_AFTER_READY = 1000; // requested dwell on the loading screen
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-  /* Ce se preîncarcă nu mai e o listă de nume fixe (se rupea la fiecare
-     redenumire de fișier), ci se citește din ce folosește chiar pagina. */
   const grain = 'assets/grain.svg';
 
   const layerImages = () =>
@@ -116,12 +109,8 @@
 
   /* -------------------------------------------------------------- reveal */
 
-  /* { selector, animația, decalajul între elementele grupului }
-     Decalajul se numără în interiorul secțiunii, nu pe toată pagina: al
-     treilea titlu de secțiune intră la fel de repede ca primul. */
-  const STEP = 120; // pasul comun între elementele unui grup (pașii 01-02-03)
-  /* at = de la ce milisecundă începe grupul, step = pasul dintre elementele
-     lui. Ambele se numără de la intrarea secțiunii în ecran. */
+
+  const STEP = 120; 
   const GROUPS = [
     { sel: '.hero-copy > *', kind: 'hero', step: 110 },
     { sel: '.hero-rail > *', kind: 'fade', step: 90 },
@@ -154,9 +143,7 @@
         if (node.hasAttribute('data-rev')) continue;
         const scope = scopeOf(node);
         const index = seen.get(scope) ?? 0;
-        /* Ce nu se randează deloc (display:none dintr-un media query, ex.
-           pasul 02 pe telefon) nu ocupă un rând în cascadă; ce e doar
-           visibility:hidden își păstrează locul, deci și ritmul. */
+       
         if (node.getClientRects().length) seen.set(scope, index + 1);
 
         node.setAttribute('data-rev', kind);
@@ -166,9 +153,7 @@
     }
   };
 
-  /* Once an element has arrived, every trace of the motion layer is removed
-     from it, so the page at rest is exactly the original markup and the
-     browser can go back to subpixel text rendering. */
+
   const settle = (node) =>
     setTimeout(() => {
       node.classList.remove('is-in');
@@ -181,12 +166,7 @@
     settle(node);
   };
 
-  /* Declanșarea se face cu IntersectionObserver: browserul anunță singur ce a
-     intrat în ecran, deci nu se măsoară nimic la fiecare scroll.
-     Pornirea e cu 7% înainte de marginea de jos, ca la varianta cu măsurători.
-     Nimic nu poate rămâne invizibil: ce a fost sărit (un salt la o ancoră) se
-     vede ca ieșit pe sus și intră imediat, iar ce e ascuns de un media query
-     (lățime și înălțime zero) e scos din așteptare pe loc. */
+
   const startReveals = () => {
     const targets = [...doc.querySelectorAll('[data-rev]')];
     if (!('IntersectionObserver' in window)) {
@@ -215,8 +195,7 @@
       { rootMargin: '0px 0px -7% 0px' }
     );
 
-    /* Ultimii 7% de pagină nu mai pot trece linia de pornire — footer-ul ar
-       rămâne invizibil. La capătul paginii intră tot ce a mai rămas. */
+
     const atEnd = () => {
       if (window.innerHeight + window.scrollY < (root.scrollHeight || 0) - 2) return;
       for (const node of [...pending]) take(node);
@@ -248,10 +227,7 @@
     const frame = () => {
       queued = false;
       const y = window.scrollY;
-      // No drift on phones: there the copy sits below the photograph as the
-      // section's main content, so fading it out while it is being read
-      // would be wrong. At the very top the drift is off as well, so the
-      // first screen renders exactly as designed, with no promoted layers.
+
       if (y <= 0 || window.innerWidth <= 1000) {
         clear();
         return;
@@ -281,10 +257,7 @@
 
   /* ------------------------------------------------- parallax pe secțiuni */
 
-  /* Mișcarea urmează scroll-ul, dar fără să coste cât un scroll listener
-     obișnuit: pozițiile se măsoară o dată (și la resize), observer-ul spune
-     care secțiuni sunt pe ecran, iar în frame se fac numai scrieri — nicio
-     citire de geometrie, deci niciun layout forțat. */
+
   const startParallax = () => {
     if (reduced) return;
     const sections = [...doc.querySelectorAll('[data-live-bg]')].map((el) => ({

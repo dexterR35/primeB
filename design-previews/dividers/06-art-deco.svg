@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="240" height="32" viewBox="0 0 240 32" fill="none" color="#c6a16a">
-  <g stroke="currentColor" stroke-width=".8" stroke-linejoin="miter">
-    <path d="M4 16h94m44 0h94" opacity=".55"/>
-    <path d="m120 7 6 9-6 9-6-9zm-11 3-4 6 4 6m22-12 4 6-4 6"/>
-    <path d="M22 19h63m70 0h63" opacity=".25"/>
-  </g>
-</svg>

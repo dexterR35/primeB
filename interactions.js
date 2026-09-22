@@ -1,4 +1,4 @@
-// Shared by the comparison page and the five standalone HTML exports.
+
 document.addEventListener('click', event => {
   const link = event.target.closest('.mobile-menu a');
   if (link) link.closest('details').open = false;

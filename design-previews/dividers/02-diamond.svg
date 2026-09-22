@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="240" height="32" viewBox="0 0 240 32" fill="none" color="#c6a16a">
-  <g stroke="currentColor" stroke-width=".8">
-    <path d="M4 16h97m38 0h97" opacity=".55"/>
-    <path d="m120 7 6 9-6 9-6-9z"/>
-  </g>
-  <circle cx="120" cy="16" r="1.2" fill="currentColor"/>
-  <circle cx="107" cy="16" r=".8" fill="currentColor" opacity=".75"/>
-  <circle cx="133" cy="16" r=".8" fill="currentColor" opacity=".75"/>
-</svg>
