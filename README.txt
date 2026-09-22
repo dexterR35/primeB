@@ -21,20 +21,10 @@ conexe) trebuie actualizate.
 
 2) ANALYTICS / TRACKING — doar GTM, cu ID DUMMY, gated de consimțământ
 -----------------------------------------------------------------------
-Singurul tracker prezent e Google Tag Manager (nu GA4/Meta/TikTok
-separat) — configurezi restul din interfața GTM, ca să nu numeri de
-două ori aceleași evenimente.
+ Google Tag Manager ()
 
   - GTM_ID = 'GTM-XXXXXXX' în cookie-consent.js (linia 8) — înlocuiește
     cu Container ID-ul real din Google Tag Manager.
-
-GTM NU se încarcă la deschiderea paginii. Codul din cookie-consent.js
-arată mai întâi un banner ("Accept" / "Refuz") și injectează scriptul
-GTM abia după ce utilizatorul apasă „Accept" (sau dacă a acceptat deja
-la o vizită anterioară, salvat în localStorage). Cât timp GTM_ID rămâne
-placeholder-ul de mai sus, funcția refuză să încarce scriptul chiar
-dacă utilizatorul acceptă — deci nu poți trimite date de test din
-greșeală cu ID-ul dummy.
 
 Bannerul (marcaj în index.html, aproape de </body>; stil în
 cookie-consent.css) refolosește fonturile și culorile site-ului
