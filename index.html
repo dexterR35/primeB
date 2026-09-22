@@ -1,6 +1,11 @@
 <!doctype html>
 <html lang="ro">
   <head>
+    <!-- Tracking: doar GTM, ca să nu risc dublă numărare (GA4/Meta/TikTok se
+         configurează din interfața GTM, nu mai sunt scripturi separate aici).
+         GTM se încarcă doar după consimțământ — vezi cookie-consent.js. ID
+         real în cookie-consent.js (GTM_ID), înlocuiește dummy-ul GTM-XXXXXXX. -->
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Adresa Secretă - Acces Doar Pe Bază De Invitație | Dosar 0216</title>
@@ -93,6 +98,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="motion.css" />
     <link rel="stylesheet" href="modal.css?v=20260922-1" />
+    <link rel="stylesheet" href="cookie-consent.css" />
 
     <script>
 
@@ -107,6 +113,7 @@
     <script src="modal.js?v=20260922-1" defer></script>
     <script src="form.js?v=20260922-2" defer></script>
     <script src="interactions.js" defer></script>
+    <script src="cookie-consent.js" defer></script>
 
     <script type="application/ld+json">
       {
@@ -366,5 +373,15 @@
       <p id="request-result-message" class="request-result-message"></p>
       <button class="request-result-action" type="button" data-result-close>Am înțeles</button>
     </dialog>
+    <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Consimțământ cookie-uri" hidden>
+      <div class="cookie-banner-copy">
+        <p class="cookie-banner-eyebrow">DOSAR NR. 0216</p>
+        <p class="cookie-banner-text">Folosim cookie-uri pentru a înțelege cum este folosit site-ul. Le activăm doar dacă accepți.</p>
+      </div>
+      <div class="cookie-banner-actions">
+        <button type="button" class="cookie-banner-decline" data-cookie-decline>Refuz</button>
+        <button type="button" class="cookie-banner-accept" data-cookie-accept>Accept</button>
+      </div>
+    </div>
   </body>
 </html>

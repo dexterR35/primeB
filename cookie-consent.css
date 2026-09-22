@@ -1,0 +1,99 @@
+/* Cookie consent banner — reuses the page's dark/gold palette and fonts. */
+.cookie-banner {
+  position: fixed;
+  z-index: 400;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  border: 1px solid var(--gold);
+  background: radial-gradient(ellipse at 0 0,#19303b88,transparent 72%),var(--ink-menu);
+  box-shadow: 0 24px 90px #0009,inset 0 0 0 3px #c6a16a0b;
+  transform: translateY(12px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s,transform .35s,visibility .35s step-end;
+}
+
+.cookie-banner.is-open {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: opacity .35s,transform .35s;
+}
+
+.cookie-banner-eyebrow {
+  margin: 0 0 6px;
+  font: 11px var(--mono);
+  letter-spacing: .08em;
+  color: var(--gold);
+}
+
+.cookie-banner-text {
+  margin: 0;
+  max-width: 46ch;
+  font: 15px/1.5 var(--body);
+  color: var(--muted);
+}
+
+.cookie-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.cookie-banner-decline {
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+  font: 13px var(--label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.cookie-banner-decline:hover {
+  color: var(--white);
+}
+
+.cookie-banner-accept {
+  min-height: 46px;
+  padding: 10px 24px;
+  border: 1px solid #bc2135;
+  background: var(--bg-primary);
+  color: var(--cream);
+  font: 500 15px/1.4 var(--body);
+  transition: filter .25s;
+}
+
+.cookie-banner-accept:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 560px) {
+  .cookie-banner {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 18px 18px 20px;
+  }
+  .cookie-banner-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner {
+    transition: opacity .15s;
+    transform: none;
+  }
+}
