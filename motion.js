@@ -131,7 +131,7 @@
     { sel: '.section-head .eyebrow', kind: 'up' },
     { sel: '.section-head h2', kind: 'up', at: 90 },
     { sel: '.section-head > p:not(.eyebrow)', kind: 'up', at: 160 },
-    { sel: '.section-head .red-rule', kind: 'rule', at: 220 },
+    { sel: '.section-head .access-rule', kind: 'rule', at: 220 },
     { sel: '.access-scene', kind: 'photo' },
     { sel: '.section-note > span', kind: 'fade', at: 120, step: STEP },
     { sel: '.access-note', kind: 'fade', at: 140, step: 140 },
