@@ -4,7 +4,7 @@
 (() => {
   'use strict';
 
-  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxiskFiTGyhbpWKNCFBYbpiC2coVF0Xfq9PBmxeK1LKYu-_cDpil415aj-m2-LFRQBp/exec';
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxwISrXZGOBVBnyG07jmH2VHpd1yF2O4YKKvyx9Rkcb0W5WsJSCyzQssMQWrlqJrbhi/exec';
   // Allow Apps Script cold starts, but bound the entire submission to one minute.
   const TOKEN_TIMEOUT_MS = 45000;
   const SUBMIT_TIMEOUT_MS = 60000;
