@@ -2007,6 +2007,10 @@ i {
   }
   .page-arrows {
     gap: 13px;
+    display: none !important;
+  }
+  .s1 .sec-foot a b,  .s1 .sec-foot a { 
+  display: none !important;
   }
   .page-arrows a {
     width: 34px;
