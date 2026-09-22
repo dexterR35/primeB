@@ -175,10 +175,14 @@ function validateSubmission_(body) {
    ====================================================================== */
 
 var SHEET_NAME = 'prime_2026_B';
+var SPREADSHEET_ID = '11JX3Xl-RZUaT-3BuVnLrnpIiTLdIvHOQKOnHpZsF760';
 var COLUMNS = ['Data', 'Nume complet', 'Email', 'Signature'];
 
 function getInboxSheet_() {
-  var spreadsheet = SpreadsheetApp.getActive();
+  // A deployed web app has no active spreadsheet, even when the script is bound.
+  if (!SPREADSHEET_ID) throw new Error('config');
+
+  var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   return spreadsheet.getSheetByName(SHEET_NAME) ||
     spreadsheet.insertSheet(SHEET_NAME, 0);
 }
@@ -291,8 +295,8 @@ function doPost(e) {
 
     return respond_({ ok: true });
   } catch (error) {
-    if (error && error.message === 'busy') {
-      return respond_({ ok: false, error: 'busy' });
+    if (error && (error.message === 'busy' || error.message === 'config')) {
+      return respond_({ ok: false, error: error.message });
     }
     console.error(
       'doPost failed: ' + (error && error.stack ? error.stack : error)

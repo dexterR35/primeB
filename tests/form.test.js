@@ -283,9 +283,44 @@ test('the deadline includes reading the POST body and releases loading state', a
 test('a stalled token response also has a deadline and never posts', async () => {
   const app = setup({ get: () => ({ ok: true, status: 200, text: () => new Promise(() => {}) }) });
   app.forms[0].submit();
-  await app.advance(120000);
-  assertRecoverableError(app.forms[0]);
+  await app.advance(10000);
+  assert.match(app.forms[0].status.textContent, /Datele nu au fost încă trimise/);
   assert.equal(app.posts().length, 0);
+  await app.advance(5000);
+  const detail = assertRecoverableError(app.forms[0]);
+  assert.match(detail.message, /Datele nu au fost trimise/);
+  assert.notEqual(detail.title, 'Trimitere neconfirmată');
+  assert.equal(app.posts().length, 0);
+});
+
+test('a slow connection changes to awaiting confirmation only after the POST starts', async () => {
+  let releaseToken;
+  const app = setup({
+    get: () => ({ ok: true, text: () => new Promise(resolve => { releaseToken = resolve; }) }),
+    post: () => ({ ok: true, text: () => new Promise(() => {}) })
+  });
+  const [form] = app.forms;
+  form.submit();
+  await app.advance(10000);
+  assert.match(form.status.textContent, /Datele nu au fost încă trimise/);
+  assert.equal(app.posts().length, 0);
+  releaseToken(JSON.stringify({ ok: true, token: 'delayed-token' }));
+  await app.advance(1300);
+  assert.equal(app.posts().length, 1);
+  assert.match(form.status.textContent, /confirmarea înregistrării/);
+  await app.advance(60000);
+  const detail = assertRecoverableError(form);
+  assert.equal(detail.title, 'Trimitere neconfirmată');
+  assert.match(detail.message, /poate fi deja înregistrată/);
+});
+
+test('a missing backend configuration shows unavailable without retrying', async () => {
+  const app = setup({ post: (_request, _count, response) => response({ ok: false, error: 'config' }) });
+  app.forms[0].submit();
+  await app.advance();
+  const detail = assertRecoverableError(app.forms[0]);
+  assert.match(detail.message, /nu este disponibil/);
+  assert.equal(app.posts().length, 1);
 });
 
 test('additional submits while a request is pending do not send duplicate requests', async () => {

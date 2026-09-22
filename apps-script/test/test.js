@@ -7,6 +7,7 @@ const vm = require('vm');
 const properties = new Map();
 const cache = new Map();
 const rows = [];
+const expectedSpreadsheetId = '11JX3Xl-RZUaT-3BuVnLrnpIiTLdIvHOQKOnHpZsF760';
 
 function makeRange(row, column, rowCount, columnCount) {
   return {
@@ -45,6 +46,7 @@ const sheet = {
 };
 
 const spreadsheet = {
+  getId: () => expectedSpreadsheetId,
   tabs: {},
   inserted: [],
   getSheetByName(name) {
@@ -56,6 +58,8 @@ const spreadsheet = {
     return sheet;
   }
 };
+
+const openedSpreadsheetIds = [];
 
 const sandbox = {
   console,
@@ -106,7 +110,14 @@ const sandbox = {
     })
   },
   SpreadsheetApp: {
-    getActive: () => spreadsheet,
+    getActive() {
+      throw new Error('Web app execution has no active spreadsheet.');
+    },
+    openById(id) {
+      openedSpreadsheetIds.push(id);
+      assert.strictEqual(id, spreadsheet.getId(), 'unexpected spreadsheet destination');
+      return spreadsheet;
+    },
     flush() {}
   }
 };
@@ -140,16 +151,22 @@ function post(overrides = {}) {
 }
 
 sandbox.RATE_MAX = 100000;
+// Stale properties must never redirect requests away from the verified destination.
+properties.set('SPREADSHEET_ID', 'different-spreadsheet');
 sandbox.setup();
 
+assert.strictEqual(sandbox.SPREADSHEET_ID, expectedSpreadsheetId);
 assert(spreadsheet.tabs.prime_2026_B, 'target tab was not created');
 assert.strictEqual(
   JSON.stringify(rows[0]),
   JSON.stringify(['Data', 'Nume complet', 'Email', 'Signature'])
 );
 
+// Web app requests must work without an active container and use the explicit ID.
+const opensBeforeRequest = openedSpreadsheetIds.length;
 const ok = post({ email: 'ana@example.com' });
 assert.strictEqual(ok.ok, true);
+assert.strictEqual(openedSpreadsheetIds.length, opensBeforeRequest + 1);
 assert.strictEqual(
   JSON.stringify(rows[1]),
   JSON.stringify([
@@ -176,6 +193,20 @@ assert.strictEqual(rows.length, beforeHoneypot);
 const token = freshToken();
 assert.strictEqual(post({ email: 'one@example.com', token }).ok, true);
 assert.strictEqual(post({ email: 'two@example.com', token }).error, 'token');
+
+// Setup uses the same explicit destination without relying on an active container.
+assert.doesNotThrow(() => sandbox.setup());
+assert.strictEqual(sandbox.SPREADSHEET_ID, expectedSpreadsheetId);
+
+// Missing configuration is explicit, and must never fall back to an active sheet.
+const beforeMissingConfig = rows.length;
+const opensBeforeMissingConfig = openedSpreadsheetIds.length;
+sandbox.SPREADSHEET_ID = '';
+assert.strictEqual(post().error, 'config');
+assert.strictEqual(rows.length, beforeMissingConfig);
+assert.strictEqual(openedSpreadsheetIds.length, opensBeforeMissingConfig);
+assert.throws(() => sandbox.setup(), /config/);
+sandbox.SPREADSHEET_ID = expectedSpreadsheetId;
 
 assert.doesNotThrow(() =>
   sandbox.writeRow({

@@ -11,7 +11,7 @@ const PORT = 8767;
 const ROOT = path.resolve(__dirname, '..');
 const FIXTURE_PATH = '/__fixture/form';
 const FIXTURE_URL = `http://${HOST}:${PORT}${FIXTURE_PATH}`;
-const PRODUCTION_DECLARATION = "const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxiskFiTGyhbpWKNCFBYbpiC2coVF0Xfq9PBmxeK1LKYu-_cDpil415aj-m2-LFRQBp/exec';";
+const PRODUCTION_DECLARATION = /^  const ENDPOINT = 'https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec';$/gm;
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -123,11 +123,11 @@ const server = http.createServer(async (req, res) => {
     let content = await fs.readFile(filePath);
     if (path.relative(ROOT, filePath) === 'form.js') {
       const source = content.toString('utf8');
-      if (source.split(PRODUCTION_DECLARATION).length !== 2) {
+      if ([...source.matchAll(PRODUCTION_DECLARATION)].length !== 1) {
         reply(res, 503, '// Fixture refused form.js: expected ENDPOINT declaration changed.', 'text/javascript; charset=utf-8');
         return;
       }
-      content = Buffer.from(source.replace(PRODUCTION_DECLARATION, `const ENDPOINT = '${FIXTURE_URL}';`));
+      content = Buffer.from(source.replace(PRODUCTION_DECLARATION, `  const ENDPOINT = '${FIXTURE_URL}';`));
     }
     res.writeHead(200, {
       'Content-Type': MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
