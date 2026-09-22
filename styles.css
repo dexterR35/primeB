@@ -75,6 +75,7 @@
   --line: rgba(198,161,106,.73);
   --line-soft: rgba(198,161,106,.37);
   --frame: 20px;
+  --index-rail-width: clamp(94px,7.9vw,150px);
   --img-grain: url('assets/grain.svg');
   --line-loader: #c6a16a66;
   --line-track: #c6a16a33;
@@ -398,8 +399,9 @@ i {
   align-items: center;
   gap: 35px;
   padding: 0 3.7vw;
+  backdrop-filter: blur(1.5px);
   border-bottom: 1px solid var(--line-soft);
-  background: var(--bg-nav);
+  /* background: var(--bg-nav); */
   box-shadow: 0 20px 40px -12px var(--shadow-section);
 }
 
@@ -571,7 +573,7 @@ i {
   right: 2vw;
   min-height: 54px;
   padding-top: 10px;
-  border-top: 1px solid var(--line);
+  /* border-top: 1px solid var(--line); */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -602,7 +604,7 @@ i {
   left: 0;
   top: 0;
   bottom: 72px;
-  width: clamp(94px,7.9vw,150px);
+  width: var(--index-rail-width);
   border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
@@ -722,7 +724,6 @@ i {
   right: 2vw;
   min-height: 54px;
   padding: 10px 0 0;
-  border-top: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -732,6 +733,22 @@ i {
   letter-spacing: .1em;
 }
 
+.sec-foot>span {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: clamp(10px,2vw,30px);
+}
+
+.sec-foot>span:after {
+  content: "";
+  flex: 1 0 20px;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(.9);
+}
+
 .sec-foot>a {
   display: flex;
   align-items: center;
@@ -739,7 +756,7 @@ i {
 }
 
 .sec-foot b {
-  font: 300 46px/.6 var(--body);
+  font: 300 43px/1 var(--body);
 }
 
 .page-arrows {
@@ -747,8 +764,9 @@ i {
   align-items: center;
   gap: 26px;
   white-space: nowrap;
-  font: 400 14px/1 var(--body);
-  letter-spacing: .12em;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
 }
 
 .page-arrows a {
@@ -827,23 +845,13 @@ i {
 }
 
 .s2 {
-  --s2-rail: clamp(94px,7.9vw,150px);
   display: flex;
   flex-direction: column;
-  padding: 26px 2vw 98px calc(var(--s2-rail) + 12px);
+  padding: 26px 2vw 98px calc(var(--index-rail-width) + 12px);
 }
 
 .s2:after {
   display: none;
-}
-
-.s2 .index-rail {
-  top: 0;
-  left: 0;
-  bottom: 72px;
-  width: var(--s2-rail);
-  padding: 30px 0 0 1.7vw;
-  border-color: var(--line);
 }
 
 .s2 .sec-tag {
@@ -910,8 +918,6 @@ i {
   align-items: end;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--ink-page);
   text-align: left;
 }
 
@@ -920,14 +926,12 @@ i {
   inset: 0 0 80px;
   z-index: -1;
   overflow: hidden;
-}
-
-.item-image:after {
-  content: "";
-  position: absolute;
-  inset: 70% 0 -1px;
-  background: linear-gradient(180deg,transparent,var(--ink-page));
-  pointer-events: none;
+  /* Fade the artwork into the section while keeping the copy crisp. */
+  mask-image:
+    linear-gradient(90deg,transparent,#0006 5%,#000 18%,#000 82%,#0006 95%,transparent),
+    linear-gradient(180deg,transparent,#0008 7%,#000 18%,#000 62%,#0008 82%,transparent);
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
 }
 
 .item img {
@@ -953,7 +957,6 @@ i {
   left: 8px;
   min-width: 50px;
   padding: 6px 10px 9px;
-  background: var(--ink-page);
   color: var(--gold);
   font: 400 clamp(22px,1.65vw,30px)/1 var(--serif);
   text-align: center;
@@ -971,26 +974,6 @@ i {
   line-height: 1.4;
 }
 
-.s2 .sec-foot {
-  left: 2vw;
-  right: 2vw;
-  bottom: 18px;
-  min-height: 54px;
-  padding: 10px 0 0;
-  border-top: 1px solid var(--line);
-  color: var(--gold);
-  font-size: 12px;
-  letter-spacing: .2em;
-}
-
-.s2 .sec-foot>span {
-  padding-left: 5px;
-}
-
-.s2 .page-arrows {
-  color: var(--gold);
-}
-
 /* S03: live text on the two leaves of the open invitation dossier. */
 .access-wrap {
   --img-folio: url('assets/generated/open-invitation-folio.webp');
@@ -998,10 +981,6 @@ i {
   --folio-line: #57513c55;
   min-height: max(800px,100svh);
   padding: 36px 2.5vw 105px;
-}
-
-.access-wrap .index-rail {
-  width: clamp(72px,6.2vw,110px);
 }
 
 .access-wrap .sec-tag {
@@ -1135,12 +1114,14 @@ i {
 
 .access-grid dd {
   margin: 0;
+  color: #0e1010;
   font: 500 clamp(16px,1.65cqw,31px)/1.25 var(--body);
 }
 
 .access-bottom {
   margin-top: 1.7cqw;
-  font: 400 clamp(13px,1.25cqw,24px)/1.5 var(--serif);
+  color: #0e1010;
+  font: 400 clamp(17px,1.7cqw,32px)/1.3 ASSignature,Georgia,serif;
 }
 
 .access-stamp {
@@ -1165,15 +1146,6 @@ i {
   height: 2px;
   background: var(--red);
   margin: 18px auto 0;
-}
-
-.access-wrap .sec-foot {
-  left: 3vw;
-  right: 3vw;
-  bottom: 28px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line-soft);
-  font-size: 12px;
 }
 
 .s3 {
@@ -1239,33 +1211,6 @@ i {
   margin-top: 20px;
 }
 
-.s3 .sec-foot {
-  color: var(--white);
-  font-family: var(--serif);
-  letter-spacing: .01em;
-  font-size: 17px;
-}
-
-.s3 .sec-foot>span {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex: 1;
-}
-
-.s3 .sec-foot>span:after {
-  content: "";
-  height: 1px;
-  background: var(--line-soft);
-  flex: 1;
-}
-
-.s3 .page-arrows {
-  min-width: 260px;
-  justify-content: space-between;
-  color: var(--gold);
-}
-
 .apply {
   padding: 82px 5vw 158px max(170px,12vw);
   min-height: max(850px,100svh);
@@ -1279,7 +1224,6 @@ i {
 
 .apply .index-rail {
   bottom: 117px;
-  width: 130px;
 }
 
 .apply .sec-tag {
@@ -1483,7 +1427,7 @@ i {
 
 /* The page form is a horizontal access dossier; shared field styles also serve the modal. */
 .apply .request-dossier {
-  --paper-ink: #292e2f;
+  --paper-ink: #0e1010;
   --paper-muted: #595448;
   --paper-line: #65583d55;
   --paper-focus: #705626;
@@ -1514,6 +1458,7 @@ i {
   margin: 0;
   color: var(--paper-ink);
   font-size: 16px;
+  font-weight: 600;
   letter-spacing: .2em;
 }
 
@@ -1544,12 +1489,13 @@ i {
 
 .request-dossier label {
   font-size: 15px;
+  font-weight: 600;
 }
 
 .field-number {
   margin-right: 12px;
   color: var(--paper-muted);
-  font: 11px/1 var(--mono);
+  font: 700 11px/1 var(--mono);
 }
 
 .request-dossier input {
@@ -1560,6 +1506,7 @@ i {
   background: transparent;
   color: var(--paper-ink);
   font-size: 22px;
+  font-weight: 700;
   box-shadow: none;
 }
 
@@ -1577,7 +1524,7 @@ i {
 }
 
 .request-completion {
-  border-top: 1px solid var(--paper-line);
+  /* border-top: 1px solid var(--paper-line); */
   background: #5b442c06;
   align-items: center;
   padding-block: 26px 30px;
@@ -1585,7 +1532,7 @@ i {
 
 .request-signature label {
   color: var(--paper-ink);
-  font: 13px/1.4 var(--label);
+  font: 600 13px/1.4 var(--label);
   text-transform: uppercase;
   letter-spacing: .16em;
 }
@@ -1594,9 +1541,15 @@ i {
   height: 51px;
   color: var(--paper-ink);
   background: transparent;
-  font: 400 36px/1 ASSignature,Georgia,serif;
+  font: 600 36px/1 ASSignature,Georgia,serif;
   padding: 2px 0 6px;
   border-bottom-color: var(--paper-line);
+}
+
+.request-signature input:disabled:not(:placeholder-shown) {
+  color: #941d2b;
+  -webkit-text-fill-color: #941d2b;
+  text-shadow: .5px .5px 0 #b78a4b;
 }
 
 .request-signature input::placeholder {
@@ -1738,6 +1691,7 @@ i {
 @media(max-width:1250px) and (min-width:1001px) {
   :root {
     --frame: 16px;
+    --index-rail-width: 77px;
   }
   .site-nav {
     padding-inline: 20px;
@@ -1761,7 +1715,6 @@ i {
     font-size: 6vw;
   }
   .index-rail {
-    width: 77px;
     padding-left: 15px;
   }
   .index-rail b {
@@ -1800,9 +1753,6 @@ i {
   }
   .apply {
     padding-left: 125px;
-  }
-  .apply .index-rail {
-    width: 85px;
   }
   .access-form {
     padding: 25px;
@@ -2056,7 +2006,7 @@ i {
     padding: 10px 0 0!important;
     font-size: 10px;
     line-height: 1.5;
-    gap: 20px;
+    gap: 12px;
     letter-spacing: .04em;
   }
   .sec-foot>a {
@@ -2064,12 +2014,10 @@ i {
     text-align: right;
   }
   .sec-foot b {
-    font-size: 35px;
+    font-size: 31px;
   }
   .page-arrows {
     gap: 13px;
-    font-size: 11px;
-    letter-spacing: .07em;
   }
   .page-arrows a {
     width: 34px;
@@ -2115,9 +2063,6 @@ i {
   }
   .s1-story .access-rule {
     margin-top: 25px;
-  }
-  .s1 .sec-foot {
-    align-items: flex-end;
   }
   .s2 {
     padding: 42px 30px 28px;
@@ -2174,17 +2119,6 @@ i {
   .item p br {
     display: none;
   }
-  .s2 .sec-foot {
-    padding-top: 14px!important;
-    margin-top: 30px;
-    gap: 10px;
-    font-size: 10px;
-    letter-spacing: .1em;
-  }
-  .s2 .sec-foot>span {
-    padding-left: 0;
-    max-width: 150px;
-  }
   .access-wrap {
     min-height: 0;
     padding: 42px 24px 30px;
@@ -2214,11 +2148,6 @@ i {
   .access-quote {
     max-width: 620px;
     font-size: 26px;
-  }
-  .access-wrap .sec-foot {
-    padding-top: 14px!important;
-    margin-top: 28px;
-    font-size: 10px;
   }
   .s3 {
     padding: 42px 30px 29px;
@@ -2261,17 +2190,6 @@ i {
     font-size: 11px;
     letter-spacing: .12em;
     margin-top: 16px;
-  }
-  .s3 .sec-foot {
-    font-size: 12px;
-    margin-top: 36px;
-  }
-  .s3 .sec-foot>span:after {
-    display: none;
-  }
-  .s3 .page-arrows {
-    min-width: 0;
-    gap: 10px;
   }
   .apply {
     padding: 42px 30px 27px;
@@ -2459,8 +2377,7 @@ i {
   }
   .access-bottom {
     margin-top: 23px;
-    font-size: 17px;
-    line-height: 1.5;
+    font-size: clamp(22px,5.8cqw,27px);
   }
   .access-quote {
     max-width: 450px;
