@@ -1,6 +1,5 @@
 /* Adresa Secretă — modalul de acces.
-   Butoanele roșii „VREAU SĂ AFLU" deschid modalul în loc să coboare la
-   formularul din josul paginii (care rămâne acolo, neschimbat).
+   CTA-urile, cardurile și dosarul deschid același formular de acces.
    Modalul se închide DOAR din butonul ÎNCHIDE: nici clicul pe fundal,
    nici Escape nu îl închid. */
 (() => {
@@ -10,6 +9,7 @@
   const modal = doc.getElementById('acces-modal');
   if (!modal) return;
 
+  const resultDialog = doc.getElementById('request-result');
   const closeBtn = modal.querySelector('.modal-close');
   const firstField = modal.querySelector('input:not([tabindex="-1"])');
   let opener = null; // butonul de unde s-a deschis, ca să-i redăm focusul
@@ -54,9 +54,9 @@
     modal.addEventListener('transitionend', onEnd);
   };
 
-  /* Butoanele roșii care duceau la #contact deschid acum modalul.
-     Link-urile de navigație „Contact" continuă să coboare la secțiune. */
+  /* Native links keep their #contact fallback and modified-click behavior. */
   doc.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const target = e.target instanceof Element ? e.target : null;
     const trigger = target?.closest('a.primary[href="#contact"], [data-modal="acces"]');
     if (trigger) {
@@ -70,9 +70,59 @@
      close() rula de două ori la fiecare clic, cu două cronometre în paralel. */
   closeBtn?.addEventListener('click', close);
 
+  /* Același rezultat este afișat pentru formularul din pagină și cel din modal.
+     Dialogul nativ gestionează focusul și face restul paginii inactiv temporar. */
+  if (resultDialog instanceof HTMLDialogElement) {
+    const resultTitle = resultDialog.querySelector('#request-result-title');
+    const resultMessage = resultDialog.querySelector('#request-result-message');
+    const resultIcon = resultDialog.querySelector('.request-result-icon');
+    let resultFocusTarget = null;
+
+    doc.addEventListener('access:result', (event) => {
+      const form = event.target;
+      const detail = event.detail;
+      if (!(form instanceof HTMLFormElement) || !form.matches('.access-form')) return;
+      if (!detail || !['success', 'error'].includes(detail.kind)) return;
+      if (typeof detail.title !== 'string' || typeof detail.message !== 'string') return;
+
+      resultDialog.dataset.kind = detail.kind;
+      resultTitle.textContent = detail.title;
+      resultMessage.textContent = detail.message;
+      resultIcon.textContent = detail.kind === 'success' ? '✓' : '!';
+      resultFocusTarget = detail.focusTarget instanceof HTMLElement
+        ? detail.focusTarget
+        : form.querySelector('button[type="submit"]');
+
+      if (!resultDialog.open) resultDialog.showModal();
+      doc.documentElement.classList.add('result-open');
+      resultDialog.scrollTop = 0;
+      resultTitle.focus({ preventScroll: true });
+    });
+
+    resultDialog.querySelectorAll('[data-result-close]').forEach((button) => {
+      button.addEventListener('click', () => resultDialog.close());
+    });
+    resultDialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      resultDialog.close();
+    });
+    resultDialog.addEventListener('close', () => {
+      // Un rezultat nou poate fi deschis înaintea acestui eveniment asincron.
+      if (resultDialog.open) return;
+      doc.documentElement.classList.remove('result-open');
+      const target = resultFocusTarget;
+      resultFocusTarget = null;
+      if (target?.isConnected && !target.disabled && target.getClientRects().length) {
+        target.focus({ preventScroll: true });
+      } else if (!modal.hidden) {
+        (firstField ?? closeBtn)?.focus({ preventScroll: true });
+      }
+    });
+  }
+
   /* Focusul rămâne în modal cât timp e deschis. */
   doc.addEventListener('keydown', (e) => {
-    if (modal.hidden || e.key !== 'Tab') return;
+    if (modal.hidden || resultDialog?.open || e.key !== 'Tab') return;
     const items = focusable();
     if (!items.length) return;
 

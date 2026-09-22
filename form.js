@@ -5,16 +5,17 @@
   'use strict';
 
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxiskFiTGyhbpWKNCFBYbpiC2coVF0Xfq9PBmxeK1LKYu-_cDpil415aj-m2-LFRQBp/exec';
-  // Apps Script poate avea un cold start de peste 20 s. Nu întrerupem
-  // prematur requestul și nu raportăm greșit timeout-ul drept lipsă de internet.
+  // Allow Apps Script cold starts, but bound the entire submission to one minute.
   const TOKEN_TIMEOUT_MS = 45000;
   const SUBMIT_TIMEOUT_MS = 60000;
+  const TOKEN_MIN_AGE_MS = 1300;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} '’.\-]*$/u;
 
   const ERRORS = {
     config:
-      'Formularul nu este încă legat la Google Sheets. Configurează URL-ul Apps Script.',
+      'Formularul nu este disponibil momentan. Te rugăm să revii mai târziu.',
+    validation: 'Te rugăm să corectezi câmpurile marcate și să trimiți din nou.',
     invalid_name: 'Numele nu pare valid. Folosește doar litere.',
     invalid_email: 'Adresa de email nu pare validă.',
     invalid_signature: 'Semnătura nu pare validă. Scrie-ți numele complet.',
@@ -23,34 +24,42 @@
     busy: 'Primim multe cereri acum. Te rugăm să revii în câteva minute.',
     server: 'Ceva nu a funcționat. Te rugăm să încerci din nou.',
     endpoint:
-      'Serviciul formularului nu a răspuns corect. Verifică deployment-ul Apps Script.',
-    network: 'Nu am putut contacta serviciul formularului. Încearcă din nou.'
+      'Serviciul formularului nu a răspuns corect. Te rugăm să revii mai târziu.',
+    timeout: 'Nu am primit confirmarea la timp. Te rugăm să încerci din nou peste câteva minute.',
+    unconfirmed: 'Conexiunea s-a întrerupt înainte de confirmare. Cererea poate fi deja înregistrată. Dacă reîncerci și adresa apare ca folosită, solicitarea există deja.',
+    network: 'Nu am putut contacta serviciul formularului. Verifică conexiunea și încearcă din nou.'
   };
 
-  function fetchWithTimeout(url, options, timeoutMs) {
+  function requestError(code) {
+    const error = new Error(code);
+    error.code = code;
+    return error;
+  }
+
+  async function fetchJsonWithTimeout(url, options, timeoutMs) {
     const controller =
       typeof AbortController !== 'undefined' ? new AbortController() : null;
     let timer;
 
-    if (controller) options.signal = controller.signal;
-
-    return new Promise((resolve, reject) => {
-      timer = window.setTimeout(() => {
-        controller?.abort();
-        reject(new Error('timeout'));
-      }, timeoutMs);
-
-      fetch(url, options).then(resolve, reject);
-    }).then(
-      response => {
-        window.clearTimeout(timer);
-        return response;
-      },
-      error => {
-        window.clearTimeout(timer);
-        throw error;
-      }
-    );
+    try {
+      // The deadline covers headers AND the body: response.text() can also stall.
+      return await Promise.race([
+        Promise.resolve()
+          .then(() => fetch(url, { ...options, ...(controller ? { signal: controller.signal } : {}) }))
+          .then(response => {
+            if (response.ok === false) throw requestError('server');
+            return readJson(response);
+          }),
+        new Promise((resolve, reject) => {
+          timer = window.setTimeout(() => {
+            reject(requestError('timeout'));
+            controller?.abort();
+          }, timeoutMs);
+        })
+      ]);
+    } finally {
+      window.clearTimeout(timer);
+    }
   }
 
   function delay(ms) {
@@ -60,7 +69,12 @@
   function readJson(response) {
     return response.text().then(text => {
       try {
-        return JSON.parse(text);
+        const data = JSON.parse(text);
+        if (!data || typeof data.ok !== 'boolean' ||
+            (!data.ok && typeof data.error !== 'string')) {
+          throw new Error('invalid_response');
+        }
+        return data;
       } catch (parseError) {
         const error = new Error('invalid_response');
         error.code = 'endpoint';
@@ -72,10 +86,10 @@
   const tokens = (() => {
     let pending = null;
 
-    function refresh() {
+    function refresh(timeoutMs = TOKEN_TIMEOUT_MS) {
       if (!ENDPOINT) return null;
 
-      pending = fetchWithTimeout(
+      pending = fetchJsonWithTimeout(
         `${ENDPOINT}?action=token`,
         {
           method: 'GET',
@@ -84,11 +98,13 @@
           credentials: 'omit',
           cache: 'no-store'
         },
-        TOKEN_TIMEOUT_MS
+        timeoutMs
       )
-        .then(readJson)
         .then(data => {
-          if (data?.ok && data.token) return { token: data.token, error: null };
+          if (data?.ok && typeof data.token === 'string' && data.token) {
+            // The server rejects tokens younger than 1200 ms, including autofill submits.
+            return { token: data.token, readyAt: Date.now() + TOKEN_MIN_AGE_MS, error: null };
+          }
           const error = new Error('invalid_token_response');
           error.code = 'endpoint';
           return { token: '', error };
@@ -102,22 +118,17 @@
       prime() {
         if (!pending) refresh();
       },
-      take() {
-        // Dacă prime() nu a apucat să ruleze (autocomplete fără focus, de
-        // exemplu), cerem un token acum și îl consumăm pe ACELA. Înainte,
-        // `current || pending` întorcea tokenul proaspăt fără să-l scoată din
-        // pending, deci aceeași valoare pleca și la trimiterea următoare —
-        // a doua oară serverul o refuza, fiind deja consumată.
-        const current = pending || refresh();
+      take(timeoutMs) {
+        // Consume each token once. Fetch another only when another attempt needs it.
+        const current = pending || refresh(timeoutMs);
         pending = null;
-        refresh();
         return current || Promise.resolve({ token: '', error: null });
       }
     };
   })();
 
-  function sendRequest(token, data) {
-    return fetchWithTimeout(
+  function sendRequest(token, data, timeoutMs) {
+    return fetchJsonWithTimeout(
       ENDPOINT,
       {
         method: 'POST',
@@ -133,52 +144,36 @@
           token
         })
       },
-      SUBMIT_TIMEOUT_MS
-    ).then(readJson);
+      timeoutMs
+    ).catch(error => {
+      // A lost POST response cannot tell us whether the server already wrote the row.
+      error.code = error.code === 'timeout' ? 'timeout' : 'unconfirmed';
+      error.requestSent = true;
+      throw error;
+    });
   }
 
   function submitRequest(data) {
     let tokenRetries = 0;
-    let busyRetries = 0;
-    let networkRetries = 0;
-    let ambiguousRetry = false;
+    const deadline = Date.now() + SUBMIT_TIMEOUT_MS;
+    const remaining = () => {
+      const ms = deadline - Date.now();
+      if (ms <= 0) throw requestError('timeout');
+      return ms;
+    };
 
-    function attempt() {
-      return tokens
-        .take()
-        .then(tokenState => {
-          if (!tokenState.token) {
-            throw tokenState.error || new Error('token_fetch');
-          }
-          return sendRequest(tokenState.token, data);
-        })
-        .then(
-          result => {
-            if (result?.ok) return result;
-
-            const code = result?.error || 'server';
-            // Dacă răspunsul primei încercări s-a pierdut după scriere,
-            // duplicate la retry înseamnă că cererea a ajuns cu succes.
-            if (code === 'duplicate' && ambiguousRetry) return { ok: true };
-            if (code === 'token' && tokenRetries < 1) {
-              tokenRetries += 1;
-              return delay(1600).then(attempt);
-            }
-            if (code === 'busy' && busyRetries < 1) {
-              busyRetries += 1;
-              return delay(1200).then(attempt);
-            }
-            return result;
-          },
-          error => {
-            if (networkRetries < 1) {
-              networkRetries += 1;
-              ambiguousRetry = true;
-              return delay(1200).then(attempt);
-            }
-            throw error;
-          }
-        );
+    async function attempt() {
+      const tokenState = await tokens.take(Math.min(TOKEN_TIMEOUT_MS, remaining()));
+      if (!tokenState.token) throw tokenState.error || requestError('network');
+      const waitForToken = Math.max(0, tokenState.readyAt - Date.now());
+      if (waitForToken) await delay(Math.min(waitForToken, remaining()));
+      const result = await sendRequest(tokenState.token, data, remaining());
+      // Only a rejected token is safe to retry automatically: no row was written.
+      if (result.error === 'token' && tokenRetries < 1) {
+        tokenRetries += 1;
+        return attempt();
+      }
+      return result;
     }
 
     return attempt();
@@ -199,6 +194,7 @@
     const success = form.querySelector('.success');
     const submitLabel = submitButton?.textContent || '';
     let submitting = false;
+    let slowTimer;
 
     const rules = {
       fullName: value =>
@@ -243,20 +239,41 @@
       error.hidden = !message;
     }
 
-    function fail(code) {
+    function finishSubmitting(sent = false) {
       submitting = false;
-      if (status) status.textContent = ERRORS[code] || ERRORS.server;
+      window.clearTimeout(slowTimer);
+      form.removeAttribute('aria-busy');
       if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = submitLabel;
+        submitButton.disabled = sent;
+        submitButton.textContent = sent ? 'CERERE TRIMISĂ' : submitLabel;
       }
+    }
+
+    function notify(kind, title, message, focusTarget) {
+      form.dispatchEvent(new CustomEvent('access:result', {
+        bubbles: true,
+        detail: { kind, title, message, focusTarget }
+      }));
+    }
+
+    function fail(code, focusTarget = submitButton, message = ERRORS[code] || ERRORS.server) {
+      finishSubmitting();
+      if (status) status.textContent = message;
+      const title = code === 'validation' ? 'Verifică datele completate' :
+        code === 'duplicate' ? 'Există deja o cerere' :
+        code === 'timeout' || code === 'unconfirmed' ? 'Trimitere neconfirmată' :
+        'Cererea nu a fost trimisă';
+      notify('error', title, message, focusTarget);
     }
 
     function showSuccess() {
       form.classList.add('sent');
-      if (success) {
-        success.focus({ preventScroll: true });
-      }
+      finishSubmitting(true);
+      if (status) status.textContent = '';
+      success?.focus({ preventScroll: true });
+      notify('success', 'Cererea a fost trimisă',
+        'Am primit cererea ta. O vom analiza personal și te vom contacta discret, la adresa de e-mail indicată.',
+        success || submitButton);
     }
 
     form.addEventListener(
@@ -300,6 +317,11 @@
     form.addEventListener('change', syncRequestStamp);
     form.addEventListener('reset', () => {
       window.setTimeout(() => {
+        if (!submitting) {
+          form.classList.remove('sent');
+          finishSubmitting();
+          if (status) status.textContent = '';
+        }
         syncSignature();
         syncRequestStamp();
       }, 0);
@@ -309,7 +331,7 @@
 
     form.addEventListener('submit', event => {
       event.preventDefault();
-      if (submitting) return;
+      if (submitting || form.classList.contains('sent')) return;
 
       const honeypot = form.elements.company;
       if (honeypot?.value) {
@@ -317,6 +339,7 @@
         return;
       }
 
+      syncSignature();
       const data = values();
       let firstInvalid = '';
 
@@ -327,8 +350,7 @@
       });
 
       if (firstInvalid) {
-        if (status) status.textContent = 'Te rugăm să corectezi câmpurile marcate.';
-        form.elements[firstInvalid]?.focus();
+        fail('validation', form.elements[firstInvalid]);
         return;
       }
 
@@ -339,10 +361,16 @@
 
       if (status) status.textContent = '';
       submitting = true;
+      form.setAttribute('aria-busy', 'true');
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.textContent = 'Se trimite…';
       }
+      slowTimer = window.setTimeout(() => {
+        if (submitting && status) {
+          status.textContent = 'Confirmarea durează puțin mai mult. Te rugăm să aștepți…';
+        }
+      }, 10000);
 
       data.company = honeypot?.value || '';
       submitRequest(data)
@@ -353,7 +381,10 @@
           }
           fail(result?.error || 'server');
         })
-        .catch(error => fail(error?.code === 'endpoint' ? 'endpoint' : 'network'));
+        .catch(error => fail(error?.code || 'network', submitButton,
+          error?.requestSent && error.code === 'timeout'
+            ? 'Nu am primit confirmarea la timp. Cererea poate fi deja înregistrată. Dacă reîncerci și adresa apare ca folosită, solicitarea există deja.'
+            : undefined));
     });
   }
 

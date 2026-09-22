@@ -896,6 +896,13 @@ i {
   min-width: 0;
   overflow: hidden;
   text-align: left;
+  cursor: pointer;
+}
+
+.item:focus-visible,
+.access-document:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 6px;
 }
 
 .item-image {
@@ -918,7 +925,7 @@ i {
   transition: transform 1s cubic-bezier(.2,.65,.3,1),filter .6s;
 }
 
-.item:hover img {
+.item:is(:hover,:focus-visible) img {
   transform: scale(1.035);
   filter: brightness(1.06);
 }
@@ -949,6 +956,16 @@ i {
   margin-top: 10px;
   font-size: clamp(16px,1.32vw,24px);
   line-height: 1.4;
+}
+
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+  color: var(--gold);
+  font: 400 clamp(12px,.85vw,13px)/1.5 var(--mono);
+  letter-spacing: .015em;
 }
 
 /* S03: live text on the two leaves of the open invitation dossier. */
@@ -991,12 +1008,14 @@ i {
 
 .access-document {
   position: relative;
+  display: block;
   container-type: inline-size;
   width: 100%;
   max-width: 1850px;
   aspect-ratio: 2;
   margin: -3vw auto -6.5vw;
   isolation: isolate;
+  cursor: pointer;
 }
 
 .folio-art {
@@ -1006,12 +1025,19 @@ i {
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  transition: filter .25s ease;
   /* Feather the photograph on all four sides while the live text stays crisp. */
   mask-image:
     linear-gradient(90deg,transparent,#0003 4%,#000000b3 10%,#000 18%,#000 84%,#000000b3 92%,#0003 97%,transparent),
     linear-gradient(180deg,transparent,#000 7%,#000 88%,transparent);
   mask-composite: intersect;
   mask-repeat: no-repeat;
+}
+
+.access-document:is(:hover,:focus-visible) .folio-art,
+.access-document:is(:hover,:focus-visible) .access-identity:before,
+.access-document:is(:hover,:focus-visible) .access-card:before {
+  filter: brightness(1.055);
 }
 
 .access-identity {
@@ -2276,24 +2302,40 @@ i {
 }
 
 @media(max-width:1000px) {
+  /* S03: size each leaf to its content and keep the seal clear of the copy. */
+  .access-wrap .index-rail {
+    min-height: 45px;
+    margin-bottom: 24px;
+  }
+  .access-wrap .section-head {
+    max-width: 440px;
+  }
   .access-wrap h2 {
-    font-size: clamp(33px,8.7vw,49px);
+    font-size: clamp(30px,8.2vw,42px);
+    text-wrap: balance;
   }
   .access-wrap .section-head .serif-subtitle {
-    font-size: 23px;
+    margin-top: 12px;
+    font-size: clamp(19px,5.2vw,23px);
+    line-height: 1.35;
+  }
+  .access-wrap .access-rule {
+    width: 170px;
+    margin: 18px auto 0;
   }
   .access-document {
     display: grid;
-    max-width: 500px;
+    max-width: 440px;
     aspect-ratio: auto;
-    gap: 4px;
-    margin: 28px auto 30px;
+    gap: 16px;
+    margin: 22px auto 26px;
   }
   .folio-art {
     display: none;
   }
   .access-identity,
   .access-card {
+    container-type: inline-size;
     isolation: isolate;
   }
   .access-identity:before,
@@ -2311,6 +2353,7 @@ i {
     mask-composite: intersect;
     mask-repeat: no-repeat;
     pointer-events: none;
+    transition: filter .25s ease;
   }
   .access-identity {
     position: relative;
@@ -2323,60 +2366,75 @@ i {
   .access-identity-copy {
     width: 58%;
     margin-left: 38%;
-    padding-top: 14%;
+    padding-top: 12%;
   }
   .access-top {
-    margin-bottom: 12px;
-    font-size: clamp(10px,2.9cqw,14px);
+    margin-bottom: clamp(8px,2.5cqw,11px);
+    font-size: clamp(10px,3.2cqw,13px);
   }
   .access-identity h3 {
-    font-size: clamp(23px,7.6cqw,38px);
+    font-size: clamp(22px,7.6cqw,34px);
   }
   .file-number {
     width: 65%;
-    margin-top: 14px;
-    padding-top: 11px;
+    margin-top: clamp(9px,3cqw,13px);
+    padding-top: clamp(7px,2.5cqw,11px);
   }
   .file-number small {
-    font-size: clamp(10px,2.7cqw,13px);
+    font-size: clamp(10px,2.9cqw,12px);
   }
   .file-number b {
-    margin-top: 4px;
-    font-size: clamp(30px,9.5cqw,47px);
+    margin-top: 3px;
+    font-size: clamp(28px,8.8cqw,40px);
   }
   .access-card {
     position: relative;
     inset: auto;
     width: 100%;
     height: auto;
-    min-height: 510px;
-    padding: 90px 9% 38px;
+    min-height: 0;
+    padding: 32px 9% 38px;
     background-size: 256.35% 138.16%;
     background-position: 82.9% 34.7%;
   }
   .access-stamp {
-    top: 35px;
-    right: 11%;
-    font-size: 24px;
+    position: relative;
+    inset: auto;
+    align-self: flex-end;
+    margin: 0 4px 20px 0;
+    font-size: clamp(21px,7cqw,25px);
+  }
+  .access-grid {
+    flex: initial;
+    grid-template-rows: none;
   }
   .access-grid>div {
-    padding: 18px 0;
-    gap: 5px;
+    padding: 15px 0;
+    gap: 6px;
   }
   .access-grid dt {
-    font-size: 12px;
+    font-size: 11px;
+    letter-spacing: .1em;
   }
   .access-grid dd {
-    font-size: 21px;
+    font-size: clamp(18px,6.5cqw,21px);
+    line-height: 1.3;
   }
   .access-bottom {
-    margin-top: 23px;
-    font-size: clamp(22px,5.8cqw,27px);
+    margin-top: 19px;
+    font-size: clamp(22px,7cqw,26px);
+    line-height: 1.3;
+    text-wrap: pretty;
   }
   .access-quote {
-    max-width: 450px;
-    font-size: 25px;
-    line-height: 1.45;
+    max-width: 400px;
+    font-size: clamp(21px,5.8vw,26px);
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+  .access-wrap .sec-foot {
+    min-height: 40px;
+    margin-top: 28px;
   }
 }
 
@@ -2500,10 +2558,11 @@ i {
   .sec-bg,.hero-image {
     transform: none;
   }
-  .primary,.item img,.rail-dots a span,.hero-address:before,.hero-stamp {
+  .primary,.item img,.rail-dots a span,.hero-address:before,.hero-stamp,
+  .folio-art,.access-identity:before,.access-card:before {
     transition: none;
   }
-  .item:hover img {
+  .item:is(:hover,:focus-visible) img {
     transform: none;
   }
 }

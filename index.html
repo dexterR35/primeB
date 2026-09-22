@@ -92,7 +92,7 @@
     <link rel="preload" as="font" type="font/ttf" href="assets/fonts/bodoni-moda-bold.ttf" crossorigin />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="motion.css" />
-    <link rel="stylesheet" href="modal.css" />
+    <link rel="stylesheet" href="modal.css?v=20260922-1" />
 
     <script>
       /* Arms the motion layer before first paint. The loader stays until
@@ -105,8 +105,8 @@
       })(document);
     </script>
     <script src="motion.js" defer></script>
-    <script src="modal.js" defer></script>
-    <script src="form.js?v=20260921-2" defer></script>
+    <script src="modal.js?v=20260922-1" defer></script>
+    <script src="form.js?v=20260922-1" defer></script>
     <script src="interactions.js" defer></script>
 
     <script type="application/ld+json">
@@ -232,7 +232,7 @@
         <img class="hero-image" src="assets/generated/hero-map-velvet-v3.webp" alt="Hartă aurie înclinată pe piele bleumarin, cu plic sigilat cu ceară roșie, stilou și catifea vișinie în prim-plan" fetchpriority="high" width="1659" height="948" />
         <div class="hero-copy">
           <p class="eyebrow">ACCES DOAR PE BAZĂ DE INVITAȚIE</p>
-          <h1 id="hero-title"><span>Există o <button class="hero-address" type="button"><em>adresă</em><span class="stamp hero-stamp" aria-hidden="true">CONFIDENȚIAL</span></button></span><span>pe care nu o</span><span>găsești singur.</span></h1>
+          <h1 id="hero-title"><span>Există o <button class="hero-address" type="button" data-modal="acces" aria-haspopup="dialog" aria-controls="acces-modal" aria-label="Adresă — cere o invitație"><em>adresă</em><span class="stamp hero-stamp" aria-hidden="true">CONFIDENȚIAL</span></button></span><span>pe care nu o</span><span>găsești singur.</span></h1>
           <p class="lede">Ajungi acolo doar dacă cineva îți spune cum.</p>
           <a href="#contact" class="primary hero-cta">Vreau să aflu <span aria-hidden="true">→</span></a>
           <p class="hero-footnote">O invitație personală. O experiență discretă.</p>
@@ -250,27 +250,27 @@
         <aside class="index-rail"><div><b>02</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe" aria-current="step"><span></span></a><a href="#acces" aria-label="Invitație"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><a class="sec-tag" href="#contact">Acces privat</a>
         <header class="section-head"><p class="eyebrow">ODATĂ AJUNS ACOLO</p><h2 id="experience-title">Ce se întâmplă<br />la adresa secretă</h2><p>Experiențe care nu se anunță public.</p></header>
         <div class="items s2-steps">
-          <article class="item">
+          <a class="item" href="#contact" data-modal="acces" aria-haspopup="dialog" aria-controls="acces-modal" aria-label="Spațiul tău — cere o invitație">
             <div class="item-image"><img src="assets/generated/woman-entrance-v2.webp" alt="Gazdă în rochie neagră la intrarea luminată a clubului, între doi lei de piatră și uși aurii deschise" loading="lazy" decoding="async" width="1254" height="1254" /></div>
             <span class="item-no">01</span>
-            <div class="item-content"><h3>Spațiul tău</h3><p>Un cadru intim, fără aglomerație<br /> și fără priviri indiscrete.</p></div>
-          </article>
-          <article class="item">
+            <div class="item-content"><h3>Spațiul tău</h3><p>Un cadru intim, fără aglomerație<br /> și fără priviri indiscrete.</p><span class="card-cta">Cere o invitație <span aria-hidden="true">↗</span></span></div>
+          </a>
+          <a class="item" href="#contact" data-modal="acces" aria-haspopup="dialog" aria-controls="acces-modal" aria-label="Grija pentru detalii — cere o invitație">
             <div class="item-image"><img src="assets/generated/private-lounge.webp" alt="Salon privat cu canapele din catifea bleumarin, masă de marmură și șemineu aprins, în lumină caldă" loading="lazy" decoding="async" width="1254" height="1254" /></div>
             <span class="item-no">02</span>
-            <div class="item-content"><h3>Grija pentru detalii</h3><p>Spune-ne ce îți dorești.<br /> De restul ne ocupăm noi.</p></div>
-          </article>
-          <article class="item">
+            <div class="item-content"><h3>Grija pentru detalii</h3><p>Spune-ne ce îți dorești.<br /> De restul ne ocupăm noi.</p><span class="card-cta">Cere o invitație <span aria-hidden="true">↗</span></span></div>
+          </a>
+          <a class="item" href="#contact" data-modal="acces" aria-haspopup="dialog" aria-controls="acces-modal" aria-label="Seri pe bază de invitație — cere o invitație">
             <div class="item-image"><img src="assets/generated/private-evening-v2.webp" alt="Masă discretă de joc cu jetoane și pahar de cristal în prim-plan, cu femeia în rochie neagră așezată într-un fotoliu în fundal" loading="lazy" decoding="async" width="1254" height="1254" /></div>
             <span class="item-no">03</span>
-            <div class="item-content"><h3>Seri pe bază de invitație</h3><p>Întâlniri discrete,<br /> rezervate celor invitați.</p></div>
-          </article>
+            <div class="item-content"><h3>Seri pe bază de invitație</h3><p>Întâlniri discrete,<br /> rezervate celor invitați.</p><span class="card-cta">Cere o invitație <span aria-hidden="true">↗</span></span></div>
+          </a>
         </div><div class="sec-foot"><span>Discreție în fiecare detaliu.</span><nav class="page-arrows" aria-label="Continuă explorarea"><a href="#despre" aria-label="Secțiunea anterioară">←</a><span>02 / 05</span><a href="#acces" aria-label="Secțiunea următoare">→</a></nav></div>
       </section>
       <section class="access-wrap screen" id="acces" aria-labelledby="invitation-title">
         <aside class="index-rail"><div><b>03</b><span>/05</span><nav class="rail-dots" aria-label="Navigație secțiuni"><a href="#despre" aria-label="Despre"><span></span></a><a href="#cum-functioneaza" aria-label="Experiențe"><span></span></a><a href="#acces" aria-label="Invitație" aria-current="step"><span></span></a><a href="#intrebari" aria-label="Experiența privată"><span></span></a><a href="#contact" aria-label="Acces"><span></span></a></nav></div></aside><a class="sec-tag" href="#contact">Acces privat</a>
         <header class="section-head"><p class="eyebrow">O INVITAȚIE PERSONALĂ</p><h2 id="invitation-title">Accesul începe cu o invitație.</h2><p class="serif-subtitle">Detaliile rămân între noi.</p><img class="access-rule" src="assets/access-rule.svg" width="240" height="32" alt="" aria-hidden="true" /></header>
-        <article class="access-document" aria-labelledby="dossier-title">
+        <a class="access-document" href="#contact" data-modal="acces" aria-haspopup="dialog" aria-controls="acces-modal" aria-label="Adresa Secretă, dosar 0216 — cere o invitație">
           <img class="folio-art" src="assets/generated/open-invitation-folio-aged-v2.webp" alt="" loading="lazy" decoding="async" width="1774" height="887" />
           <div class="access-identity">
             <div class="access-identity-copy">
@@ -288,7 +288,7 @@
             </dl>
             <p class="access-bottom">Invitația este personală. Detaliile nu sunt publice.</p>
           </div>
-        </article>
+        </a>
         <p class="access-quote closing-quote">Nu primești doar o adresă. Primești o invitație.</p>
         <div class="sec-foot"><span>Discret. Exclusiv. Personal.</span><nav class="page-arrows" aria-label="Continuă explorarea"><a href="#cum-functioneaza" aria-label="Secțiunea anterioară">←</a><span>03 / 05</span><a href="#intrebari" aria-label="Secțiunea următoare">→</a></nav></div>
       </section>
@@ -359,5 +359,13 @@
       <p class="form-status" role="status" aria-live="polite"></p>
       <p class="success" role="status" tabindex="-1">Cererea a fost trimisă. Te vom contacta discret.</p>
     </form><small class="modal-dossier">Doar pe bază de invitație.</small></div></div></div>
+    <dialog class="request-result" id="request-result" aria-labelledby="request-result-title" aria-describedby="request-result-message">
+      <button class="request-result-close" type="button" data-result-close aria-label="Închide mesajul"><span aria-hidden="true">×</span></button>
+      <p class="request-result-eyebrow">ADRESA SECRETĂ · DOSAR NR. 0216</p>
+      <span class="request-result-icon" aria-hidden="true">✓</span>
+      <h2 id="request-result-title" tabindex="-1" autofocus>Cererea ta</h2>
+      <p id="request-result-message" class="request-result-message"></p>
+      <button class="request-result-action" type="button" data-result-close>Am înțeles</button>
+    </dialog>
   </body>
 </html>

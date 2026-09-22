@@ -1,5 +1,6 @@
 /* Access dialog — shares the page's typography, fields and red gradient. */
-html.modal-open,html.modal-open body {
+html.modal-open,html.modal-open body,
+html.result-open,html.result-open body {
   overflow: hidden;
 }
 
@@ -126,6 +127,111 @@ html.modal-open,html.modal-open body {
   color: var(--gold);
 }
 
+/* The result sits in the browser's top layer, above either access form. */
+.request-result {
+  --result-accent: var(--gold);
+  position: fixed;
+  inset: 0;
+  width: min(520px,calc(100% - 32px));
+  max-width: none;
+  height: fit-content;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 46px 38px 34px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--result-accent);
+  background: radial-gradient(ellipse at 50% 0,#19303b88,transparent 72%),var(--ink-menu);
+  color: var(--cream);
+  box-shadow: inset 0 0 0 5px #c6a16a0b,0 24px 90px #0009;
+  text-align: center;
+}
+
+.request-result[open] {
+  animation: result-appear .25s ease-out;
+}
+
+.request-result::backdrop {
+  background: #03090edb;
+  backdrop-filter: blur(7px);
+}
+
+.request-result[data-kind="error"] {
+  --result-accent: var(--red-edge);
+}
+
+.request-result-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+  font: 30px/1 var(--body);
+}
+
+.request-result-close:hover {
+  color: var(--cream);
+}
+
+.request-result-eyebrow {
+  color: var(--gold);
+  font: 11px/1.5 var(--mono);
+  letter-spacing: .08em;
+}
+
+.request-result-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 26px auto 22px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: var(--result-accent);
+  font: 36px/1 var(--body);
+}
+
+.request-result h2 {
+  font-size: clamp(30px,6vw,40px);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
+
+.request-result-message {
+  margin-top: 18px;
+  color: var(--muted);
+  font: 17px/1.6 var(--body);
+  overflow-wrap: anywhere;
+}
+
+.request-result-action {
+  min-height: 50px;
+  width: 100%;
+  margin-top: 28px;
+  padding: 12px 22px;
+  border: 1px solid #bc2135;
+  background: var(--bg-primary);
+  color: var(--cream);
+  font: 500 18px/1.4 var(--body);
+}
+
+.request-result-action:hover {
+  filter: brightness(1.12);
+}
+
+@keyframes result-appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media(max-width:760px) {
   .modal {
     padding: 12px;
@@ -154,11 +260,24 @@ html.modal-open,html.modal-open body {
   .modal .submit-button {
     font-size: 18px;
   }
+  .request-result {
+    width: calc(100% - 24px);
+    max-width: 520px;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 45px 24px 26px;
+  }
+  .request-result-message {
+    font-size: 16px;
+  }
 }
 
 @media(prefers-reduced-motion:reduce) {
   .modal,.modal-panel {
     transition: opacity .15s;
     transform: none;
+  }
+  .request-result[open] {
+    animation: none;
   }
 }

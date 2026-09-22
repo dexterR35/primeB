@@ -1,179 +1,81 @@
-ADRESA SECRETĂ — PAGINA "INVITAȚIA" (layout 02)
-===============================================
+CULORI
+------
+#05090c — fundalul general, aproape negru, cu tentă albastră.
+#03090d — fundalul hero-ului; fotografiile se pierd treptat în întuneric.
+#f5efe4 — crem pentru titluri și textul principal pe suprafețe închise.
+#c6a16a — auriu pentru supratitluri, linii, repere și detalii de dosar.
+#b6b5b0 — gri cald pentru text secundar și note discrete.
+#ce0c2c — roșu pentru numerotarea secțiunilor și accente de acces.
+#b71329 — cerneala roșie a ștampilelor „CONFIDENȚIAL”.
+#a10813 → #8b0611 — baza degradeului butoanelor, cu lumini și umbre roșii.
+#ead8b8 — baza hârtiei din formular, completată de textura îmbătrânită.
+#0e1010 — textul închis de pe hârtie; #595448 — notele secundare ale formularului.
+#bc9e67 — conturul formularului; #65583d55 — liniile fine dintre câmpuri.
 
-Pagină autonomă, extrasă din pachetul cu cinci variante, cu ecran de încărcare,
-motion la intrare și la scroll, și un head SEO complet.
-Deschide index.html direct în browser. Nu necesită instalare sau internet.
+Atmosfera combină piele bleumarin, catifea vișinie, aur și ceară roșie.
+Hârtia are pete fine, fibre și margini uzate; centrul rămâne lizibil.
+Granulația discretă și umbrele unesc fotografiile cu fundalul paginii.
 
+FONTURI
+-------
+Bodoni Moda — alias ASDisplay, variabila --serif.
+  Titluri, numele mărcii, subtitluri și citate; variante regular, bold și italic.
+Jost — alias ASBody, variabila --body.
+  Paragrafe, descrieri, câmpuri și valori; textul de bază este 18px/1.5.
+Barlow Condensed — alias ASCondensed, variabila --label.
+  Supratitluri, etichete și ștampile, adesea cu majuscule și litere spațiate.
+Nimbus Mono PS — alias ASMono, variabila --mono.
+  Numere de dosar, note și repere cu aspect de document.
+Z003 — alias ASSignature.
+  Semnătura și nota de mână de pe invitație.
 
-FIȘIERE
-  index.html        pagina Invitația + head SEO + markup-ul ecranului de încărcare
-  styles.css        sistemul vizual comun + layoutul .v2 (invitația).
-                    Regulile variantelor 01, 03, 04, 05 și bara de comparație
-                    au fost eliminate. Singura adăugare e blocul de la final:
-                    ordinea hero-ului pe mobil (vezi mai jos).
-  motion.css        ecranul de încărcare, reveal-urile la scroll, reduced-motion
-  motion.js         preloader, secvența de intrare, reveal-urile, drift-ul hero
-  form.js           validare + trimiterea ambelor formulare către Apps Script
-  modal.js          deschiderea, închiderea și focusul modalului de acces
-  interactions.js   meniul mobil (se închide la alegerea unei secțiuni sau Escape)
-  apps-script/      backend-ul Google Sheets și instrucțiunile de publicare
-  site.webmanifest  nume, culori, iconițe (PWA / add-to-home-screen)
-  robots.txt        + sitemap.xml
-  assets/           doar imaginile, textura, grain-ul și fonturile folosite,
-                    plus favicon.svg, favicon-32.png, apple-touch-icon.png,
-                    og-image.jpg (1200×630, generat din hero + ștampilă)
+În S02, „Experiențe care nu se anunță public.” este auriu #c6a16a,
+Nimbus Mono PS (--mono), greutate 400, mărime 14px, înălțime de rând 1.5.
+Contrastul dintre serif, text simplu și scris de mână construiește ierarhia.
 
+LAYOUT
+------
+Hero — hartă, plic sigilat și stilou pe fundal întunecat; mesaj amplu în stânga,
+cu „adresă” acoperită de ștampila „CONFIDENȚIAL” și butonul „Vreau să aflu”.
+Navigația conduce către Despre, Experiențe, Invitație și Acces.
 
-ECRANUL DE ÎNCĂRCARE
-  Acoperă pagina din primul frame: clasa .js-motion + .is-loading e pusă pe <html>
-  de un script inline din <head>, înainte de primul paint.
-  Afișează: DOSAR NR. 0216, numele ADRESA SECRETĂ, bara de progres cu procent,
-  mesajele SE VERIFICĂ AUTORIZAȚIA → SE DESCHIDE DOSARUL 0216 →
-  SE ÎNCARCĂ MATERIALELE → ACCES APROBAT, apoi ștampila CONFIDENȚIAL.
+S01 / Despre — „Un loc fără nume”. Titlu și poveste centrate, fotografie
+nocturnă discretă în fundal, ornamente aurii și citat de încheiere.
 
-  Ordinea: DOM gata + fonturile gata + imaginile care contează
-           (toate <img> non-lazy + imaginea hero selectată responsive,
-           grain.svg, archival-paper.png)
-           → bara urcă la 100% (~0,4 s) → ștampila CONFIDENȚIAL
-           → pauză de 2 secunde (cerută, ca ecranul să poată fi citit)
-           → loader-ul se stinge în 0,9 s și intră hero-ul.
+S02 / Experiențe — trei imagini numerotate: „Spațiul tău”, „Grija pentru detalii”
+și „Seri pe bază de invitație”. Titlul și nota aurie împart antetul pe desktop.
+Cardurile rămân în trei coloane de la 701px și se suprapun vertical sub acest prag.
 
-  Progresul e real (fracțiunea de assets încărcate), dar avansează și în timp
-  ca să nu pară blocat; 100% apare doar când totul s-a raportat.
-  Loaderul stă până DOM-ul, imaginile critice și fonturile sunt gata, apoi
-  încă 2 s. Fără timeout de rezervă: dacă motion.js nu rulează, overlay-ul rămâne.
+S03 / Invitație — „Accesul începe cu o invitație”. Pe desktop, dosar deschis:
+identitate și sigiliu pe foaia din stânga, fișă pe hârtie veche în dreapta.
+Fișa arată clasificarea, accesul și validarea, cu ștampilă și notă de mână.
+La cel mult 1000px, cele două foi sunt centrate și așezate una sub alta,
+într-o coloană de maximum 440px. Hârtia își adaptează înălțimea la conținut;
+ștampila stă deasupra rândurilor, iar numărul dosarului lasă sigiliul liber.
 
-  Reglaj: HOLD_AFTER_READY (2000 ms), în capul motion.js.
+S04 / Experiența privată — fotografie de atmosferă și text în partea dreaptă
+pe desktop; titlul „Nu e doar un bonus”, descriere și invitație de a continua.
 
+S05 / Acces — titlu centrat și formular ca un dosar pe hârtie îmbătrânită.
+Numele și e-mailul stau pe două coloane; semnătura se formează din nume.
+Sub 701px, câmpurile și zona de trimitere urmează o singură coloană.
+Sub formular apar nota despre analiza individuală și subsolul mărcii.
 
-MOTION
-  La intrare: hero-ul urcă în cascadă (supratitlu → titlu → lede → buton → notă),
-  ștampila și textul scris de mână intră ultimele.
-  La scroll: fiecare secțiune își aduce pe rând supratitlul, titlul, textul,
-  linia roșie, fotografia (push-in lent de la 1.07) și pașii 01-02-03,
-  decalați câte 120 ms. Fișa de acces urcă, ștampila CONFIDENȚIAL se „trântește".
-  Textul din hero se depărtează și se stinge ușor cât scrollezi peste el
-  (doar peste 700 px — pe mobil e oprit, vezi secțiunea MOBIL).
+Pe ecrane mici, meniul se restrânge, reperele numerotate devin orizontale,
+iar secțiunile se dimensionează după conținut. Hero-ul păstrează textul sus
+și mută fotografia spre partea de jos, cu o trecere întunecată între ele.
 
-  Decalajele se numără ÎN INTERIORUL secțiunii (GROUPS din motion.js: `at` =
-  de când începe grupul, `step` = pasul dintre elementele lui). Înainte
-  indexul se număra pe toată pagina, așa că titlul secțiunii 3 pornea cu
-  180 ms întârziere față de al secțiunii 1; acum toate secțiunile intră la fel.
+POVESTE
+-------
+Există o adresă pe care nu o găsești singur. Nu are firmă la intrare și nu
+se descoperă din întâmplare: ajungi acolo printr-o invitație personală.
 
-  O SINGURĂ ANIMAȚIE PE ELEMENT: blocurile de text (.section-head, .items,
-  .apply-content, .hero-copy) aveau și un zoom de intrare de 2,4 s (scale
-  0.965 → 1, pornit de .in-view) PESTE reveal-ul fiecărui copil — două
-  animații pe același text în același timp. Zoomul a fost scos din styles.css;
-  a rămas: intrarea = reveal, mișcarea la scroll = translate-ul de parallax.
-  Hero-ul a fost scos și din parallaxul de text: acolo mișcarea la scroll o
-  face driftul din motion.js, deci nu mai e dus de două mișcări deodată.
-  Fotografiile de fundal își păstrează push-in-ul (e singura lor animație).
+Odată ajuns, ești deja așteptat. Spațiul este intim, fără aglomerație,
+iar detaliile sunt pregătite cu grijă. Experiențele și serile rămân discrete,
+rezervate celor invitați, într-un ritm personal.
 
-  Reveal-urile pornesc cu IntersectionObserver (linia de pornire la 93% din
-  ecran, ca înainte); nu se mai măsoară nimic la fiecare scroll.
-  Nimic nu poate rămâne invizibil: ce a fost sărit (salt la o ancoră) se vede
-  ca ieșit pe sus și intră imediat, ce e ascuns de un media query (cutie 0×0)
-  e scos din așteptare, iar la capătul paginii intră tot ce a mai rămas —
-  ultimii 7% nu mai pot trece linia de pornire (footer-ul).
-  Verificat în browser real: după parcurgerea paginii, la revenirea sus și
-  după un salt la o ancoră, niciun element nu rămâne la opacity 0.
-  După ce un element a ajuns, atributul data-rev și clasa is-in sunt ȘTERSE,
-  deci pagina în repaus e exact markup-ul original, iar textul revine la
-  randarea subpixel a browserului.
+Invitația deschide accesul; detaliile nu sunt publice. Fiecare cerere este
+analizată individual, iar contactul se face discret, la adresa de e-mail indicată.
 
-  prefers-reduced-motion: reduce → fără deplasări și fără zoom pe fotografii,
-  doar un fade scurt; ecranul de încărcare rămâne (inclusiv pauza de 2 s).
-  Fără JavaScript: nu apare loader-ul, nimic nu e ascuns, pagina e cea originală.
-
-
-MOBIL — FOTOGRAFIA PRIMA, TEXTUL AL DOILEA
-  Sub 700 px hero-ul se inversează: fotografia dosarului intră în flux imediat
-  sub meniu (înălțime clamp(230px, 54vw, 330px)), cu ștampila CONFIDENȚIAL și
-  nota scrisă de mână suprapuse pe marginea ei de jos, iar supratitlul, titlul,
-  lede-ul, butonul și nota de subsol vin dedesubt, pe fundal închis.
-  Degradeul hero-ului e limitat la înălțimea fotografiei, ca să se stingă în
-  fundal exact sub ea. Peste 700 px nu se schimbă nimic: textul rămâne peste
-  fotografie, ca în designul original.
-  Regulile sunt grupate la finalul styles.css, marcate cu un comentariu.
-  Tot pe mobil e oprit drift-ul hero-ului (textul nu se mai estompează la
-  scroll), pentru că acolo textul e conținutul principal, nu un overlay.
-  Secțiunile 1-3 păstrează ordinea originală: supratitlu, titlu, text, fotografie.
-
-
-LAZY LOAD
-  Fotografiile din secțiunile 1–3 și fundalul fișei de acces rămân loading="lazy"
-  + decoding="async" (nu blochează ecranul de încărcare). Imaginea hero e
-  eager, cu fetchpriority="high" și <link rel="preload">.
-  După intrare, motion.js încarcă în idle access-paper-card.png și
-  private-night.png, ca să nu apară gol nimic la scroll.
-
-
-SEO — DE ÎNLOCUIT ÎNAINTE DE PUBLICARE
-  Domeniul folosit ca exemplu este https://adresasecreta.ro/ și apare în:
-  canonical, hreflang, og:url, og:image, twitter:image, JSON-LD (Organization,
-  WebSite, WebPage), robots.txt și sitemap.xml. Înlocuiește-l cu domeniul real
-  (caută-l cu: grep -rn adresasecreta.ro .) și actualizează <lastmod> în sitemap.
-  Head-ul include: title, description, keywords, robots, canonical, hreflang,
-  theme-color, color-scheme, Open Graph complet (cu dimensiuni și alt),
-  Twitter summary_large_image, iconițe, manifest și date structurate JSON-LD.
-  Nu am marcat secțiunea 3 ca FAQPage: nu conține întrebări și răspunsuri reale.
-
-
-OBSERVAȚII
-  Păstrează fișierele împreună; căile către assets/ sunt relative.
-  Elementul rădăcină <div class="site v2"> trebuie să păstreze clasa "v2" —
-  layoutul invitației e construit pe ea în styles.css.
-  Filtrul SVG #worn-ink (ștampilele) e inline la începutul <body>, ca să poată
-  fi folosit și de ecranul de încărcare.
-  history.scrollRestoration = 'manual': la reîncărcare pagina pornește de sus,
-  ca intro-ul să se vadă întotdeauna.
-  Formularele din pagină și modal trimit în Google Sheets după ce URL-ul /exec
-  al deployment-ului este pus în ENDPOINT din form.js. Setup-ul complet este
-  descris în apps-script/README.md; destinația este prime_2026_B.
-  Etichetele din footer păstrează mockup-ul; nu au fost furnizate documente legale.
-  Fonturi locale: Bodoni Moda, Barlow Condensed, Nimbus Mono PS, Z003 (+ licențe).
-
-CULORI ȘI TEMĂ — :root
-  Toate culorile paginii stau într-un singur bloc :root, la începutul
-  styles.css, grupate pe familii: cerneală (--ink-*), roșu (--red-*),
-  hârtie (--paper-*, --white, --cream), gri-verzui pentru texte secundare
-  (--sage-*), linii (--line-*), umbre (--shadow-*) și, la final, suprafețele
-  compuse: fundalurile și vălurile de gradient (--bg-*, --scrim-*).
-  În reguli nu mai există niciun cod de culoare literal — totul trece prin
-  var(). Schimbi tema dintr-un singur loc; ca să schimbi, de exemplu,
-  atmosfera unei secțiuni, modifici --bg-section sau --scrim-hero.
-  motion.css (ecran de încărcare, reveal-uri) folosește aceleași variabile.
-  --cols controlează câte casete stau pe un rând pe ecran mare (acum 3).
-  Valorile sunt exact cele din design: randarea e identică pixel cu pixel
-  cu varianta dinaintea mutării în :root, verificat la 9 lățimi.
-
-  Notă despre duplicarea din CSS: perechile de selectori „X, .v2 X" din
-  media queries NU sunt redundante — fiecare bate o regulă .v2 definită mai
-  devreme. Am verificat automat toate cele 52: eliminarea oricăreia (sau a
-  prefixului .v2 în bloc) schimbă randarea, așa că au rămas pe loc.
-
-
-SIGLA "AS"
-  A fost scoasă din header și de pe ecranul de încărcare; a rămas doar numele.
-  Regulile .sigil din styles.css și .loader-sigil din motion.css au fost șterse,
-  fiind cod mort. Monograma AS apare în continuare acolo unde e element grafic,
-  nu siglă de antet: sigiliul rotund din secțiunea 2, rândul "AS 0216" din
-  marginea secțiunii 1, referința "AS · 0216 · MMXXVI" din josul ecranului de
-  încărcare, fotografiile (sigiliul de ceară) și iconițele de browser
-  (favicon.svg, favicon-32.png, apple-touch-icon.png). Spune dacă vrei scoase
-  și acestea.
-
-
-VERIFICĂRI
-  Pagina în repaus (după ce animațiile se termină) este identică pixel cu pixel
-  cu varianta originală la 701, 820, 1000, 1200, 1440 și 1800 px, cu excepția
-  zonei numelui din antet (înaltă de ~50 px), de unde a fost scoasă sigla.
-  Sub 700 px diferă și prin ordinea hero-ului, cerută explicit.
-  Înainte de acea schimbare, era identică și la 320, 360, 390 și 700 px,
-  inclusiv cu JavaScript dezactivat.
-  Reveal-urile au fost verificate în browser real (prin DevTools Protocol):
-  după salt la finalul paginii, la revenirea sus și după click pe o ancoră,
-  nu rămâne niciun element invizibil pe ecran.
-  Zero erori și zero avertismente în consolă, atât deschisă de pe disc, cât și
-  servită prin HTTP.
+„Nu primești doar o adresă. Primești o invitație.”
+„Adresa Secretă. Nu se caută. Se primește.”
