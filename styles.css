@@ -617,7 +617,7 @@ i {
   margin-top: 24px;
   width: 35px;
   height: 1px;
-  background: var(--gold);
+  /* background: var(--gold); */
 }
 
 .rail-dots {
