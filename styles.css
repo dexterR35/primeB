@@ -480,13 +480,18 @@ i {
   white-space: nowrap;
 }
 
-.hero .eyebrow:after {
+.form-field .field-number {
+  display: none !important;
+
+}
+
+/* .hero .eyebrow:after {
   content: "";
   width: 180px;
   max-width: 23%;
   height: 1px;
   background: var(--line-soft);
-}
+} */
 
 .hero h1 {
   font-size: clamp(56px,5.55vw,108px);
@@ -537,12 +542,17 @@ i {
   white-space: nowrap;
 }
 
+.s1 .sec-tag,.s2 .sec-tag, .access-wrap .sec-tag, .apply .sec-tag {
+  display: none !important;
+}
+
+
 .hero-address:before {
   content: "";
   position: absolute;
   inset: 0 -.04em;
   z-index: 1;
-  background: rgba(0,0,0,.8);
+  background: rgb(0 0 0 / 54%);
   pointer-events: none;
   transition: opacity .25s ease;
 }
@@ -564,39 +574,6 @@ i {
 .hero-address:is(:hover,:focus):before,
 .hero-address:is(:hover,:focus) .hero-stamp {
   opacity: 0;
-}
-
-.hero-bottom {
-  position: absolute;
-  bottom: 18px;
-  left: 2vw;
-  right: 2vw;
-  min-height: 54px;
-  padding-top: 10px;
-  /* border-top: 1px solid var(--line); */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font: 400 13px/1.3 var(--mono);
-  letter-spacing: .15em;
-}
-
-.hero-bottom>span,.hero-bottom>a {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.hero-bottom>span:before,.hero-bottom>span:after,.hero-bottom>a:after {
-  content: "";
-  height: 1px;
-  width: 55px;
-  background: var(--line-soft);
-}
-
-.hero-bottom>a span {
-  color: var(--gold);
-  font: 30px var(--body);
 }
 
 .index-rail {
@@ -1139,12 +1116,14 @@ i {
   font-size: clamp(24px,2.15vw,40px);
 }
 
+
+
 .access-quote:after {
   content: "";
   display: block;
-  width: 62px;
-  height: 2px;
-  background: var(--red);
+  width: 72px;
+  height: 1px;
+  background: var(--gold);
   margin: 18px auto 0;
 }
 
@@ -1447,9 +1426,18 @@ i {
 .request-heading {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 20px;
   padding: 21px 36px;
   border-bottom: 1px solid var(--paper-line);
+}
+
+.request-brand {
+  margin: 0;
+  color: var(--paper-ink);
+  font: 700 clamp(22px,2.1vw,32px)/1 var(--serif);
+  letter-spacing: .015em;
+  white-space: nowrap;
 }
 
 .request-reference {
@@ -1459,16 +1447,17 @@ i {
   width: 160px;
   min-height: 36px;
   text-align: center;
+  flex-shrink: 0;
 }
 
-.request-reference h3 {
+.request-file {
   margin: 0;
   color: var(--paper-muted);
   font: 11px/1.4 var(--mono);
   letter-spacing: .1em;
 }
 
-.request-reference b {
+.request-file b {
   color: var(--paper-ink);
   font-weight: 400;
   margin-left: 8px;
@@ -1504,9 +1493,11 @@ i {
   gap: 9px;
 }
 
-.request-dossier label {
-  font-size: 15px;
-  font-weight: 600;
+.request-dossier .form-field label {
+  color: var(--paper-ink);
+  font: 600 13px/1.4 var(--label);
+  text-transform: uppercase;
+  letter-spacing: .16em;
 }
 
 .field-number {
@@ -1545,13 +1536,6 @@ i {
   background: #5b442c06;
   align-items: center;
   padding-block: 26px 30px;
-}
-
-.request-signature label {
-  color: var(--paper-ink);
-  font: 600 13px/1.4 var(--label);
-  text-transform: uppercase;
-  letter-spacing: .16em;
 }
 
 .request-signature input:disabled {
@@ -1931,23 +1915,6 @@ i {
     letter-spacing: .01em;
     margin-top: 13px;
   }
-  .hero-bottom {
-    left: 30px;
-    right: 30px;
-    bottom: 30px;
-    font-size: 9px;
-    letter-spacing: .05em;
-    gap: 10px;
-  }
-  .hero-bottom>span,.hero-bottom>a {
-    gap: 8px;
-  }
-  .hero-bottom>span:before,.hero-bottom>span:after,.hero-bottom>a:after {
-    display: none;
-  }
-  .hero-bottom>a span {
-    font-size: 24px;
-  }
   .index-rail {
     position: relative;
     top: auto!important;
@@ -2025,6 +1992,11 @@ i {
     line-height: 1.5;
     gap: 12px;
     letter-spacing: .04em;
+  }
+  .hero .sec-foot {
+    position: absolute !important;
+    inset: auto 30px 30px !important;
+    margin-top: 0;
   }
   .sec-foot>a {
     gap: 15px;
@@ -2426,15 +2398,19 @@ i {
 @media(max-width:700px) {
   .request-heading {
     padding: 20px 22px;
+    gap: 12px;
+  }
+  .request-brand {
+    font-size: 18px;
   }
   .request-reference {
     width: 136px;
   }
-  .request-reference h3 {
+  .request-file {
     font-size: 10px;
     letter-spacing: .03em;
   }
-  .request-reference b {
+  .request-file b {
     margin-left: 4px;
   }
   .request-stamp {
