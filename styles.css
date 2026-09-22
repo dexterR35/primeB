@@ -875,8 +875,8 @@ i {
   padding: 9px 0 9px 3vw;
   margin: 0 0 3px;
   border-left: 1px solid var(--line);
-  font-size: clamp(17px,1.4vw,25px);
-  line-height: 1.45;
+  color: var(--gold);
+  font: 400 14px / 1.5 var(--mono);
 }
 
 .s2-steps {
@@ -2083,7 +2083,6 @@ i {
     max-width: none;
     padding: 0;
     border: 0;
-    font-size: 17px;
     margin-top: 17px;
     letter-spacing: .005em;
   }
