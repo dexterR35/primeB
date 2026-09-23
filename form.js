@@ -4,7 +4,7 @@
 (() => {
   'use strict';
 
-  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxtSD26Tmsgn6QBw_nK_-zlJO9zOH0x6-xzS-vFMdyMnVVA9BH9pMxAcRT4c4Q2Gmjw/exec';
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzOXTmCwRHkqVIzWHSxhaIDF5pZODY7NbPzZC6GMSV51F9y_U7lKY2sMhQfAozZ0XL_/exec';
   // Apps Script cold starts can take 15-20s+; keep time for a write confirmation after.
   const SUBMIT_TIMEOUT_MS = 60000;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
