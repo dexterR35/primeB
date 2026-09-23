@@ -90,14 +90,13 @@ async function flushMicrotasks() {
   for (let i = 0; i < 40; i += 1) await Promise.resolve();
 }
 
-function setup({ post, get, formCount = 1 } = {}) {
+function setup({ post, formCount = 1 } = {}) {
   const forms = Array.from({ length: formCount }, (_, index) => createForm(`request-${index}`));
   const timers = new Map();
   const requests = [];
   const window = new Element();
   let now = 0;
   let nextTimer = 0;
-  let tokenCounter = 0;
   window.setTimeout = (callback, delay = 0) => {
     const id = ++nextTimer;
     timers.set(id, { callback, at: now + delay });
@@ -106,13 +105,9 @@ function setup({ post, get, formCount = 1 } = {}) {
   window.clearTimeout = id => timers.delete(id);
   const response = data => ({ ok: true, status: 200, text: () => Promise.resolve(JSON.stringify(data)) });
   const fetch = async (url, options = {}) => {
-    const request = { url, ...options, startedAt: now };
+    const request = { url, ...options, startedAt: now, payload: JSON.parse(options.body) };
     requests.push(request);
-    if (request.method === 'POST') {
-      request.payload = JSON.parse(request.body);
-      return post ? post(request, requests.filter(item => item.method === 'POST').length, response) : response({ ok: true });
-    }
-    return get ? get(request, ++tokenCounter, response) : response({ ok: true, token: `token-${++tokenCounter}` });
+    return post ? post(request, requests.length, response) : response({ ok: true });
   };
   class CustomEvent {
     constructor(type, options = {}) { this.type = type; Object.assign(this, options); }
@@ -146,13 +141,7 @@ function setup({ post, get, formCount = 1 } = {}) {
     await flushMicrotasks();
   }
 
-  return {
-    forms,
-    requests,
-    advance,
-    gets: () => requests.filter(request => request.method === 'GET'),
-    posts: () => requests.filter(request => request.method === 'POST')
-  };
+  return { forms, requests, advance };
 }
 
 function assertResult(form, kind) {
@@ -178,7 +167,7 @@ function assertRecoverableError(form) {
   return detail;
 }
 
-test('both access forms finish successfully and cannot resubmit completed requests', async () => {
+test('both access forms finish successfully in a single request and cannot resubmit completed requests', async () => {
   const app = setup({ formCount: 2 });
   for (const form of app.forms) {
     form.submit();
@@ -191,11 +180,11 @@ test('both access forms finish successfully and cannot resubmit completed reques
     await app.advance();
     assert.equal(form.results.length, 1);
   }
-  assert.equal(app.posts().length, 2);
-  assert.notEqual(app.posts()[0].payload.token, app.posts()[1].payload.token);
+  assert.equal(app.requests.length, 2, 'Each submit is exactly one request — no token round trip.');
+  assert.equal(app.requests[0].method, 'POST');
 });
 
-test('invalid fields produce a popup and focus target without posting a request', async () => {
+test('invalid fields produce a popup and focus target without sending a request', async () => {
   const app = setup();
   const [form] = app.forms;
   form.elements.email.value = 'invalid-address';
@@ -205,7 +194,7 @@ test('invalid fields produce a popup and focus target without posting a request'
   assert.equal(detail.focusTarget, form.elements.email);
   assert.equal(form.elements.email.getAttribute('aria-invalid'), 'true');
   assert.equal(form.errors.email.hidden, false);
-  assert.equal(app.posts().length, 0);
+  assert.equal(app.requests.length, 0);
 });
 
 test('a server rejection restores the submit button and reports an error', async () => {
@@ -213,7 +202,7 @@ test('a server rejection restores the submit button and reports an error', async
   app.forms[0].submit();
   await app.advance();
   assertRecoverableError(app.forms[0]);
-  assert.equal(app.posts().length, 1);
+  assert.equal(app.requests.length, 1);
 });
 
 test('a duplicate request stays an error and is never reported as a new success', async () => {
@@ -222,29 +211,19 @@ test('a duplicate request stays an error and is never reported as a new success'
   await app.advance();
   const detail = assertRecoverableError(app.forms[0]);
   assert.match(detail.message, /deja/i);
-  assert.equal(app.posts().length, 1);
+  assert.equal(app.requests.length, 1);
 });
 
-test('a token rejection retries once with a distinct token', async () => {
-  const app = setup({
-    post: (_request, count, response) => response(count === 1 ? { ok: false, error: 'token' } : { ok: true })
-  });
+test('a busy backend restores the submit button and reports an error', async () => {
+  const app = setup({ post: (_request, _count, response) => response({ ok: false, error: 'busy' }) });
   app.forms[0].submit();
-  await app.advance(5000);
-  assertResult(app.forms[0], 'success');
-  assert.equal(app.posts().length, 2);
-  assert.notEqual(app.posts()[0].payload.token, app.posts()[1].payload.token);
+  await app.advance();
+  const detail = assertRecoverableError(app.forms[0]);
+  assert.match(detail.message, /multe cereri/i);
+  assert.equal(app.requests.length, 1);
 });
 
-test('repeated token rejections stop after one retry and leave the form usable', async () => {
-  const app = setup({ post: (_request, _count, response) => response({ ok: false, error: 'token' }) });
-  app.forms[0].submit();
-  await app.advance(120000);
-  assertRecoverableError(app.forms[0]);
-  assert.equal(app.posts().length, 2);
-});
-
-test('a lost POST response is not automatically retried and a deliberate retry remains possible', async () => {
+test('a lost request is not automatically retried and a deliberate retry remains possible', async () => {
   const app = setup({
     post: (_request, count, response) => {
       if (count === 1) throw new TypeError('Failed to fetch');
@@ -255,174 +234,49 @@ test('a lost POST response is not automatically retried and a deliberate retry r
   form.submit();
   await app.advance(120000);
   assertRecoverableError(form);
-  assert.equal(app.posts().length, 1, 'An ambiguous network failure must not repeat a write.');
+  assert.equal(app.requests.length, 1, 'An ambiguous network failure must not repeat a write.');
   form.submit();
   await app.advance();
   assertResult(form, 'success');
-  assert.equal(app.posts().length, 2);
+  assert.equal(app.requests.length, 2);
 });
 
-test('the deadline includes reading the POST body and releases loading state', async () => {
+test('the deadline includes reading the response body and releases loading state', async () => {
   const app = setup({ post: () => ({ ok: true, status: 200, text: () => new Promise(() => {}) }) });
   const [form] = app.forms;
   form.submit();
   await app.advance();
   assert.equal(form.button.disabled, true);
   assert.equal(form.results.length, 0);
-  await app.advance(120000);
+  await app.advance(60000);
   const timeout = assertRecoverableError(form);
-  assert.equal(app.posts().length, 1);
-  assert.equal(app.posts()[0].signal.aborted, true);
+  assert.equal(app.requests.length, 1);
+  assert.equal(app.requests[0].signal.aborted, true);
+  assert.match(timeout.message, /poate fi deja înregistrată/);
 
   const network = setup({ post: () => Promise.reject(new TypeError('Failed to fetch')) });
   network.forms[0].submit();
   await network.advance(120000);
   assert.notEqual(timeout.message, assertRecoverableError(network.forms[0]).message,
-    'A deadline must be explained separately from a network error.');
+    'A confirmed-in-flight timeout must be explained separately from a network error.');
 });
 
-test('a stalled token response retries once within the submission deadline and never posts', async () => {
-  const app = setup({ get: () => ({ ok: true, status: 200, text: () => new Promise(() => {}) }) });
-  app.forms[0].submit();
-  await app.advance(10000);
-  assert.match(app.forms[0].status.textContent, /Datele nu au fost încă trimise/);
-  assert.equal(app.posts().length, 0);
-  await app.advance(5000);
-  assert.equal(app.forms[0].results.length, 0, 'A cold start may still finish after 15 seconds.');
-  assert.equal(app.gets().length, 1);
-  await app.advance(10000);
-  assert.equal(app.gets()[0].signal.aborted, true);
-  assert.equal(app.forms[0].results.length, 0, 'The first token timeout is recoverable.');
-  await app.advance(500);
-  assert.equal(app.gets().length, 2);
-  await app.advance(24999);
-  assert.equal(app.forms[0].results.length, 0);
-  await app.advance(1);
-  const detail = assertRecoverableError(app.forms[0]);
-  assert.match(detail.message, /Datele nu au fost trimise/);
-  assert.notEqual(detail.title, 'Trimitere neconfirmată');
-  assert.equal(app.gets()[1].signal.aborted, true);
-  assert.equal(app.posts().length, 0);
-  await app.advance(120000);
-  assert.equal(app.gets().length, 2, 'A persistent failure cannot trigger an endless GET loop.');
-  assert.equal(app.forms[0].results.length, 1);
-});
-
-test('a failed focus prefetch recovers before sending the request exactly once', async () => {
-  const app = setup({
-    get: (_request, count, response) => count === 1
-      ? { ok: true, text: () => Promise.resolve('<html>Temporarily unavailable</html>') }
-      : response({ ok: true, token: 'fresh-after-prefetch-failure' })
-  });
-  const [form] = app.forms;
-  form.dispatchEvent({ type: 'focusin' });
-  await app.advance(10000);
-  assert.equal(app.gets().length, 1);
-  assert.equal(form.results.length, 0, 'Prefetch failures must not show an unsolicited popup.');
-  form.submit();
-  await app.advance();
-  assertResult(form, 'success');
-  assert.equal(app.gets().length, 2);
-  assert.equal(app.posts().length, 1);
-  assert.equal(app.posts()[0].payload.token, 'fresh-after-prefetch-failure');
-});
-
-test('a transient token service failure on immediate submit recovers safely', async t => {
-  const failures = {
-    html: () => ({ ok: true, text: () => Promise.resolve('<html>Unavailable</html>') }),
-    missingToken: response => response({ ok: true }),
-    http: () => ({ ok: false, status: 503, text: () => Promise.resolve('Unavailable') }),
-    network: () => Promise.reject(new TypeError('Failed to fetch'))
-  };
-  for (const [name, firstResponse] of Object.entries(failures)) {
-    await t.test(name, async () => {
-      const app = setup({
-        get: (_request, count, response) => count === 1
-          ? firstResponse(response)
-          : response({ ok: true, token: 'recovered-token' })
-      });
-      const [form] = app.forms;
-      form.submit();
-      await app.advance(499);
-      assert.equal(app.gets().length, 1, 'A transient failure waits briefly before retrying.');
-      assert.equal(app.posts().length, 0);
-      assert.equal(form.results.length, 0);
-      await app.advance(1301);
-      assertResult(form, 'success');
-      assert.equal(app.gets().length, 2);
-      assert.equal(app.posts().length, 1);
-      assert.equal(app.posts()[0].payload.token, 'recovered-token');
-      assert.ok(app.posts()[0].startedAt - app.gets()[1].startedAt >= 1300,
-        'A recovered token must also age before use.');
-    });
-  }
-});
-
-test('persistent token failure stops after two GETs and allows a deliberate retry', async () => {
-  let available = false;
-  const app = setup({
-    get: (_request, count, response) => available
-      ? response({ ok: true, token: `restored-token-${count}` })
-      : { ok: true, text: () => Promise.resolve('<html>Unavailable</html>') }
-  });
-  const [form] = app.forms;
-  form.submit();
-  await app.advance(120000);
-  const detail = assertRecoverableError(form);
-  assert.match(detail.message, /Serviciul formularului nu a răspuns corect/);
-  assert.equal(form.results.length, 1);
-  assert.equal(app.gets().length, 2);
-  assert.equal(app.posts().length, 0);
-  available = true;
-  form.submit();
-  await app.advance();
-  assertResult(form, 'success');
-  assert.equal(app.gets().length, 3);
-  assert.equal(app.posts().length, 1);
-});
-
-test('an immediate autofill submit waits for the token minimum age before POST', async () => {
-  const app = setup();
-  const [form] = app.forms;
-  form.submit();
-  await app.advance(1299);
-  assert.equal(app.gets().length, 1);
-  assert.equal(app.posts().length, 0);
-  assert.equal(form.results.length, 0);
-  await app.advance(1);
-  assertResult(form, 'success');
-  assert.equal(app.posts().length, 1);
-  assert.ok(app.posts()[0].startedAt - app.gets()[0].startedAt >= 1300);
-});
-
-test('a slow connection changes to awaiting confirmation only after the POST starts', async () => {
-  let releaseToken;
-  const app = setup({
-    get: () => ({ ok: true, text: () => new Promise(resolve => { releaseToken = resolve; }) }),
-    post: () => ({ ok: true, text: () => new Promise(() => {}) })
-  });
+test('a slow connection shows a waiting notice without changing the request count', async () => {
+  const app = setup({ post: () => ({ ok: true, status: 200, text: () => new Promise(() => {}) }) });
   const [form] = app.forms;
   form.submit();
   await app.advance(10000);
-  assert.match(form.status.textContent, /Datele nu au fost încă trimise/);
-  assert.equal(app.posts().length, 0);
-  releaseToken(JSON.stringify({ ok: true, token: 'delayed-token' }));
-  await app.advance(1300);
-  assert.equal(app.posts().length, 1);
-  assert.match(form.status.textContent, /confirmarea înregistrării/);
-  await app.advance(60000);
-  const detail = assertRecoverableError(form);
-  assert.equal(detail.title, 'Trimitere neconfirmată');
-  assert.match(detail.message, /poate fi deja înregistrată/);
+  assert.match(form.status.textContent, /Încă așteptăm confirmarea/);
+  assert.equal(app.requests.length, 1);
 });
 
-test('a missing backend configuration shows unavailable without retrying', async () => {
+test('a backend "config" rejection shows unavailable and restores the submit button', async () => {
   const app = setup({ post: (_request, _count, response) => response({ ok: false, error: 'config' }) });
   app.forms[0].submit();
   await app.advance();
   const detail = assertRecoverableError(app.forms[0]);
   assert.match(detail.message, /nu este disponibil/);
-  assert.equal(app.posts().length, 1);
+  assert.equal(app.requests.length, 1);
 });
 
 test('additional submits while a request is pending do not send duplicate requests', async () => {
@@ -437,7 +291,7 @@ test('additional submits while a request is pending do not send duplicate reques
   assert.equal(form.getAttribute('aria-busy'), 'true');
   form.submit();
   await app.advance();
-  assert.equal(app.posts().length, 1);
+  assert.equal(app.requests.length, 1);
   assert.equal(form.results.length, 0);
   finishBody(JSON.stringify({ ok: true }));
   await app.advance();
@@ -450,22 +304,15 @@ test('an invalid response body produces a recoverable error', async () => {
   app.forms[0].submit();
   await app.advance(120000);
   assertRecoverableError(app.forms[0]);
-  assert.equal(app.posts().length, 1);
+  assert.equal(app.requests.length, 1);
 });
 
-test('focus prefetch is shared and its token is consumed only once', async () => {
-  const app = setup({ formCount: 2 });
-  const [first, second] = app.forms;
-  first.dispatchEvent({ type: 'focusin' });
-  first.dispatchEvent({ type: 'focusin' });
-  second.dispatchEvent({ type: 'focusin' });
+test('the honeypot field short-circuits to success without sending a request', async () => {
+  const app = setup();
+  const [form] = app.forms;
+  form.elements.company.value = 'bot filled this in';
+  form.submit();
   await app.advance();
-  assert.equal(app.requests.length, 1);
-  first.submit();
-  await app.advance();
-  second.submit();
-  await app.advance();
-  assertResult(first, 'success');
-  assertResult(second, 'success');
-  assert.notEqual(app.posts()[0].payload.token, app.posts()[1].payload.token);
+  assertResult(form, 'success');
+  assert.equal(app.requests.length, 0);
 });

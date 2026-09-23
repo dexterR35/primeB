@@ -6,69 +6,13 @@ var LIMITS = {
   bodyChars: 4096,
   nameMin: 2,
   nameMax: 80,
-  emailMax: 254,
-  tokenMinAgeMs: 1200,
-  tokenMaxAgeMs: 30 * 60 * 1000
+  emailMax: 254
 };
-
-function getSigningKey_() {
-  var props = PropertiesService.getScriptProperties();
-  var key = props.getProperty('SIGNING_KEY');
-  if (!key) {
-    key = Utilities.base64Encode(
-      Utilities.getUuid() + '.' + Utilities.getUuid() + '.' + Date.now()
-    );
-    props.setProperty('SIGNING_KEY', key);
-  }
-  return key;
-}
-
-function hmac_(message) {
-  var raw = Utilities.computeHmacSha256Signature(message, getSigningKey_());
-  return Utilities.base64EncodeWebSafe(raw).replace(/=+$/, '');
-}
-
-function safeEquals_(a, b) {
-  var x = String(a), y = String(b);
-  if (x.length !== y.length) return false;
-  var diff = 0;
-  for (var i = 0; i < x.length; i++) {
-    diff |= x.charCodeAt(i) ^ y.charCodeAt(i);
-  }
-  return diff === 0;
-}
 
 
 /* ======================================================================
-   2. TOKENS AND RATE LIMIT
+   2. RATE LIMIT
    ====================================================================== */
-
-function issueToken() {
-  var payload = Date.now() + '.' + Utilities.getUuid();
-  return payload + '.' + hmac_(payload);
-}
-
-function consumeToken_(token) {
-  if (typeof token !== 'string' || token.length > 200) return false;
-
-  var parts = token.split('.');
-  if (parts.length !== 3) return false;
-
-  var issuedAt = parts[0], nonce = parts[1], mac = parts[2];
-  if (!/^\d{13}$/.test(issuedAt) || !/^[0-9a-fA-F-]{36}$/.test(nonce)) {
-    return false;
-  }
-  if (!safeEquals_(mac, hmac_(issuedAt + '.' + nonce))) return false;
-
-  var age = Date.now() - Number(issuedAt);
-  if (age < LIMITS.tokenMinAgeMs || age > LIMITS.tokenMaxAgeMs) return false;
-
-  var cache = CacheService.getScriptCache();
-  var key = 'tok:' + nonce;
-  if (cache.get(key)) return false;
-  cache.put(key, '1', Math.ceil(LIMITS.tokenMaxAgeMs / 1000) + 60);
-  return true;
-}
 
 var RATE_MAX = 300;
 var RATE_WINDOW_MS = 60 * 60 * 1000;
@@ -252,11 +196,7 @@ function respond_(payload) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function doGet(e) {
-  var action = e && e.parameter ? e.parameter.action : '';
-  if (action === 'token') {
-    return respond_({ ok: true, token: issueToken() });
-  }
+function doGet() {
   return respond_({ ok: false, error: 'not_found' });
 }
 
@@ -282,9 +222,6 @@ function doPost(e) {
     }
     if (!checked.ok) {
       return respond_({ ok: false, error: checked.error });
-    }
-    if (!consumeToken_(body.token)) {
-      return respond_({ ok: false, error: 'token' });
     }
     if (!rateLimitOk_()) {
       return respond_({ ok: false, error: 'busy' });
@@ -312,9 +249,31 @@ function doPost(e) {
 
 function setup() {
   var sheet = getInboxSheet_();
-  getSigningKey_();
   ensureHeader_(sheet);
   console.log('Ready. Writing to the "' + sheet.getName() + '" tab.');
+}
+
+// Pings the script on a schedule so most visitors land on an already-warm
+// container instead of paying Apps Script's 15-20s+ cold start on submit.
+// This does not remove cold starts, it just makes them rarer.
+function keepWarm_() {
+  SpreadsheetApp.openById(SPREADSHEET_ID);
+}
+
+// Run this once from the Apps Script editor (select it in the function
+// dropdown, click Run) after deploying. It installs a trigger that keeps
+// running on its own; you do not need to run it again unless it gets removed.
+function installKeepWarmTrigger() {
+  ScriptApp.getProjectTriggers()
+    .filter(function (trigger) { return trigger.getHandlerFunction() === 'keepWarm_'; })
+    .forEach(function (trigger) { ScriptApp.deleteTrigger(trigger); });
+
+  ScriptApp.newTrigger('keepWarm_')
+    .timeBased()
+    .everyMinutes(5)
+    .create();
+
+  console.log('Keep-warm trigger installed: keepWarm_ runs every 5 minutes.');
 }
 
 function selfTest() {

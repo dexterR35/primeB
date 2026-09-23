@@ -4,7 +4,6 @@
 const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { randomUUID } = require('node:crypto');
 
 const HOST = '127.0.0.1';
 const PORT = 8767;
@@ -45,12 +44,8 @@ function reply(res, status, body, type = 'application/json; charset=utf-8') {
 }
 
 async function formFixture(req, res) {
-  if (req.method === 'GET') {
-    reply(res, 200, { ok: true, token: `fixture-${randomUUID()}` });
-    return;
-  }
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
+    res.setHeader('Allow', 'POST');
     reply(res, 405, { ok: false, error: 'method' });
     return;
   }

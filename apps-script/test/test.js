@@ -129,19 +129,12 @@ vm.runInContext(
   { filename: 'Code.gs' }
 );
 
-function freshToken() {
-  const issuedAt = Date.now() - 5000;
-  const nonce = crypto.randomUUID();
-  return `${issuedAt}.${nonce}.${sandbox.hmac_(`${issuedAt}.${nonce}`)}`;
-}
-
 function post(overrides = {}) {
   const body = {
     fullName: 'Ana Maria Popescu',
     email: `ana-${Math.random().toString(36).slice(2)}@example.com`,
     signature: 'Ana Maria Popescu',
     company: '',
-    token: freshToken(),
     ...overrides
   };
   const output = sandbox.doPost({
@@ -189,10 +182,6 @@ assert.strictEqual(
 const beforeHoneypot = rows.length;
 assert.strictEqual(post({ company: 'bot' }).ok, true);
 assert.strictEqual(rows.length, beforeHoneypot);
-
-const token = freshToken();
-assert.strictEqual(post({ email: 'one@example.com', token }).ok, true);
-assert.strictEqual(post({ email: 'two@example.com', token }).error, 'token');
 
 // Setup uses the same explicit destination without relying on an active container.
 assert.doesNotThrow(() => sandbox.setup());
